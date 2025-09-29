@@ -1,220 +1,339 @@
+DROP DATABASE IF EXISTS gestion;
+CREATE DATABASE gestion;
+USE gestion;
+
 CREATE TABLE utilisateur (
-   id_utilisateur INT AUTO_INCREMENT,
-   nom VARCHAR(255) NOT NULL,
-   email VARCHAR(255) NOT NULL,
-   mot_de_passe VARCHAR(255) NOT NULL,
-   prenom VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_utilisateur)
-);
+  id_utilisateur INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(255) NOT NULL,
+  prenom VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  mot_de_passe VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE departement (
-   id_departement INT AUTO_INCREMENT,
-   nom VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_departement)
-);
+  id_departement INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE ville (
-   id_ville INT AUTO_INCREMENT,
-   nom VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_ville)
-);
+  id_ville INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE competence (
-   id_competence INT AUTO_INCREMENT,
-   libelle VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_competence)
-);
+  id_competence INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE genre (
-   id_genre INT AUTO_INCREMENT,
-   libelle VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_genre)
-);
+  id_genre INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE filiere (
-   id_filiere INT AUTO_INCREMENT,
-   libelle VARCHAR(255) NOT NULL,
-   PRIMARY KEY (id_filiere)
-);
-
-CREATE TABLE candidat (
-   id_candidat INT AUTO_INCREMENT,
-   date_naissance DATE,
-   photo VARCHAR(255),
-   adresse VARCHAR(255),
-   id_genre INT NOT NULL,
-   id_ville INT NOT NULL,
-   id_utilisateur INT NOT NULL,
-   PRIMARY KEY (id_candidat),
-   FOREIGN KEY (id_genre) REFERENCES genre(id_genre),
-   FOREIGN KEY (id_ville) REFERENCES ville(id_ville),
-   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
-);
-
-CREATE TABLE test (
-   id_test INT AUTO_INCREMENT,
-   titre VARCHAR(255),
-   temps TIME NOT NULL,
-   score_min INT NOT NULL,
-   PRIMARY KEY (id_test)
-);
-
-CREATE TABLE notification (
-   id_notification INT AUTO_INCREMENT,
-   message VARCHAR(255) NOT NULL,
-   id_utilisateur INT NOT NULL,
-   PRIMARY KEY (id_notification),
-   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
-);
+  id_filiere INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE diplome (
-   id_diplome INT AUTO_INCREMENT,
-   libelle VARCHAR(255) NOT NULL,
-   niveau DECIMAL(10,5) NOT NULL,
-   PRIMARY KEY (id_diplome)
-);
+  id_diplome INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(255) NOT NULL,
+  niveau DECIMAL(4,5) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE question (
-   id_question INT AUTO_INCREMENT,
-   enonce VARCHAR(255) NOT NULL,
-   point INT NOT NULL,
-   PRIMARY KEY (id_question)
-);
+  id_question INT AUTO_INCREMENT PRIMARY KEY,
+  enonce TEXT NOT NULL,    
+  point INT NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE experience (
-   id_experience INT AUTO_INCREMENT,
-   description VARCHAR(255),
-   debut INT NOT NULL,
-   fin INT NOT NULL,
-   lieu VARCHAR(255),
-   id_filiere INT NOT NULL,
-   id_candidat INT NOT NULL,
-   PRIMARY KEY (id_experience),
-   FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
-);
+CREATE TABLE test (
+  id_test INT AUTO_INCREMENT PRIMARY KEY,
+  titre VARCHAR(255),
+  temps TIME,
+  score_min INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE poste (
-   id_poste INT AUTO_INCREMENT,
-   libelle VARCHAR(255) NOT NULL,
-   id_departement INT NOT NULL,
-   PRIMARY KEY (id_poste),
-   FOREIGN KEY (id_departement) REFERENCES departement(id_departement)
-);
+  id_poste INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(255) NOT NULL,
+  id_departement INT NOT NULL,
+  FOREIGN KEY (id_departement) REFERENCES departement(id_departement)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE reponse (
-   id_reponse INT AUTO_INCREMENT,
-   valeur VARCHAR(255) NOT NULL,
-   est_correct BOOLEAN,
-   id_question INT NOT NULL,
-   PRIMARY KEY (id_reponse),
-   FOREIGN KEY (id_question) REFERENCES question(id_question)
-);
+  id_reponse INT AUTO_INCREMENT PRIMARY KEY,
+  valeur VARCHAR(1000) NOT NULL,
+  est_correct TINYINT(1) NOT NULL DEFAULT 0,
+  id_question INT NOT NULL,
+  INDEX (id_question),
+  FOREIGN KEY (id_question) REFERENCES question(id_question)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE annonce (
-   id_annonce INT AUTO_INCREMENT,
-   date_limite DATE NOT NULL,
-   description VARCHAR(255),
-   annee_experence INT,
-   age INT,
-   age_obligatoire BOOLEAN,
-   diplome_obligatoire BOOLEAN,
-   experience_obligatoire BOOLEAN,
-   genre_obligatoire BOOLEAN,
-   ville_obligatoire BOOLEAN,
-   id_diplome INT,
-   id_genre INT,
-   id_ville INT,
-   id_filiere INT NOT NULL,
-   id_test INT NOT NULL,
-   id_poste INT NOT NULL,
-   PRIMARY KEY (id_annonce),
-   UNIQUE (id_poste),
-   FOREIGN KEY (id_diplome) REFERENCES diplome(id_diplome),
-   FOREIGN KEY (id_genre) REFERENCES genre(id_genre),
-   FOREIGN KEY (id_ville) REFERENCES ville(id_ville),
-   FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere),
-   FOREIGN KEY (id_test) REFERENCES test(id_test),
-   FOREIGN KEY (id_poste) REFERENCES poste(id_poste)
-);
+CREATE TABLE candidat (
+  id_candidat INT AUTO_INCREMENT PRIMARY KEY,
+  date_naissance DATE,
+  photo VARCHAR(255),
+  adresse VARCHAR(255),
+  id_genre INT NOT NULL,
+  id_ville INT NOT NULL,
+  id_utilisateur INT NOT NULL UNIQUE,
+  FOREIGN KEY (id_genre) REFERENCES genre(id_genre)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_ville) REFERENCES ville(id_ville)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE candidat_essai (
-   id_candidat_essai INT AUTO_INCREMENT,
-   date_contrat DATE NOT NULL,
-   duree INT NOT NULL,
-   id_poste INT NOT NULL,
-   id_candidat INT NOT NULL,
-   PRIMARY KEY (id_candidat_essai),
-   FOREIGN KEY (id_poste) REFERENCES poste(id_poste),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
-);
+CREATE TABLE experience (
+  id_experience INT AUTO_INCREMENT PRIMARY KEY,
+  description VARCHAR(1000),
+  debut YEAR NOT NULL,
+  fin YEAR NOT NULL,
+  lieu VARCHAR(255),
+  id_filiere INT NOT NULL,
+  id_candidat INT NOT NULL,
+  FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE candidature (
-   id_candidature INT AUTO_INCREMENT,
-   id_annonce INT,
-   id_candidat INT,
-   date_candidature DATE NOT NULL,
-   PRIMARY KEY (id_candidature),
-   FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
-);
 
 CREATE TABLE employe (
-   id_poste INT,
-   id_utilisateur INT,
-   id_employe INT AUTO_INCREMENT,
-   PRIMARY KEY (id_employe),
-   FOREIGN KEY (id_poste) REFERENCES poste(id_poste),
-   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
-);
+  id_employe INT AUTO_INCREMENT PRIMARY KEY,
+  id_poste INT NOT NULL,
+  id_utilisateur INT NOT NULL,
+  date_embauche DATE DEFAULT NULL,
+  FOREIGN KEY (id_poste) REFERENCES poste(id_poste)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE test_qcm (
-   id_test INT,
-   id_question INT,
-   FOREIGN KEY (id_test) REFERENCES test(id_test),
-   FOREIGN KEY (id_question) REFERENCES question(id_question)
-);
+  id_test INT NOT NULL,
+  id_question INT NOT NULL,
+  PRIMARY KEY (id_test, id_question),
+  FOREIGN KEY (id_test) REFERENCES test(id_test)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_question) REFERENCES question(id_question)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE annonce (
+  id_annonce INT AUTO_INCREMENT PRIMARY KEY,
+  date_limite DATE NOT NULL,
+  description TEXT,
+  annee_experience INT DEFAULT NULL,
+  age INT DEFAULT NULL,
+  age_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  diplome_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  experience_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  genre_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  ville_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  id_diplome INT DEFAULT NULL,
+  id_genre INT DEFAULT NULL,
+  id_ville INT DEFAULT NULL,
+  id_filiere INT NOT NULL,
+  id_test INT NOT NULL,
+  id_poste INT NOT NULL,
+  INDEX (id_poste),
+  INDEX (id_test),
+  INDEX (id_filiere),
+  FOREIGN KEY (id_diplome) REFERENCES diplome(id_diplome)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (id_genre) REFERENCES genre(id_genre)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (id_ville) REFERENCES ville(id_ville)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_test) REFERENCES test(id_test)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_poste) REFERENCES poste(id_poste)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE candidat_essai (
+  id_candidat_essai INT AUTO_INCREMENT PRIMARY KEY,
+  date_contrat DATE NOT NULL,
+  duree INT NOT NULL,
+  id_poste INT NOT NULL,
+  id_candidat INT NOT NULL,
+  FOREIGN KEY (id_poste) REFERENCES poste(id_poste)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  UNIQUE (id_poste, id_candidat)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE candidature (
+  id_candidature INT AUTO_INCREMENT PRIMARY KEY,
+  id_annonce INT,
+  id_candidat INT,
+  date_candidature DATE NOT NULL,
+  FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE education (
-   id_filiere INT,
-   id_candidat INT,
-   id_diplome INT,
-   annee_debut INT NOT NULL,
-   annee_fin INT NOT NULL,
-   lieu VARCHAR(255),
-   FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat),
-   FOREIGN KEY (id_diplome) REFERENCES diplome(id_diplome)
-);
+  id_education INT AUTO_INCREMENT PRIMARY KEY,
+  id_filiere INT NOT NULL,
+  id_candidat INT NOT NULL,
+  id_diplome INT NOT NULL,
+  annee_debut YEAR NOT NULL,
+  annee_fin YEAR NOT NULL,
+  lieu VARCHAR(255),
+  FOREIGN KEY (id_filiere) REFERENCES filiere(id_filiere)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_diplome) REFERENCES diplome(id_diplome)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Compétences du candidat (many-to-many) : PK composite
 CREATE TABLE candidat_competence (
-   id_competence INT,
-   id_candidat INT,
-   FOREIGN KEY (id_competence) REFERENCES competence(id_competence),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
-);
+  id_candidat INT NOT NULL,
+  id_competence INT NOT NULL,
+  PRIMARY KEY (id_candidat, id_competence),
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_competence) REFERENCES competence(id_competence)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE test_passage (
-   id_candidat INT,
-   id_test INT,
-   date_passage DATE NOT NULL,
-   PRIMARY KEY (id_candidat, id_test),
-   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat),
-   FOREIGN KEY (id_test) REFERENCES test(id_test)
-);
+  id_candidat INT NOT NULL,
+  id_test INT NOT NULL,
+  date_passage DATE NOT NULL,
+  PRIMARY KEY (id_candidat, id_test),
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_test) REFERENCES test(id_test)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE entretien (
-   id_candidature INT,
-   id_employe INT,
-   date_entretien DATE NOT NULL,
-   FOREIGN KEY (id_candidature) REFERENCES candidature(id_candidature),
-   FOREIGN KEY (id_employe) REFERENCES employe(id_employe)
-);
+  id_entretien INT AUTO_INCREMENT PRIMARY KEY,
+  id_candidature INT NOT NULL,
+  id_employe INT NOT NULL,
+  date_entretien DATE NOT NULL,
+  compte_rendu TEXT,
+  FOREIGN KEY (id_candidature) REFERENCES candidature(id_candidature)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_employe) REFERENCES employe(id_employe)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE annonce_competence (
-   id_competence INT,
-   id_annonce INT,
-   est_obligatoire BOOLEAN,
-   FOREIGN KEY (id_competence) REFERENCES competence(id_competence),
-   FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
-);
+  id_annonce INT NOT NULL,
+  id_competence INT NOT NULL,
+  est_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id_annonce, id_competence),
+  FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_competence) REFERENCES competence(id_competence)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Notifications
+CREATE TABLE notification (
+  id_notification INT AUTO_INCREMENT PRIMARY KEY,
+  message VARCHAR(255) NOT NULL,
+  id_utilisateur INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Utilisateurs
+INSERT INTO utilisateur (nom, prenom, email, mot_de_passe)
+VALUES 
+('Rakoto', 'Jean', 'jean.rakoto@example.com', 'pwd123'),
+('Randria', 'Marie', 'marie.randria@example.com', 'pwd456'),
+('Rabe', 'Paul', 'paul.rabe@example.com', 'pwd789');
+
+-- Genres
+INSERT INTO genre (libelle)
+VALUES ('Homme'), ('Femme');
+
+-- Villes
+INSERT INTO ville (nom)
+VALUES ('Antananarivo'), ('Toamasina'), ('Fianarantsoa');
+
+-- Départements
+INSERT INTO departement (nom)
+VALUES ('Informatique'), ('Ressources Humaines');
+
+-- Postes
+INSERT INTO poste (libelle, id_departement)
+VALUES ('Développeur Java', 1),
+       ('Recruteur RH', 2);
+
+-- Diplômes
+INSERT INTO diplome (libelle, niveau)
+VALUES ('Licence', 3.0),
+       ('Master', 5.0);
+
+-- Filières
+INSERT INTO filiere (libelle)
+VALUES ('Informatique'), ('Gestion');
+
+-- Compétences
+INSERT INTO competence (libelle)
+VALUES ('Java'), ('Spring Boot'), ('Communication'), ('Comptabilité');
+
+-- Candidats
+INSERT INTO candidat (date_naissance, photo, adresse, id_genre, id_ville, id_utilisateur)
+VALUES 
+('2000-05-12', 'photo1.jpg', 'Andoharanofotsy', 1, 1, 1),
+('1998-09-20', 'photo2.jpg', 'Toamasina Centre', 2, 2, 2);
+
+-- Expériences
+INSERT INTO experience (description, debut, fin, lieu, id_filiere, id_candidat)
+VALUES 
+('Stage en développement', 2019, 2020, 'Antananarivo', 1, 1),
+('Assistante RH', 2020, 2022, 'Toamasina', 2, 2);
+
+-- Tests
+INSERT INTO test (titre, temps, score_min)
+VALUES 
+('Test Java', '01:00:00', 50),
+('Test RH', '00:45:00', 40);
+
+-- Questions
+INSERT INTO question (enonce, point)
+VALUES 
+('Qu’est-ce qu’une classe en Java ?', 10),
+('Définir le rôle d’un recruteur', 5);
+
+-- Réponses
+INSERT INTO reponse (valeur, est_correct, id_question)
+VALUES 
+('Une structure définissant objets', TRUE, 1),
+('Une personne qui embauche', TRUE, 2);
+
+-- Annonce
+INSERT INTO annonce (date_limite, description, annee_experence, age, age_obligatoire, diplome_obligatoire, experience_obligatoire, genre_obligatoire, ville_obligatoire, id_diplome, id_genre, id_ville, id_filiere, id_test, id_poste)
+VALUES 
+('2025-12-31', 'Recherche Développeur Java confirmé', 2, 30, TRUE, TRUE, TRUE, FALSE, FALSE, 1, NULL, 1, 1, 1, 1),
+('2025-06-30', 'Besoin de Recruteur RH junior', 1, NULL, FALSE, FALSE, TRUE, FALSE, FALSE, 2, 2, 2, 2, 2, 2);
+
+-- Candidature
+INSERT INTO candidature (id_annonce, id_candidat, date_candidature)
+VALUES 
+(1, 1, '2025-01-10'),
+(2, 2, '2025-01-15');
+
