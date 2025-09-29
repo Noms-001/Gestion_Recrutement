@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalentSphere - Dépôt de CV</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 
@@ -280,16 +280,16 @@
         </main>
     </div>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/cv-submission.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/cv-submission.js"></script>
     <script>
         loadNavbar();
         loadSidebar();
     </script>
-    <script src="js/experience.js"></script>
-    <script src="js/formation.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/experience.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/formation.js"></script>
 </body>
 
 </html>

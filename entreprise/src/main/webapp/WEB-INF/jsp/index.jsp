@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalentSphere - Connexion</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 
@@ -67,30 +67,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Afficher/masquer mot de passe
-        function togglePasswordVisibility(inputId, toggleId) {
-            const input = document.getElementById(inputId);
-            const toggle = document.getElementById(toggleId);
-            toggle.addEventListener('click', function () {
-                const type = input.type === 'password' ? 'text' : 'password';
-                input.type = type;
-                this.querySelector('i').classList.toggle('bi-eye');
-                this.querySelector('i').classList.toggle('bi-eye-slash');
-                input.placeholder = type === 'password' ? "••••••••" : "";
-            });
-        }
-
-        togglePasswordVisibility('password', 'togglePassword');
-
-        // Simulation de connexion
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Connexion réussie!');
-            window.location.href = 'dashboard.html';
-        });
-    </script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/index.js"></script>
 </body>
 
 </html>

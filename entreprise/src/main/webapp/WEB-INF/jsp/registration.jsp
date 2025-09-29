@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalentSphere - Inscription</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 
@@ -127,55 +127,8 @@
         </div>
     </div>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        // toggle mot de passe
-        function togglePasswordVisibility(inputId, toggleId) {
-            const input = document.getElementById(inputId);
-            const toggle = document.getElementById(toggleId);
-            toggle.addEventListener('click', function () {
-                const type = input.type === 'password' ? 'text' : 'password';
-                input.type = type;
-                this.querySelector('i').classList.toggle('bi-eye');
-                this.querySelector('i').classList.toggle('bi-eye-slash');
-                if (type === 'text') {
-                    input.placeholder = "";
-                } else {
-                    input.placeholder = "••••••••";
-                }
-            });
-        }
-
-        togglePasswordVisibility('password', 'togglePassword');
-        togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
-
-        // afficher champ poste si recruteur
-        document.getElementById('profile').addEventListener('change', function () {
-            const posteField = document.getElementById('posteField');
-            if (this.value === 'recruteur') {
-                posteField.classList.remove('d-none');
-                document.getElementById('poste').required = true;
-            } else {
-                posteField.classList.add('d-none');
-                document.getElementById('poste').required = false;
-            }
-        });
-
-        // validation formulaire
-        document.getElementById('registrationForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (password !== confirmPassword) {
-                alert('Les mots de passe ne correspondent pas!');
-                return;
-            }
-
-            alert('Inscription réussie!');
-            window.location.href = 'index.html';
-        });
-    </script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/register.js"></script>
 </body>
 
 </html>
