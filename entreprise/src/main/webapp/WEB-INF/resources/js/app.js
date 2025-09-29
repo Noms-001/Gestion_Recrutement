@@ -19,7 +19,7 @@ function loadNavbar() {
                         <i class="bi bi-list fs-4"></i>
                     </button>
                     <div class="navbar-brand d-flex align-items-center logo">
-                        <span class="text-primary" id="sidebarToggle"><img src="img/logo.png" alt="logo" style="width: 40px; height: 40px;">Talent<small>Sphere<small></span>
+                        <span class="text-primary" id="sidebarToggle"><img src="${pageContext.request.contextPath}/resources/img/logo.png" alt="logo" style="width: 40px; height: 40px;">Talent<small>Sphere<small></span>
                     </div>
                 </div>
 

@@ -8,7 +8,7 @@
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/img/logo.png">
 </head>
 
 <body>
@@ -18,7 +18,7 @@
                 <div class="card shadow-lg border-0">
                     <div class="card-body p-5">
                         <div class="text-center mb-4 logo">
-                            <img src="img/logo.png" alt="logo" class="logo-img mb-3">
+                            <img src="${pageContext.request.contextPath}/resources/img/logo.png" alt="logo" class="logo-img mb-3">
                             <h1 class="fw-bold text-primary" style="margin-left: -15%;">Talent<small style="margin-top: 2%;">Sphere</small></h1>
                             <p class="text-muted">Connexion à votre compte</p>
                         </div>
