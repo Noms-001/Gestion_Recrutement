@@ -97,7 +97,7 @@
                         <!-- Job Offers Table -->
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-0">
-                                <div class="table-responsive">
+                                <div class="table-responsive" style="overflow: visible !important;">
                                     <table class="table table-hover mb-0">
                                         <thead class="bg-light">
                                             <tr>
