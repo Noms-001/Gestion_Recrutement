@@ -2,6 +2,7 @@ package com.example.entreprise.entity;
 
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "experience")
 public class Experience {
@@ -11,8 +12,50 @@ public class Experience {
     private Long id;
 
     private String description;
-    private Integer debut;
-    private Integer fin;
+    @Column(name = "debut_mois")
+    private Integer debutMois;  // 1-12
+
+    @Column(name = "debut_annee")
+    private Integer debutAnnee;
+
+    @Column(name = "fin_mois")
+    private Integer finMois;    // 1-12
+
+    @Column(name = "fin_annee")
+    private Integer finAnnee;
+    
+    public Integer getDebutMois() {
+        return debutMois;
+    }
+
+    public void setDebutMois(Integer debutMois) {
+        this.debutMois = debutMois;
+    }
+
+    public Integer getDebutAnnee() {
+        return debutAnnee;
+    }
+
+    public void setDebutAnnee(Integer debutAnnee) {
+        this.debutAnnee = debutAnnee;
+    }
+
+    public Integer getFinMois() {
+        return finMois;
+    }
+
+    public void setFinMois(Integer finMois) {
+        this.finMois = finMois;
+    }
+
+    public Integer getFinAnnee() {
+        return finAnnee;
+    }
+
+    public void setFinAnnee(Integer finAnnee) {
+        this.finAnnee = finAnnee;
+    }
+
     private String lieu;
 
     @ManyToOne
@@ -24,18 +67,43 @@ public class Experience {
     private Candidat candidat;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public Integer getDebut() { return debut; }
-    public void setDebut(Integer debut) { this.debut = debut; }
-    public Integer getFin() { return fin; }
-    public void setFin(Integer fin) { this.fin = fin; }
-    public String getLieu() { return lieu; }
-    public void setLieu(String lieu) { this.lieu = lieu; }
-    public Filiere getFiliere() { return filiere; }
-    public void setFiliere(Filiere filiere) { this.filiere = filiere; }
-    public Candidat getCandidat() { return candidat; }
-    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLieu() {
+        return lieu;
+    }
+
+    public void setLieu(String lieu) {
+        this.lieu = lieu;
+    }
+
+    public Filiere getFiliere() {
+        return filiere;
+    }
+
+    public void setFiliere(Filiere filiere) {
+        this.filiere = filiere;
+    }
+
+    public Candidat getCandidat() {
+        return candidat;
+    }
+
+    public void setCandidat(Candidat candidat) {
+        this.candidat = candidat;
+    }
 }

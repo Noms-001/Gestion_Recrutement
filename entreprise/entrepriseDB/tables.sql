@@ -1,15 +1,19 @@
-DROP DATABASE IF EXISTS gestion;
-CREATE DATABASE gestion;
-USE gestion;
+CREATE TABLE genre (
+  id_genre INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE utilisateur (
   id_utilisateur INT AUTO_INCREMENT PRIMARY KEY,
   nom VARCHAR(255) NOT NULL,
   prenom VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
+  id_genre INT NOT NULL,
   mot_de_passe VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_genre) REFERENCES genre(id_genre)
+    ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE departement (
@@ -25,11 +29,6 @@ CREATE TABLE ville (
 CREATE TABLE competence (
   id_competence INT AUTO_INCREMENT PRIMARY KEY,
   libelle VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE genre (
-  id_genre INT AUTO_INCREMENT PRIMARY KEY,
-  libelle VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE filiere (
@@ -80,11 +79,9 @@ CREATE TABLE candidat (
   date_naissance DATE,
   photo VARCHAR(255),
   adresse VARCHAR(255),
-  id_genre INT NOT NULL,
-  id_ville INT NOT NULL,
+  telephone VARCHAR(255),
+  id_ville INT,
   id_utilisateur INT NOT NULL UNIQUE,
-  FOREIGN KEY (id_genre) REFERENCES genre(id_genre)
-    ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (id_ville) REFERENCES ville(id_ville)
     ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
@@ -94,8 +91,10 @@ CREATE TABLE candidat (
 CREATE TABLE experience (
   id_experience INT AUTO_INCREMENT PRIMARY KEY,
   description VARCHAR(1000),
-  debut YEAR NOT NULL,
-  fin YEAR NOT NULL,
+  debut_mois INT NOT NULL,
+  debut_annee INT NOT NULL,
+  fin_mois INT NOT NULL,
+  fin_annee INT NOT NULL,
   lieu VARCHAR(255),
   id_filiere INT NOT NULL,
   id_candidat INT NOT NULL,
@@ -253,7 +252,34 @@ CREATE TABLE notification (
   id_notification INT AUTO_INCREMENT PRIMARY KEY,
   message VARCHAR(255) NOT NULL,
   id_utilisateur INT NOT NULL,
+  lu BOOLEAN,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
     ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE langue (
+  id_langue INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE candidat_langue (
+  id_candidat INT NOT NULL,
+  id_langue INT NOT NULL,
+  PRIMARY KEY (id_candidat, id_langue),
+  FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_langue) REFERENCES langue(id_langue)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE annonce_langue (
+  id_annonce INT NOT NULL,
+  id_langue INT NOT NULL,
+  est_obligatoire BOOLEAN,
+  PRIMARY KEY (id_annonce, id_langue),
+  FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_langue) REFERENCES langue(id_langue)
+    ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

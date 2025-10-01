@@ -27,18 +27,59 @@ public class Education {
     private String lieu;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Filiere getFiliere() { return filiere; }
-    public void setFiliere(Filiere filiere) { this.filiere = filiere; }
-    public Candidat getCandidat() { return candidat; }
-    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
-    public Diplome getDiplome() { return diplome; }
-    public void setDiplome(Diplome diplome) { this.diplome = diplome; }
-    public Integer getAnneeDebut() { return anneeDebut; }
-    public void setAnneeDebut(Integer anneeDebut) { this.anneeDebut = anneeDebut; }
-    public Integer getAnneeFin() { return anneeFin; }
-    public void setAnneeFin(Integer anneeFin) { this.anneeFin = anneeFin; }
-    public String getLieu() { return lieu; }
-    public void setLieu(String lieu) { this.lieu = lieu; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Filiere getFiliere() {
+        return filiere;
+    }
+
+    public void setFiliere(Filiere filiere) {
+        this.filiere = filiere;
+    }
+
+    public Candidat getCandidat() {
+        return candidat;
+    }
+
+    public void setCandidat(Candidat candidat) {
+        this.candidat = candidat;
+    }
+
+    public Diplome getDiplome() {
+        return diplome;
+    }
+
+    public void setDiplome(Diplome diplome) {
+        this.diplome = diplome;
+    }
+
+    public Integer getAnneeDebut() {
+        return anneeDebut;
+    }
+
+    public void setAnneeDebut(Integer anneeDebut) {
+        this.anneeDebut = anneeDebut;
+    }
+
+    public Integer getAnneeFin() {
+        return anneeFin;
+    }
+
+    public void setAnneeFin(Integer anneeFin) {
+        this.anneeFin = anneeFin;
+    }
+
+    public String getLieu() {
+        return lieu;
+    }
+
+    public void setLieu(String lieu) {
+        this.lieu = lieu;
+    }
 }

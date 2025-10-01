@@ -1,3 +1,8 @@
+<%@ page session="true" %>
+<% if(session.getAttribute("id_utilisateur") == null) {
+    response.sendRedirect("/");
+} %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -6,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalentSphere - Tableau de bord</title>
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/img/logo.png">
 </head>
@@ -224,11 +229,19 @@
     </div>
 
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
     <script>
-        loadNavbar();
-        loadSidebar();
+        const currentUser = {
+            name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
+            initials: "<%= session.getAttribute("nom") != null && session.getAttribute("prenom") != null ? 
+                        session.getAttribute("nom").substring(0,1).toUpperCase() + session.getAttribute("prenom").substring(0,1).toUpperCase() 
+                        : "" %>",
+            avatar: "<%= session.getAttribute("avatarColor")%>",
+            id: "<%= session.getAttribute("id_utilisateur") %>",
+            poste: "<%= session.getAttribute("poste") %>"
+        };
     </script>
+<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
 </body>
 
 </html>

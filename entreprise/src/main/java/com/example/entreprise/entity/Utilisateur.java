@@ -18,6 +18,10 @@ public class Utilisateur {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @ManyToOne
+    @JoinColumn(name = "id_genre", nullable = false)
+    private Genre genre;
+
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;
 
@@ -67,6 +71,14 @@ public class Utilisateur {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
     }
 
     public String getMotDePasse() {

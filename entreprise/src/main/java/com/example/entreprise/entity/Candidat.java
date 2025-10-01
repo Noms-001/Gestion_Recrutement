@@ -1,8 +1,20 @@
 package com.example.entreprise.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "candidat")
@@ -16,13 +28,10 @@ public class Candidat {
     private LocalDate dateNaissance;
     private String photo;
     private String adresse;
+    private String telephone;
 
     @ManyToOne
-    @JoinColumn(name = "id_genre", nullable = false)
-    private Genre genre;
-
-    @ManyToOne
-    @JoinColumn(name = "id_ville", nullable = false)
+    @JoinColumn(name = "id_ville")
     private Ville ville;
 
     @OneToOne
@@ -34,6 +43,22 @@ public class Candidat {
 
     @OneToMany(mappedBy = "candidat")
     private List<Candidature> candidatures;
+
+    @ManyToMany
+    @JoinTable(
+        name = "candidat_langue",
+        joinColumns = @JoinColumn(name = "id_candidat"),
+        inverseJoinColumns = @JoinColumn(name = "id_langue")
+    )
+    private List<Langue> langues;
+
+    public List<Langue> getLangues() {
+        return langues;
+    }
+
+    public void setLangues(List<Langue> langues) {
+        this.langues = langues;
+    }
 
     @ManyToMany
     @JoinTable(name = "candidat_competence", joinColumns = @JoinColumn(name = "id_candidat"), inverseJoinColumns = @JoinColumn(name = "id_competence"))
@@ -81,12 +106,12 @@ public class Candidat {
         this.adresse = adresse;
     }
 
-    public Genre getGenre() {
-        return genre;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setGenre(Genre genre) {
-        this.genre = genre;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public Ville getVille() {
@@ -153,3 +178,5 @@ public class Candidat {
         this.educations = educations;
     }
 }
+
+

@@ -1,4 +1,9 @@
-<!doctype html>
+<%@ page session="true" %>
+<% if(session.getAttribute("id_utilisateur") == null) {
+    response.sendRedirect("/");
+} %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -6,14 +11,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Modèle CV — Clean (avec photo)</title>
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap-icons.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/cv.css">
 </head>
 
 <body>
-    <div class="download-wrapper">
+    <div class="download-wrapper d-flex">
+        <a href="${pageContext.request.contextPath}/cv-submission" style="color: var(--muted)">
+            <i class="bi bi-arrow-left  fs-1" style="font-size:2.5rem; -webkit-text-stroke:1px;"></i>
+        </a>
+
         <button class="btn btn-sm download-btn" id="downloadPdf">
-            <i class="bi bi-download me-1"></i> Télécharger PDF
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Télécharger PDF
         </button>
     </div>
 
@@ -26,9 +35,9 @@
 
                 <div class="contact mt-3">
                     <div class="section-title">Contact</div>
-                    <p id="cvEmail"><i class="bi bi-envelope me-2"></i>email@example.com</p>
-                    <p id="cvPhone"><i class="bi bi-telephone me-2"></i>+33 6 12 34 56 78</p>
-                    <p id="cvLocation"><i class="bi bi-geo-alt me-2"></i>Paris, France</p>
+                    <p id="cvEmail" class="mb-1"><i class="bi bi-envelope me-2"></i>email@example.com</p>
+                    <p id="cvPhone" class="mb-1"><i class="bi bi-telephone me-2"></i>+33 6 12 34 56 78</p>
+                    <p id="cvLocation" class="mb-1"><i class="bi bi-geo-alt me-2"></i>Paris, France</p>
                 </div>
 
                 <div class="skills mt-3">
@@ -64,8 +73,12 @@
             </section>
         </div>
     </div>
-
-    <script src="${pageContext.request.contextPath}/resources/js/cv.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/html2canvas.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/jspdf.umd.min.js"></script>
+    <script>
+        const utilisateurId = "<%= session.getAttribute("id_utilisateur") %>"
+    </script>
+    <script src="${pageContext.request.contextPath}/resources/js/show-cv.js"></script>
 </body>
 
 </html>
