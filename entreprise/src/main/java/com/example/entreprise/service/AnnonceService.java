@@ -17,7 +17,7 @@ public class AnnonceService {
     }
 
     // Filtre combiné
-    public List<Annonce> filter(Long villeId, Long departementId, String poste) {
-        return repository.findByFilters(villeId, departementId, poste);
+    public List<Annonce> filter(Long villeId, Long departementId, String poste, String status) {
+        return repository.findByFilters(villeId, departementId, poste, status);
     }
 }

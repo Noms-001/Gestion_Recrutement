@@ -15,18 +15,18 @@ public class ManageJobsController {
     @Autowired
     private AnnonceService annonceService;
     @Autowired
-    private PosteService posteService;
+    private VilleService villeService;
     @Autowired
     private DepartementService departementService;
 
     @GetMapping("/manage-jobs")
     public String showManageJobs(Model model) {
         List<Annonce> annonces = annonceService.findAll();
-        List<Poste> postes = posteService.getAll();
+        List<Ville> villes = villeService.findAll();
         List<Departement> departements = departementService.getAll();
 
         model.addAttribute("annonces", annonces);
-        model.addAttribute("postes", postes);
+        model.addAttribute("villes", villes);
         model.addAttribute("departements", departements);
 
         return "manage-jobs"; // JSP

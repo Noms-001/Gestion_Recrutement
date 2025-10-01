@@ -15,13 +15,14 @@ public class AnnonceRestController {
     @Autowired
     private AnnonceService annonceService;
 
-    // GET /api/annonces?villeId=1&metierId=2&niveauId=3
     @GetMapping("/api/annonces")
-    public List<Annonce> filterAnnonces(
+    public List<AnnonceDTO> filterAnnonces(
             @RequestParam(required = false) Long villeId,
             @RequestParam(required = false) Long departementId,
-            @RequestParam(required = false) String poste) {
+            @RequestParam(required = false) String poste,
+            @RequestParam(required = false) String status) {
 
-        return annonceService.filter(villeId, departementId, poste);
+        return annonceService.filter(villeId, departementId, poste, status);
     }
+
 }
