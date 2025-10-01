@@ -12,7 +12,7 @@
     <title>TalentSphere - Tableau de bord</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/logo.png">
 </head>
 
@@ -575,9 +575,7 @@
     <script>
         const currentUser = {
             name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
-            initials: "<%= session.getAttribute("nom") != null && session.getAttribute("prenom") != null ? 
-                        session.getAttribute("nom").substring(0,1).toUpperCase() + session.getAttribute("prenom").substring(0,1).toUpperCase() 
-                        : "" %>",
+            initials: "<%= session.getAttribute("initiales") != null ? session.getAttribute("initiales") : "" %>",
             avatar: "<%= session.getAttribute("avatarColor")%>",
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"

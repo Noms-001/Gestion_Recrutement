@@ -544,6 +544,93 @@ body {
 /* Utilities */
 .border-dashed { border-style: dashed !important; }
 .bg-light-primary { background-color: rgba(13,110,253,0.1) !important; }
+/* Container year picker */
+.year-picker-dropdown {
+    position: absolute;
+    display: none;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 100%; /* largeur du dropdown */
+}
+
+/* Grille des années */
+.year-picker-dropdown .year-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-height: 204px;
+    overflow: hidden;
+    padding-bottom: 5px;
+}
+
+/* Chaque année */
+.year-picker-dropdown .year-grid div {
+    padding: 8px 8px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    transition: all 0.2s ease;
+}
+
+.year-picker-dropdown .year-grid div:hover,
+.year-picker-dropdown .year-grid div.selected {
+    background: #0d6efd;
+    color: white;
+    font-weight: bold;
+}
+
+/* Navigation buttons container */
+.year-picker-dropdown .year-nav {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Style boutons Prev / Next */
+.year-picker-dropdown .year-nav button {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+/* Icon inside input */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    right: 12px;
+    top: 73%;
+    transform: translateY(-50%);
+    color: #5c6063;
+    cursor: pointer;
+}
+
+.autocomplete-list {
+    z-index: 1050;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.autocomplete-list .list-group-item {
+    cursor: pointer;
+    padding: 2% 1%;
+}
+.autocomplete-list .list-group-item:hover {
+    background-color: #f0f0f0;
+}
 
 /* Responsive */
 @media (max-width:768px){
@@ -558,37 +645,3 @@ body {
     .sidebar-nav .nav-link { padding:0.5rem 1rem; }
 }
 
-.year-picker {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 colonnes par ligne */
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    max-height: 300px;
-    overflow-y: auto; /* scroll si trop long */
-    background: #f8f9fa;
-}
-
-.year-picker div {
-    padding: 6px 10px;
-    text-align: center;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: white;
-    border: 1px solid #ddd;
-    font-size: 14px;
-}
-
-.year-picker div:hover {
-    background: #0d6efd;
-    color: white;
-    font-weight: bold;
-}
-
-.year-picker div.selected {
-    background: #0d6efd;
-    color: white;
-    font-weight: bold;
-}

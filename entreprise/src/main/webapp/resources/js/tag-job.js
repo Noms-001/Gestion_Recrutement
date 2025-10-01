@@ -9,13 +9,56 @@ function addTag(type) {
     // éviter doublons
     if (container.querySelector(`[data-value="${value}"]`)) return;
 
-    const tag = document.createElement('span');
-    tag.className = "badge bg-light text-dark border d-flex align-items-center";
+    // conteneur du tag
+    const tag = document.createElement('div');
+    tag.className = "border bg-light text-dark rounded p-2 mb-1";
     tag.dataset.value = value;
-    tag.innerHTML = text + ` <i class="bi bi-x ms-2" style="cursor:pointer;" onclick="this.parentElement.remove()"></i>`;
 
+    // ligne principale
+    const row = document.createElement('div');
+    row.className = "d-flex align-items-center justify-content-between";
+
+    // texte
+    const spanText = document.createElement('span');
+    spanText.textContent = text;
+
+    // bloc actions
+    const actions = document.createElement('div');
+    actions.className = "d-flex align-items-center";
+
+    // toggle switch avec tooltip
+    const toggleWrapper = document.createElement('div');
+    toggleWrapper.className = "form-check form-switch m-0 p-0";
+    toggleWrapper.style.marginRight = "8px";
+
+    const toggle = document.createElement('input');
+    toggle.type = "checkbox";
+    toggle.className = "form-check-input";
+    toggle.setAttribute("data-bs-html", "true"); // autoriser HTML dans le tooltip
+    toggle.setAttribute("title", '<i class="bi bi-info-circle"></i> Spécifie si c\'est obligatoire'); // ✅ texte dans l'info-bulle
+    toggleWrapper.appendChild(toggle);
+
+    // bouton suppression
+    const closeIcon = document.createElement('i');
+    closeIcon.className = "bi bi-x";
+    closeIcon.style.cursor = "pointer";
+    closeIcon.addEventListener('click', () => tag.remove());
+
+    // actions = switch + croix
+    actions.appendChild(toggleWrapper);
+    actions.appendChild(closeIcon);
+
+    // ligne principale
+    row.appendChild(spanText);
+    row.appendChild(actions);
+
+    // assembler
+    tag.appendChild(row);
     container.appendChild(tag);
 
-    // réinitialiser le select
+    // reset select
     select.value = '';
+
+    // ⚡️ activer le tooltip pour ce switch
+    new bootstrap.Tooltip(toggle);
 }

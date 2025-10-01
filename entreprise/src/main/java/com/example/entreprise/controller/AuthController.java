@@ -51,7 +51,7 @@ public class AuthController {
         if (employe.isPresent()) {
             session.setAttribute("poste", employe.get().getPoste().getId());
             session.setAttribute("profil", "recruteur");
-            session.setAttribute("avatarColor", "var(--primary)");
+            session.setAttribute("avatarColor", "var(--primary-color)");
             return "dashboard";
         } else {
             session.setAttribute("profil", "candidat");

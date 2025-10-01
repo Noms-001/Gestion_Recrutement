@@ -2,6 +2,7 @@
 function loadNavbar(notificationInfo = {}) {
     let notifCount = notificationInfo.notificationCount;
     let notifications = notificationInfo.notifications;
+    console.log(currentUser.avatar);
     const navbarHtml = `
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container-fluid">
@@ -89,13 +90,13 @@ function loadNavbar(notificationInfo = {}) {
 
 // ======= Load Sidebar =======
 function loadSidebar() {
-    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    const currentPage = window.location.pathname.split('/').pop() || '/dashboard';
     let sidebarHtml = `
         <aside class="sidebar" id="sidebar">
             <nav class="sidebar-nav">`;
     if (currentUser.poste != 'null') {
-        sidebarHtml = `
-                <a href="dashboard.html" class="nav-link ${currentPage === 'dashboard.html' ? 'active' : ''}">
+        sidebarHtml += `
+                <a href="/dashboard" class="nav-link ${currentPage === 'dashboard' ? 'active' : ''}">
                     <i class="bi bi-speedometer2"></i><span>Tableau de bord</span>
                 </a>
     `;
@@ -104,16 +105,16 @@ function loadSidebar() {
         sidebarHtml += `
         <div class="nav-section mt-3">
             <small class="text-muted px-3 text-uppercase fw-semibold title">Espace candidat</small>
-            <a href="cv-submission.html" class="nav-link ${currentPage === 'cv-submission.html' ? 'active' : ''}">
+            <a href="/cv-submission" class="nav-link ${currentPage === 'cv-submission' ? 'active' : ''}">
                 <i class="bi bi-file-person"></i><span>Déposer un CV</span>
             </a>
-            <a href="job-listings.html" class="nav-link ${currentPage === 'job-listings.html' ? 'active' : ''}">
+            <a href="/job-listings" class="nav-link ${currentPage === 'job-listings' ? 'active' : ''}">
                 <i class="bi bi-search"></i><span>Offres d'emploi</span>
             </a>
-            <a href="online-test.html" class="nav-link ${currentPage === 'online-test.html' ? 'active' : ''}">
+            <a href="/online-test" class="nav-link ${currentPage === 'online-test' ? 'active' : ''}">
                 <i class="bi bi-clipboard-check"></i><span>Passer un test</span>
             </a>
-            <a href="candidates.html" class="nav-link ${currentPage === 'candidates.html' ? 'active' : ''}">
+            <a href="/candidates" class="nav-link ${currentPage === 'candidates' ? 'active' : ''}">
                 <i class="bi bi-people"></i><span>Annuaire candidats</span>
             </a>
         </div>
@@ -124,19 +125,19 @@ function loadSidebar() {
         sidebarHtml += `
         <div class="nav-section mt-3">
             <small class="text-muted px-3 text-uppercase fw-semibold title">Espace recruteur</small>
-            <a href="manage-jobs.html" class="nav-link ${currentPage === 'manage-jobs.html' ? 'active' : ''}"><i class="bi bi-briefcase"></i><span>Gérer les annonces</span></a>
-            <a href="create-test.html" class="nav-link ${currentPage === 'create-test.html' ? 'active' : ''}"><i class="bi bi-file-earmark-plus"></i><span>Créer un test</span></a>
-            <a href="validation-list.html" class="nav-link ${currentPage === 'validation-list.html' ? 'active' : ''}"><i class="bi bi-check-circle"></i><span>Valider candidats</span></a>
+            <a href="/manage-jobs" class="nav-link ${currentPage === 'manage-jobs' ? 'active' : ''}"><i class="bi bi-briefcase"></i><span>Gérer les annonces</span></a>
+            <a href="/create-test" class="nav-link ${currentPage === 'create-test' ? 'active' : ''}"><i class="bi bi-file-earmark-plus"></i><span>Créer un test</span></a>
+            <a href="/validation-list" class="nav-link ${currentPage === 'validation-list' ? 'active' : ''}"><i class="bi bi-check-circle"></i><span>Valider candidats</span></a>
         </div>
         <div class="nav-section mt-3">
             <small class="text-muted px-3 text-uppercase fw-semibold title">Entretiens</small>
-            <a href="interview-planning.html" class="nav-link ${currentPage === 'interview-planning.html' ? 'active' : ''}"><i class="bi bi-calendar3"></i><span>Planning entretiens</span></a>
-            <a href="interview-evaluation.html" class="nav-link ${currentPage === 'interview-evaluation.html' ? 'active' : ''}"><i class="bi bi-star"></i><span>Noter entretien</span></a>
+            <a href="/interview-planning" class="nav-link ${currentPage === 'interview-planning' ? 'active' : ''}"><i class="bi bi-calendar3"></i><span>Planning entretiens</span></a>
+            <a href="/interview-evaluation" class="nav-link ${currentPage === 'interview-evaluation' ? 'active' : ''}"><i class="bi bi-star"></i><span>Noter entretien</span></a>
         </div>
         <div class="nav-section mt-3">
             <small class="text-muted px-3 text-uppercase fw-semibold title">Employés</small>
-            <a href="trial-employees.html" class="nav-link ${currentPage === 'trial-employees.html' ? 'active' : ''}"><i class="bi bi-hourglass-split"></i><span>Période d'essai</span></a>
-            <a href="trial-contract.html" class="nav-link ${currentPage === 'trial-contract.html' ? 'active' : ''}"><i class="bi bi-file-earmark-text"></i><span>Contrat d'essai</span></a>
+            <a href="/trial-employees" class="nav-link ${currentPage === 'trial-employees' ? 'active' : ''}"><i class="bi bi-hourglass-split"></i><span>Période d'essai</span></a>
+            <a href="/trial-contract" class="nav-link ${currentPage === 'trial-contract' ? 'active' : ''}"><i class="bi bi-file-earmark-text"></i><span>Contrat d'essai</span></a>
         </div>
         `;
     }

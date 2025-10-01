@@ -130,7 +130,10 @@ CREATE TABLE test_qcm (
 
 CREATE TABLE annonce (
   id_annonce INT AUTO_INCREMENT PRIMARY KEY,
-  date_limite DATE NOT NULL,
+  date_limite DATE NOT NULL, 
+  date_creation DATE DEFAULT (CURRENT_DATE),
+  urgent BOOLEAN,
+  ferme BOOLEAN,
   description TEXT,
   annee_experience INT DEFAULT NULL,
   age INT DEFAULT NULL,

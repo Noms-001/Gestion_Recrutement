@@ -73,8 +73,10 @@
             </section>
         </div>
     </div>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/html2canvas.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/jspdf.umd.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
     <script>
         const utilisateurId = "<%= session.getAttribute("id_utilisateur") %>"
     </script>

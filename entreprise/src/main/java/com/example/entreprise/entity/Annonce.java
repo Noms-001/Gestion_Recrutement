@@ -7,20 +7,35 @@ import java.util.List;
 @Entity
 @Table(name = "annonce")
 public class Annonce {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_annonce")
     private Long id;
 
+    @Column(name = "date_limite")
     private LocalDate dateLimite;
+
+    @Column(name = "date_creation")
+    private LocalDate dateCreation;
+
     private String description;
+    @Column(name = "annee_experience")
     private Integer anneeExperience;
     private Integer age;
-    private Boolean ageObligatoire;
-    private Boolean diplomeObligatoire;
-    private Boolean experienceObligatoire;
-    private Boolean genreObligatoire;
-    private Boolean villeObligatoire;
+    private Boolean urgent = false;
+    private Boolean ferme = false;
+
+    @Column(name = "age_obligatoire")
+    private Boolean ageObligatoire = false;
+    @Column(name = "diplome_obligatoire")
+    private Boolean diplomeObligatoire = false;
+    @Column(name = "experience_obligatoire")
+    private Boolean experienceObligatoire = false;
+    @Column(name = "genre_obligatoire")
+    private Boolean genreObligatoire = false;
+    @Column(name = "ville_obligatoire")
+    private Boolean villeObligatoire = false;
 
     @ManyToOne
     @JoinColumn(name = "id_diplome")
@@ -46,155 +61,79 @@ public class Annonce {
     @JoinColumn(name = "id_poste", nullable = false)
     private Poste poste;
 
-    @OneToMany(mappedBy = "annonce")
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Candidature> candidatures;
 
-    @ManyToMany
-    @JoinTable(name = "annonce_competence", joinColumns = @JoinColumn(name = "id_annonce"), inverseJoinColumns = @JoinColumn(name = "id_competence"))
-    private List<Competence> competencesObligatoires;
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnnonceCompetence> competences;
+
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnnonceLangue> langues;
 
     // Getters & Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDate getDateLimite() { return dateLimite; }
+    public void setDateLimite(LocalDate dateLimite) { this.dateLimite = dateLimite; }
 
-    public LocalDate getDateLimite() {
-        return dateLimite;
-    }
+    public LocalDate getDateCreation() { return dateCreation; }
+    public void setDateCreation(LocalDate dateCreation) { this.dateCreation = dateCreation; }
 
-    public void setDateLimite(LocalDate dateLimite) {
-        this.dateLimite = dateLimite;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public Integer getAnneeExperience() { return anneeExperience; }
+    public void setAnneeExperience(Integer anneeExperience) { this.anneeExperience = anneeExperience; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
 
-    public Integer getAnneeExperience() {
-        return anneeExperience;
-    }
+    public Boolean getUrgent() { return urgent; }
+    public void setUrgent(Boolean urgent) { this.urgent = urgent; }
 
-    public void setAnneeExperience(Integer anneeExperience) {
-        this.anneeExperience = anneeExperience;
-    }
+    public Boolean getFerme() { return ferme; }
+    public void setFerme(Boolean ferme) { this.ferme = ferme; }
 
-    public Integer getAge() {
-        return age;
-    }
+    public Boolean getAgeObligatoire() { return ageObligatoire; }
+    public void setAgeObligatoire(Boolean ageObligatoire) { this.ageObligatoire = ageObligatoire; }
 
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+    public Boolean getDiplomeObligatoire() { return diplomeObligatoire; }
+    public void setDiplomeObligatoire(Boolean diplomeObligatoire) { this.diplomeObligatoire = diplomeObligatoire; }
 
-    public Boolean getAgeObligatoire() {
-        return ageObligatoire;
-    }
+    public Boolean getExperienceObligatoire() { return experienceObligatoire; }
+    public void setExperienceObligatoire(Boolean experienceObligatoire) { this.experienceObligatoire = experienceObligatoire; }
 
-    public void setAgeObligatoire(Boolean ageObligatoire) {
-        this.ageObligatoire = ageObligatoire;
-    }
+    public Boolean getGenreObligatoire() { return genreObligatoire; }
+    public void setGenreObligatoire(Boolean genreObligatoire) { this.genreObligatoire = genreObligatoire; }
 
-    public Boolean getDiplomeObligatoire() {
-        return diplomeObligatoire;
-    }
+    public Boolean getVilleObligatoire() { return villeObligatoire; }
+    public void setVilleObligatoire(Boolean villeObligatoire) { this.villeObligatoire = villeObligatoire; }
 
-    public void setDiplomeObligatoire(Boolean diplomeObligatoire) {
-        this.diplomeObligatoire = diplomeObligatoire;
-    }
+    public Diplome getDiplome() { return diplome; }
+    public void setDiplome(Diplome diplome) { this.diplome = diplome; }
 
-    public Boolean getExperienceObligatoire() {
-        return experienceObligatoire;
-    }
+    public Genre getGenre() { return genre; }
+    public void setGenre(Genre genre) { this.genre = genre; }
 
-    public void setExperienceObligatoire(Boolean experienceObligatoire) {
-        this.experienceObligatoire = experienceObligatoire;
-    }
+    public Ville getVille() { return ville; }
+    public void setVille(Ville ville) { this.ville = ville; }
 
-    public Boolean getGenreObligatoire() {
-        return genreObligatoire;
-    }
+    public Filiere getFiliere() { return filiere; }
+    public void setFiliere(Filiere filiere) { this.filiere = filiere; }
 
-    public void setGenreObligatoire(Boolean genreObligatoire) {
-        this.genreObligatoire = genreObligatoire;
-    }
+    public Test getTest() { return test; }
+    public void setTest(Test test) { this.test = test; }
 
-    public Boolean getVilleObligatoire() {
-        return villeObligatoire;
-    }
+    public Poste getPoste() { return poste; }
+    public void setPoste(Poste poste) { this.poste = poste; }
 
-    public void setVilleObligatoire(Boolean villeObligatoire) {
-        this.villeObligatoire = villeObligatoire;
-    }
+    public List<Candidature> getCandidatures() { return candidatures; }
+    public void setCandidatures(List<Candidature> candidatures) { this.candidatures = candidatures; }
 
-    public Diplome getDiplome() {
-        return diplome;
-    }
+    public List<AnnonceCompetence> getCompetences() { return competences; }
+    public void setCompetences(List<AnnonceCompetence> competences) { this.competences = competences; }
 
-    public void setDiplome(Diplome diplome) {
-        this.diplome = diplome;
-    }
-
-    public Genre getGenre() {
-        return genre;
-    }
-
-    public void setGenre(Genre genre) {
-        this.genre = genre;
-    }
-
-    public Ville getVille() {
-        return ville;
-    }
-
-    public void setVille(Ville ville) {
-        this.ville = ville;
-    }
-
-    public Filiere getFiliere() {
-        return filiere;
-    }
-
-    public void setFiliere(Filiere filiere) {
-        this.filiere = filiere;
-    }
-
-    public Test getTest() {
-        return test;
-    }
-
-    public void setTest(Test test) {
-        this.test = test;
-    }
-
-    public Poste getPoste() {
-        return poste;
-    }
-
-    public void setPoste(Poste poste) {
-        this.poste = poste;
-    }
-
-    public List<Candidature> getCandidatures() {
-        return candidatures;
-    }
-
-    public void setCandidatures(List<Candidature> candidatures) {
-        this.candidatures = candidatures;
-    }
-
-    public List<Competence> getCompetencesObligatoires() {
-        return competencesObligatoires;
-    }
-
-    public void setCompetencesObligatoires(List<Competence> competencesObligatoires) {
-        this.competencesObligatoires = competencesObligatoires;
-    }
+    public List<AnnonceLangue> getLangues() { return langues; }
+    public void setLangues(List<AnnonceLangue> langues) { this.langues = langues; }
 }

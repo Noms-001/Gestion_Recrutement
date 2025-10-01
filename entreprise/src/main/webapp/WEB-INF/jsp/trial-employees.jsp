@@ -738,10 +738,8 @@
     <script>
         const currentUser = {
             name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
-            initials: "<%= session.getAttribute("nom") != null && session.getAttribute("prenom") != null ? 
-                        session.getAttribute("nom").substring(0,1).toUpperCase() + session.getAttribute("prenom").substring(0,1).toUpperCase() 
-                        : "" %>",
-            avatar: "<%= session.getAttribute("avatarColor")%>",
+            initials: "<%= session.getAttribute("initiales") != null ? session.getAttribute("initiales") : "" %>",
+           avatar: "<%= session.getAttribute("avatarColor")%>",
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"
         };

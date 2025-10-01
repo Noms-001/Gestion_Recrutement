@@ -16,39 +16,19 @@ public class Competence {
     @ManyToMany(mappedBy = "competences")
     private List<Candidat> candidats;
 
-    @ManyToMany(mappedBy = "competencesObligatoires")
-    private List<Annonce> annonces;
+    @OneToMany(mappedBy = "competence")
+    private List<AnnonceCompetence> annonces;
 
     // Getters & Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getLibelle() { return libelle; }
+    public void setLibelle(String libelle) { this.libelle = libelle; }
 
-    public String getLibelle() {
-        return libelle;
-    }
+    public List<Candidat> getCandidats() { return candidats; }
+    public void setCandidats(List<Candidat> candidats) { this.candidats = candidats; }
 
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public List<Candidat> getCandidats() {
-        return candidats;
-    }
-
-    public void setCandidats(List<Candidat> candidats) {
-        this.candidats = candidats;
-    }
-
-    public List<Annonce> getAnnonces() {
-        return annonces;
-    }
-
-    public void setAnnonces(List<Annonce> annonces) {
-        this.annonces = annonces;
-    }
+    public List<AnnonceCompetence> getAnnonces() { return annonces; }
+    public void setAnnonces(List<AnnonceCompetence> annonces) { this.annonces = annonces; }
 }

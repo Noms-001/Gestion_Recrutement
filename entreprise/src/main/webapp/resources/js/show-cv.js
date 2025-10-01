@@ -86,6 +86,7 @@ document.getElementById("downloadPdf").addEventListener("click", async () => {
 
     // 3. Télécharger
     pdf.save("mon-cv.pdf");
+    showToast("success", "Votre CV a été enregistré avec succès !")
 });
 
 
