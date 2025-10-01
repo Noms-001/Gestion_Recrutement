@@ -88,9 +88,17 @@ function addFromBank(title, answers, correctIndex, points) {
 // Validation formulaire
 document.getElementById('testForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    const totalQuestions = document.querySelectorAll('#questionsContainer .card').length;
-    if (totalQuestions < 2) {
-        alert('Veuillez ajouter au moins 2 questions.');
+    const questions = document.querySelectorAll('#questionsContainer .card');
+    if (questions.length < 2) {
+        showToast('warning','Veuillez ajouter au moins 2 questions.');
         return;
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+        const answers = questions[i].querySelectorAll('.answers .input-group');
+        if (answers.length < 2) {
+            showToast('warning',`La question ${i + 1} doit avoir au moins 2 réponses.`);
+            return;
+        }
     }
 });

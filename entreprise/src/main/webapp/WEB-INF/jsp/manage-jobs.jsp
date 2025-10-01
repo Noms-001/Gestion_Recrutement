@@ -93,50 +93,43 @@
                                 </div>
                             </div>
 
-                            <!-- Job Offers Table -->
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead class="bg-light">
+                        <!-- Job Offers Table -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="table-responsive" style="overflow: visible !important;">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Poste</th>
+                                                <th>Departement</th>
+                                                <th>Type</th>
+                                                <th>Statut</th>
+                                                <th>Candidatures</th>
+                                                <th>Date de création</th>
+                                                <th>Date d'expiration</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(Annonce annonce : annonces) { %>
                                                 <tr>
-                                                    <th>Poste</th>
-                                                    <th>Departement</th>
-                                                    <th>Type</th>
-                                                    <th>Statut</th>
-                                                    <th>Candidatures</th>
-                                                    <th>Date de création</th>
-                                                    <th>Date d'expiration</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% int rowIndex = 0;
-                                                for(Annonce annonce : annonces) { 
-                                                    String badgeColor = "";
-                                                    switch (rowIndex % 3) { // 5 couleurs différentes
-                                                        case 0: badgeColor = "bg-primary"; break;
-                                                        case 1: badgeColor = "bg-info"; break;
-                                                        case 2: badgeColor = "bg-secondary"; break;
-                                                    } rowIndex ++;%>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
-                                                            <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge <%= badgeColor %>"><%= annonce.getPoste().getDepartement().getNom() %></span>
-                                                        </td>
-                                                        <td>CDI</td> <!-- ou autre type selon ton modèle -->
-                                                        <td>
-                                                            <% 
-                                                                if(annonce.getFerme() != null && annonce.getFerme()) { %>
-                                                                    <span class="badge bg-dark">Fermée</span>
-                                                            <% } else if(annonce.getDateLimite() != null && annonce.getDateLimite().isBefore(LocalDate.now())) { %>
-                                                                    <span class="badge bg-danger">Expirée</span>
-                                                            <% } else { %>
-                                                                    <span class="badge bg-success">Active</span>
-                                                            <% } %>
+                                                    <td>
+                                                        <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
+                                                        <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-primary"><%= annonce.getPoste().getDepartement().getNom() %></span>
+                                                    </td>
+                                                    <td>CDI</td> <!-- ou autre type selon ton modèle -->
+                                                    <td>
+                                                        <% 
+                                                            if(annonce.getFerme() != null && annonce.getFerme()) { %>
+                                                                <span class="badge bg-dark">Fermée</span>
+                                                        <% } else if(annonce.getDateLimite() != null && annonce.getDateLimite().isBefore(LocalDate.now())) { %>
+                                                                <span class="badge bg-danger">Expirée</span>
+                                                        <% } else { %>
+                                                                <span class="badge bg-success">Active</span>
+                                                        <% } %>
 
                                                         </td>
                                                         <td>
