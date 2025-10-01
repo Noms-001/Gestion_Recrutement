@@ -19,9 +19,9 @@ public class AnnonceRestController {
     @GetMapping("/api/annonces")
     public List<Annonce> filterAnnonces(
             @RequestParam(required = false) Long villeId,
-            @RequestParam(required = false) Long metierId,
-            @RequestParam(required = false) Long niveauId) {
+            @RequestParam(required = false) Long departementId,
+            @RequestParam(required = false) String poste) {
 
-        return annonceService.filter(villeId, metierId, niveauId);
+        return annonceService.filter(villeId, departementId, poste);
     }
 }

@@ -13,9 +13,10 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
 
     @Query("SELECT a FROM Annonce a " +
            "WHERE (:villeId IS NULL OR a.ville.id = :villeId) " +
-           "AND (:posteId IS NULL OR a.poste.id = :posteId) " +
-           "AND (:annonceNom IS NULL OR LOWER(a.description) LIKE LOWER(CONCAT('%', :annonceNom, '%')))")
+           "AND (:departementId IS NULL OR a.poste.departement.id = :departementId) " +
+           "AND (:poste IS NULL OR LOWER(a.poste.libelle) LIKE LOWER(CONCAT('%', :poste, '%')))")
     List<Annonce> findByFilters(@Param("villeId") Long villeId,
-                                @Param("posteId") Long posteId,
-                                @Param("annonceNom") String annonceNom);
+                                @Param("departementId") Long departementId,
+                                @Param("poste") String poste);
 }
+

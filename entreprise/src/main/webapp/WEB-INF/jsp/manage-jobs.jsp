@@ -1,13 +1,16 @@
 <%@ page session="true" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ page import="java.util.*, java.time.*" %>
+<%@ page import="com.example.entreprise.entity.*" %>
 <%
+    List<Annonce> annonces = (List<Annonce>) request.getAttribute("annonces");
+    List<Poste> postes = (List<Poste>) request.getAttribute("postes");
+    List<Departement> departements = (List<Departement>) request.getAttribute("departements");
+
     if(session.getAttribute("id_utilisateur") == null) {
         response.sendRedirect("/");
-    }
+    } 
 %>
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -65,9 +68,11 @@
                                     <div class="col-md-2">
                                         <select class="form-select">
                                             <option value="">Tous les Departements</option>
-                                            <c:forEach var="dep" items="${departements}">
-                                                <option value="${dep.id}">${dep.nom}</option>
-                                            </c:forEach>
+                                            <option value="dev">Développement</option>
+                                            <option value="design">Design</option>
+                                            <option value="marketing">Marketing</option>
+                                            <option value="commercial">Commercial</option>
+                                            <option value="rh">RH</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">
@@ -107,65 +112,56 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <c:forEach var="annonce" items="${annonces}">
+                                            <% for(Annonce annonce : annonces) { %>
                                                 <tr>
                                                     <td>
-                                                        <div class="fw-medium">${annonce.titre}</div>
-                                                        <small class="text-muted">${annonce.salaire} • ${annonce.localisation}</small>
+                                                        <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
+                                                        <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-primary">${annonce.departement.nom}</span>
+                                                        <span class="badge bg-primary"><%= annonce.getPoste().getDepartement().getNom() %></span>
                                                     </td>
-                                                    <td>${annonce.typeContrat}</td>
+                                                    <td>CDI</td> <!-- ou autre type selon ton modèle -->
                                                     <td>
-                                                        <c:choose>
-                                                            <c:when test="${annonce.ferme}">
+                                                        <% 
+                                                            if(annonce.getFerme() != null && annonce.getFerme()) { %>
                                                                 <span class="badge bg-dark">Fermée</span>
-                                                            </c:when>
-                                                            <c:when test="${annonce.dateLimite.before(new java.util.Date())}">
+                                                        <% } else if(annonce.getDateLimite() != null && annonce.getDateLimite().isBefore(LocalDate.now())) { %>
                                                                 <span class="badge bg-danger">Expirée</span>
-                                                            </c:when>
-                                                            <c:otherwise>
+                                                        <% } else { %>
                                                                 <span class="badge bg-success">Active</span>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                        <% } %>
+
                                                     </td>
                                                     <td>
-                                                        <div class="fw-bold">${annonce.nombreCandidatures}</div>
+                                                        <div class="fw-bold"><%= annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0 %></div>
                                                         <small class="text-muted">candidatures</small>
                                                     </td>
-                                                    <td><fmt:formatDate value="${annonce.dateCreation}" pattern="dd/MM/yyyy"/></td>
-                                                    <td><fmt:formatDate value="${annonce.dateLimite}" pattern="dd/MM/yyyy"/></td>
+                                                    <td><%= annonce.getDateCreation() %></td>
+                                                    <td><%= annonce.getDateLimite() %></td>
                                                     <td>
                                                         <div class="dropdown">
                                                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                                                type="button" data-bs-toggle="dropdown">
+                                                                    type="button" data-bs-toggle="dropdown">
                                                                 Actions
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <li><a class="dropdown-item" href="#"
-                                                                        onclick="editJobOffer(${annonce.id})"><i
-                                                                            class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                                                <li><a class="dropdown-item" href="#"><i
-                                                                            class="bi bi-eye me-2"></i>Voir les
-                                                                        candidatures</a></li>
+                                                                <li><a class="dropdown-item" href="#" onclick="editJobOffer(<%= annonce.getId() %>)"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
+                                                                <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
                                                                 <hr class="dropdown-divider">
-                                                                <li><a class="dropdown-item" href="#"><i
-                                                                            class="bi bi-x-circle me-2"></i>Fermée
-                                                                        l'annonce</a></li>
-                                                                <li><a class="dropdown-item text-danger" href="#"><i
-                                                                            class="bi bi-trash me-2"></i>Supprimer</a></li>
+                                                                <li><a class="dropdown-item" href="#"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
+                                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Supprimer</a></li>
                                                             </ul>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            </c:forEach>
-                                        </tbody>
+                                            <% } %>
+                                            </tbody>
+
                                     </table>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -205,15 +201,68 @@
                                                 <label for="jobDepartment" class="form-label">Département *</label>
                                                 <select class="form-select" id="jobDepartment" required>
                                                     <option value="">Sélectionner un département</option>
-                                                    <c:forEach var="dep" items="${departements}">
-                                                        <option value="${dep.id}">${dep.nom}</option>
-                                                    </c:forEach>
+                                                    <option value="dev">Développement</option>
+                                                    <option value="design">Design</option>
+                                                    <option value="marketing">Marketing</option>
+                                                    <option value="commercial">Commercial</option>
+                                                    <option value="rh">Ressources Humaines</option>
+                                                    <option value="finance">Finance</option>
                                                 </select>
                                             </div>
 
-                                            <!-- Reste des champs identiques à ton HTML initial -->
-                                            <!-- Âge, Expérience, Localisation, Genre, Diplôme, Filière, Description, Compétences, Langues -->
-                                            <!-- Tout conservé comme dans ton HTML original -->
+                                            <div class="col-md-6">
+                                                <label for="age" class="form-label">Âge minimum</label>
+                                                <input type="number" class="form-control" name="age" id="age">
+                                                <div class="form-check form-switch mt-1 toggle-required" data-info="Spécifie si c'est obligatoire">
+                                                    <input class="form-check-input" type="checkbox" id="ageRequired">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="experience" class="form-label">Expérience requise</label>
+                                                <input type="number" class="form-control" name="experience" id="experience">
+                                                <div class="form-check form-switch mt-1 toggle-required" data-info="Spécifie si c'est obligatoire">
+                                                    <input class="form-check-input" type="checkbox" id="experienceRequired">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="location" class="form-label">Localisation *</label>
+                                                <input type="text" class="form-control" id="location" required placeholder="Ex: Paris, Lyon, Télétravail">
+                                                <div class="form-check form-switch mt-1 toggle-required" data-info="Spécifie si c'est obligatoire">
+                                                    <input class="form-check-input" type="checkbox" id="locationRequired">
+                                                </div>
+                                            </div>
+
+                                            <!-- Genre -->
+                                            <div class="col-md-6">
+                                                <label for="gender" class="form-label">Genre</label>
+                                                <select class="form-select" id="gender" name="gender">
+                                                    <option value="">Sélectionner</option>
+                                                    <option value="homme">Homme</option>
+                                                    <option value="femme">Femme</option>
+                                                    <option value="autre">Autre</option>
+                                                </select>
+                                                <div class="form-check form-switch mt-1 toggle-required" data-info="Spécifie si c'est obligatoire">
+                                                    <input class="form-check-input" type="checkbox" id="genderRequired">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="diplome" class="form-label">Diplôme minimum</label>
+                                                <input type="number" class="form-control" id="diplome" name="diplome">
+                                                <div class="form-check form-switch mt-1 toggle-required" data-info="Spécifie si c'est obligatoire">
+                                                    <input class="form-check-input" type="checkbox" id="diplomeRequired">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="filiere" class="form-label">Filières</label>
+                                                <select name="filiere" id="filiere" class="form-control">
+                                                    <option value="">Sélectionner une filière</option>
+                                                    <option value="Informatique">Informatique</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -233,8 +282,65 @@
                             </div>
 
                             <div class="col-md-4">
-                                <!-- Publication Settings, Skills -->
-                                <!-- Tout conservé tel quel, identique à ton HTML original -->
+                                <!-- Publication Settings -->
+                                <div class="card border-0 bg-light mb-4">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">Paramètres de publication</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="endDate" class="form-label">Date limite</label>
+                                            <input type="date" class="form-control" id="endDate">
+                                        </div>
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="urgentJob">
+                                            <label class="form-check-label" for="urgentJob">
+                                                Recrutement urgent
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Skills -->
+                                <div class="card border-0 bg-light mb-4">
+                                    <div class="card-header bg-warning text-white">
+                                        <h6 class="mb-0">Compétences requises</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Compétences techniques -->
+                                        <div class="mb-3">
+                                            <label for="technicalSkills" class="form-label">Compétences techniques</label>
+                                            <select class="form-select mb-2" id="technicalSkills" onchange="addTag('technicalSkills')">
+                                                <option value="">-- Choisir une compétence --</option>
+                                                <option value="javascript">JavaScript</option>
+                                                <option value="react">React</option>
+                                                <option value="typescript">TypeScript</option>
+                                                <option value="python">Python</option>
+                                                <option value="php">PHP</option>
+                                                <option value="java">Java</option>
+                                                <option value="css">CSS</option>
+                                                <option value="html">HTML</option>
+                                                <option value="nodejs">Node.js</option>
+                                                <option value="angular">Angular</option>
+                                            </select>
+                                            <div id="technicalSkillsContainer" class="d-flex flex-column gap-2" style="scrollbar-width: thin; max-height: 160px; width: 100%; overflow-y: auto"></div>
+                                        </div>
+
+                                        <!-- Langues -->
+                                        <div class="mb-3">
+                                            <label for="languages" class="form-label">Langues</label>
+                                            <select class="form-select mb-2" id="languages" onchange="addTag('languages')">
+                                                <option value="">-- Choisir une langue --</option>
+                                                <option value="francais">Français</option>
+                                                <option value="anglais">Anglais</option>
+                                                <option value="espagnol">Espagnol</option>
+                                                <option value="allemand">Allemand</option>
+                                                <option value="italien">Italien</option>
+                                            </select>
+                                            <div id="languagesContainer" class="d-flex flex-column gap-2" style="scrollbar-width: thin; max-height: 160px; width: 100%; overflow-y: auto"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -254,7 +360,7 @@
         const currentUser = {
             name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
             initials: "<%= session.getAttribute("initiales") != null ? session.getAttribute("initiales") : "" %>",
-            avatar: "<%= session.getAttribute("avatarColor") %>",
+           avatar: "<%= session.getAttribute("avatarColor")%>",
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"
         };
@@ -263,4 +369,5 @@
     <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
 </body>
+
 </html>
