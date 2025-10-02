@@ -3,6 +3,10 @@
     response.sendRedirect("/");
 } %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.example.entreprise.entity.Question" %>
+<%@ page import="com.example.entreprise.entity.Reponse" %>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -95,29 +99,38 @@
                     </div>
                     <div class="modal-body">
                         <div class="list-group">
+                            <% 
+                                List<Question> questions = (List<Question>) request.getAttribute("questions");
+                                int qIndex = 0;
+                                if (questions != null) {
+                                    for (Question question : questions) {
+                                        qIndex++;
+                            %>
                             <div class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6>Qu'est-ce que le DOM ?</h6>
-                                    <small>JavaScript • 15 points</small>
+                                    <h6><%= question.getEnonce() %></h6>
+                                    <small><%= question.getReponses().size() %> réponses • <%= question.getPoint() %> points</small>
                                 </div>
-                                <button class="btn btn-sm btn-outline-primary"
-                                    onclick="addFromBank('Qu\'est-ce que le DOM ?', ['Une API du navigateur','Un langage','Une base de données'], 0, 15)"
-                                    data-bs-dismiss="modal">Ajouter</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                        onclick="addFromBank('<%= question.getEnonce().replace("\'", "\\\'") %>', 
+                                                            [<%= question.getReponses().stream()
+                                                                            .map(r -> "\'" + r.getValeur().replace("\'", "\\\'") + "\'")
+                                                                            .reduce((a,b) -> a + "," + b).orElse("") %>],
+                                                            0,
+                                                            <%= question.getPoint() %>)"
+                                        data-bs-dismiss="modal">
+                                    Ajouter
+                                </button>
                             </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6>Différence entre let et var ?</h6>
-                                    <small>JavaScript • 10 points</small>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary"
-                                    onclick="addFromBank('Différence entre let et var ?', ['let est bloc-scopé','var est fonction-scopé','aucune différence'], 2, 10)"
-                                    data-bs-dismiss="modal">Ajouter</button>
-                            </div>
+                            <%      }
+                                }
+                            %>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
 
         </main>
     </div>
