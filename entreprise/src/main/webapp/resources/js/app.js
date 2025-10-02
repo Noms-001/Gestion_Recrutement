@@ -2,7 +2,6 @@
 function loadNavbar(notificationInfo = {}) {
     let notifCount = notificationInfo.notificationCount;
     let notifications = notificationInfo.notifications;
-    console.log(currentUser.avatar);
     const navbarHtml = `
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container-fluid">

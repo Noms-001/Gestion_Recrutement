@@ -33,8 +33,4 @@ public class AnnonceLangueService {
     public List<AnnonceLangue> filterByVille(Long villeId) {
         return repository.findByAnnonceVilleId(villeId);
     }
-
-    public List<AnnonceLangue> filterByTypeContrat(Long typeContratId) {
-        return repository.findByAnnonceTypeContratId(typeContratId);
-    }
 }

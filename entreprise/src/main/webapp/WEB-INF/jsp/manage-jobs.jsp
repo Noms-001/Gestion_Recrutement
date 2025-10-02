@@ -363,7 +363,12 @@
                 id: "<%= session.getAttribute("id_utilisateur") %>",
                 poste: "<%= session.getAttribute("poste") %>"
             };
-
+                console.log("ok");
+        </script>
+        <script src="${pageContext.request.contextPath}/resources/js/manage-job.js"></script>
+        <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
+        <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+        <script>
             document.getElementById('btnFilter').addEventListener('click', function() {
                 const villeId = document.getElementById('filterVille').value;
                 const departementId = document.getElementById('filterDepartement').value;
@@ -377,10 +382,10 @@
                 if(poste) params.append('poste', poste);
                 if(status) params.append('status', status);
 
-                fetch(`${window.location.origin}/api/annonces?${params.toString()}`)
+                fetch(`${window.location.origin}/api/annonces?villeId=${villeId}&departementId=${departementId}&poste=${poste}&status=${status}`)
                     .then(response => response.json())
                     .then(data => {
-                        // data est la liste des annonces
+                        console.log(data);
                         updateAnnonceTable(data);
                     })
                     .catch(error => console.error('Erreur fetch annonces:', error));
@@ -392,7 +397,7 @@
                 let rowIndex = 0;
                 annonces.forEach(annonce => {
                     let badgeColor = '';
-                    switch(rowIndex % 3) {
+                    switch (rowIndex % 3) {
                         case 0: badgeColor = 'bg-primary'; break;
                         case 1: badgeColor = 'bg-info'; break;
                         case 2: badgeColor = 'bg-secondary'; break;
@@ -400,9 +405,9 @@
                     rowIndex++;
 
                     let statusBadge = '';
-                    if(annonce.ferme) {
+                    if (annonce.ferme) {
                         statusBadge = '<span class="badge bg-dark">Fermée</span>';
-                    } else if(annonce.dateLimite && new Date(annonce.dateLimite) < new Date()) {
+                    } else if (annonce.dateLimite && new Date(annonce.dateLimite) < new Date()) {
                         statusBadge = '<span class="badge bg-danger">Expirée</span>';
                     } else {
                         statusBadge = '<span class="badge bg-success">Active</span>';
@@ -411,13 +416,19 @@
                     tbody.innerHTML += `
                         <tr>
                             <td>
-                                <div class="fw-medium">${annonce.poste.libelle}</div>
-                                <small class="text-muted">${annonce.anneeExperience ? annonce.anneeExperience + ' ans' : ''} • ${annonce.ville ? annonce.ville.nom : ''}</small>
+                                <div class="fw-medium">${annonce.posteLibelle || ''}</div>
+                                <small class="text-muted">
+                                    ${annonce.anneeExperience ? annonce.anneeExperience + ' ans' : ''} 
+                                    • ${annonce.villeNom || ''}
+                                </small>
                             </td>
-                            <td><span class="badge ${badgeColor}">${annonce.poste.departement.nom}</span></td>
-                            <td>CDI</td>
+                            <td><span class="badge ${badgeColor}">${annonce.departementNom || ''}</span></td>
+                            <td>${annonce.typeContrat || 'CDI'}</td>
                             <td>${statusBadge}</td>
-                            <td><div class="fw-bold">${annonce.candidatures ? annonce.candidatures.length : 0}</div><small class="text-muted">candidatures</small></td>
+                            <td>
+                                <div class="fw-bold">${annonce.candidaturesCount || 0}</div>
+                                <small class="text-muted">candidatures</small>
+                            </td>
                             <td>${annonce.dateCreation || ''}</td>
                             <td>${annonce.dateLimite || ''}</td>
                             <td>
@@ -439,11 +450,7 @@
                 });
             }
 
-
         </script>
-        <script src="${pageContext.request.contextPath}/resources/js/manage-job.js"></script>
-        <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
-        <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     </body>
 
     </html>
