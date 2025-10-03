@@ -215,18 +215,6 @@ function parseQCM(text) {
             }
         }
 
-        // Fusion de lignes de question sur plusieurs lignes
-        if (
-            currentQ &&          
-            !/[.?!:]$/.test(currentQ) &&
-            /[?!.:]$/.test(line) &&
-            !(detectedAnswerRegex && detectedAnswerRegex.test(line)) &&
-            !(detectedQuestionRegex && detectedQuestionRegex.test(line))
-        ) {
-            currentQ.question += " " + line;
-            continue;
-        }
-
         // Cas 1 : question détectée
         if (detectedQuestionRegex && detectedQuestionRegex.test(line)) {
             if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
