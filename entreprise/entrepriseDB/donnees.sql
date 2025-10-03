@@ -50,33 +50,3 @@ VALUES
 ('Stage en développement', 1, 2019, 1, 2020, 'Antananarivo', 1, 1),
 ('Assistante RH', 1, 2020, 1, 2022, 'Toamasina', 2, 2);
 
--- Tests
-INSERT INTO test (titre, temps, score_min)
-VALUES 
-('Test Java', '01:00:00', 50),
-('Test RH', '00:45:00', 40);
-
--- Questions
-INSERT INTO question (enonce, point)
-VALUES 
-('Qu''est-ce qu''une classe en Java ?', 10),
-('Définir le rôle d''un recruteur', 5);
-
--- Réponses
-INSERT INTO reponse (valeur, est_correct, id_question)
-VALUES 
-('Une structure définissant objets', TRUE, 1),
-('Une personne qui embauche', TRUE, 2);
-
--- Annonce
-INSERT INTO annonce (date_limite, description, annee_experience, age, age_obligatoire, diplome_obligatoire, experience_obligatoire, genre_obligatoire, ville_obligatoire, id_diplome, id_genre, id_ville, id_filiere, id_test, id_poste)
-VALUES 
-('2025-12-31', 'Recherche Développeur Java confirmé', 2, 30, TRUE, TRUE, TRUE, FALSE, FALSE, 1, NULL, 1, 1, 1, 1),
-('2025-06-30', 'Besoin de Recruteur RH junior', 1, NULL, FALSE, FALSE, TRUE, FALSE, FALSE, 2, 2, 2, 2, 2, 2);
-
--- Candidature
-INSERT INTO candidature (id_annonce, id_candidat, date_candidature)
-VALUES 
-(1, 1, '2025-01-10'),
-(2, 2, '2025-01-15');
-

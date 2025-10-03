@@ -16,8 +16,9 @@ public class Test {
     private LocalTime temps;
     private Integer scoreMin;
 
-    @OneToMany(mappedBy = "test")
-    private List<TestQcm> questions;
+    @ManyToMany
+    @JoinTable(name = "test_qcm", joinColumns = @JoinColumn(name = "id_test"), inverseJoinColumns = @JoinColumn(name = "id_question"))
+    private List<Question> questions;
 
     @OneToMany(mappedBy = "test")
     private List<TestPassage> passages;
@@ -26,18 +27,59 @@ public class Test {
     private List<Annonce> annonces;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitre() { return titre; }
-    public void setTitre(String titre) { this.titre = titre; }
-    public LocalTime getTemps() { return temps; }
-    public void setTemps(LocalTime temps) { this.temps = temps; }
-    public Integer getScoreMin() { return scoreMin; }
-    public void setScoreMin(Integer scoreMin) { this.scoreMin = scoreMin; }
-    public List<TestQcm> getQuestions() { return questions; }
-    public void setQuestions(List<TestQcm> questions) { this.questions = questions; }
-    public List<TestPassage> getPassages() { return passages; }
-    public void setPassages(List<TestPassage> passages) { this.passages = passages; }
-    public List<Annonce> getAnnonces() { return annonces; }
-    public void setAnnonces(List<Annonce> annonces) { this.annonces = annonces; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public LocalTime getTemps() {
+        return temps;
+    }
+
+    public void setTemps(LocalTime temps) {
+        this.temps = temps;
+    }
+
+    public Integer getScoreMin() {
+        return scoreMin;
+    }
+
+    public void setScoreMin(Integer scoreMin) {
+        this.scoreMin = scoreMin;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    public List<TestPassage> getPassages() {
+        return passages;
+    }
+
+    public void setPassages(List<TestPassage> passages) {
+        this.passages = passages;
+    }
+
+    public List<Annonce> getAnnonces() {
+        return annonces;
+    }
+
+    public void setAnnonces(List<Annonce> annonces) {
+        this.annonces = annonces;
+    }
 }

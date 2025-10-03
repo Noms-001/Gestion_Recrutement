@@ -66,13 +66,19 @@ CREATE TABLE poste (
 
 CREATE TABLE reponse (
   id_reponse INT AUTO_INCREMENT PRIMARY KEY,
-  valeur VARCHAR(1000) NOT NULL,
-  est_correct TINYINT(1) NOT NULL DEFAULT 0,
-  id_question INT NOT NULL,
-  INDEX (id_question),
-  FOREIGN KEY (id_question) REFERENCES question(id_question)
-    ON DELETE CASCADE ON UPDATE CASCADE
+  valeur VARCHAR(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE question_reponse (
+  id_question INT NOT NULL,
+  id_reponse INT NOT NULL,
+  est_correct BOOLEAN NOT NULL DEFAULT 0,
+  FOREIGN KEY (id_question) REFERENCES question(id_question)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_reponse) REFERENCES reponse(id_reponse)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE candidat (
   id_candidat INT AUTO_INCREMENT PRIMARY KEY,
@@ -137,11 +143,11 @@ CREATE TABLE annonce (
   description TEXT,
   annee_experience INT DEFAULT NULL,
   age INT DEFAULT NULL,
-  age_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
-  diplome_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
-  experience_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
-  genre_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
-  ville_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  age_obligatoire BOOLEAN NOT NULL DEFAULT 0,
+  diplome_obligatoire BOOLEAN NOT NULL DEFAULT 0,
+  experience_obligatoire BOOLEAN NOT NULL DEFAULT 0,
+  genre_obligatoire BOOLEAN NOT NULL DEFAULT 0,
+  ville_obligatoire BOOLEAN NOT NULL DEFAULT 0,
   id_diplome INT DEFAULT NULL,
   id_genre INT DEFAULT NULL,
   id_ville INT DEFAULT NULL,
@@ -242,7 +248,7 @@ CREATE TABLE entretien (
 CREATE TABLE annonce_competence (
   id_annonce INT NOT NULL,
   id_competence INT NOT NULL,
-  est_obligatoire TINYINT(1) NOT NULL DEFAULT 0,
+  est_obligatoire BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (id_annonce, id_competence),
   FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
     ON DELETE CASCADE ON UPDATE CASCADE,

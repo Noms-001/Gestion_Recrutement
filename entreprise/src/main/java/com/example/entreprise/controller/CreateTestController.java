@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.entreprise.dto.QuestionDTO;
 import com.example.entreprise.dto.TestDTO;
-import com.example.entreprise.entity.Question;
 import com.example.entreprise.entity.Test;
 import com.example.entreprise.service.TestService;
 
@@ -35,8 +35,8 @@ public class CreateTestController {
     }
 
     @GetMapping("/questions")
-    public List<Question> getAllQuestions() {
-        return testService.getAllQuestions();
+    public List<QuestionDTO> getAllQuestions() {
+        return testService.getAllQuestionsDTO();
     }
 
 }

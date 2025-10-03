@@ -74,12 +74,20 @@ function addAnswer(btn) {
 function removeQuestion(btn) {
     if (document.querySelectorAll("#questionsContainer .card").length > 2) {
         const card = btn.closest('.card');
-        const title = card.querySelector('input[type="text"]').value;
-        addedQuestions.delete(title); // 🔑 libère la question pour pouvoir la réajouter
+        const id = card.getAttribute("data-qid"); // 🔑 récupérer id banque
+        addedQuestions.delete(id);
         card.remove();
         renumberQuestions();
+
+        // 🔑 réafficher la question dans la banque
+        const bankItem = document.getElementById("bank-question-" + id);
+        if (bankItem) {
+            bankItem.classList.remove("d-none");
+            bankItem.classList.add("d-flex");
+        } 
     }
 }
+
 
 function renumberQuestions() {
     questionCount = 0;
@@ -89,13 +97,49 @@ function renumberQuestions() {
     });
 }
 
-function addFromBank(title, answers, correctIndex, points) {
-    if (addedQuestions.has(title)) {
-        showToast('warning', 'Cette question a déjà été ajoutée.');
-        return;
+function addFromBank(title, id, answers, points) {
+    if (addedQuestions.has(id)) {
+        return; // plus besoin de message
     }
-    addQuestion(title, answers, correctIndex, points);
-    addedQuestions.add(title);
+    questionCount++;
+    const qIndex = questionCount;
+    const container = document.getElementById('questionsContainer');
+
+    const questionDiv = document.createElement('div');
+    questionDiv.classList.add('card', 'mb-3');
+    questionDiv.setAttribute("data-qindex", qIndex);
+    questionDiv.setAttribute("data-qid", id); // 🔑 stocker l’id
+
+    questionDiv.innerHTML = `
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-bold">Question ${qIndex}</span>
+          <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion(this)">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <input type="text" class="form-control mb-2" value="${title}" required>
+          <div class="answers"></div>
+          <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addAnswer(this)">+ Réponse</button>
+          <input type="number" class="form-control mt-2" value="${points}" required>
+        </div>
+    `;
+
+    container.appendChild(questionDiv);
+
+    const answersDiv = questionDiv.querySelector('.answers');
+    answers.forEach(ans => {
+        answersDiv.appendChild(createAnswer(ans.valeur, ans.estCorrect, qIndex));
+    });
+
+    addedQuestions.add(id);
+
+    // 🔑 cacher l’item de la banque
+    const item = document.getElementById("bank-question-" + id);
+    if (item) {
+        item.classList.remove("d-flex");
+        item.classList.add("d-none");
+    }
 }
 
 // Validation formulaire
@@ -109,14 +153,42 @@ document.getElementById('testForm').addEventListener('submit', async function (e
     }
 
     for (let i = 0; i < questions.length; i++) {
-        const answers = questions[i].querySelectorAll('.answers .input-group');
+        const card = questions[i];
+        const enonce = card.querySelector('input[type="text"]').value.trim();
+        const point = card.querySelector('input[type="number"]').value;
+
+        if (!enonce) {
+            showToast('warning', `La question ${i + 1} doit avoir un intitulé.`);
+            return;
+        }
+        if (!point || point <= 0) {
+            showToast('warning', `La question ${i + 1} doit avoir un nombre de points valide.`);
+            return;
+        }
+
+        const answers = card.querySelectorAll('.answers .input-group');
         if (answers.length < 2) {
             showToast('warning', `La question ${i + 1} doit avoir au moins 2 réponses.`);
             return;
         }
+
+        let hasCorrect = false;
+        for (const ans of answers) {
+            const valeur = ans.querySelector('input[type="text"]').value.trim();
+            const estCorrect = ans.querySelector('input[type="radio"]').checked;
+            if (!valeur) {
+                showToast('warning', `Toutes les réponses de la question ${i + 1} doivent être remplies.`);
+                return;
+            }
+            if (estCorrect) hasCorrect = true;
+        }
+        if (!hasCorrect) {
+            showToast('warning', `La question ${i + 1} doit avoir une réponse correcte.`);
+            return;
+        }
     }
 
-    // Si on arrive ici => tout est OK
+    // Si tout est OK -> préparer données
     const questionsData = [];
     questions.forEach(card => {
         const enonce = card.querySelector('input[type="text"]').value;
@@ -147,7 +219,60 @@ document.getElementById('testForm').addEventListener('submit', async function (e
 
     if (response.ok) {
         showToast('success', 'Test créé avec succès !');
+        reloadQuestionBank();
+        resetTestForm();
     } else {
         showToast('danger', 'Erreur lors de la création du test.');
     }
 });
+
+async function reloadQuestionBank() {
+    try {
+        const response = await fetch('/tests/questions');
+        if (!response.ok) throw new Error('Erreur lors du chargement des questions');
+        const questions = await response.json();
+
+        const listGroup = document.querySelector('#questionBankModal .list-group');
+        listGroup.innerHTML = ''; // vider la liste
+
+        questions.forEach(question => {
+            console.log(question.reponses);
+            const item = document.createElement('div');
+            item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+            item.setAttribute("id", "bank-question-" + question.id); // 🔑 identifiant unique
+            item.innerHTML = `
+        <div>
+            <h6>${question.enonce}</h6>
+            <small>${question.reponses.length} réponses • ${question.point} points</small>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary"
+            onclick="addFromBank('${question.enonce.replace(/'/g, "\\'")}', ${question.id}, [${question.reponses.map(r => `{valeur: '${r.valeur}', estCorrect: ${r.estCorrect}}`).join(", ")}], ${question.point})"
+            data-bs-dismiss="modal">
+            Ajouter
+        </button>
+    `;
+            listGroup.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error(error);
+        showToast('danger', 'Impossible de recharger la banque de questions.');
+    }
+}
+
+function resetTestForm() {
+    // Réinitialiser les champs de configuration
+    document.getElementById('testForm').reset();
+
+    // Cacher toutes les étapes et afficher la première
+    document.querySelectorAll('.step').forEach(el => el.classList.add('d-none'));
+    document.getElementById('step1').classList.remove('d-none');
+
+    // Vider toutes les questions ajoutées
+    const container = document.getElementById('questionsContainer');
+    container.innerHTML = '';
+
+    // Réinitialiser les compteurs et la liste des questions ajoutées
+    questionCount = 0;
+    addedQuestions.clear();
+}
