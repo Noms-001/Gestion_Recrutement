@@ -162,178 +162,177 @@
     <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/create-test.js"></script>
     <!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
-<!-- Tesseract.js -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <!-- Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
-<script type="module">
-function parseQCM(text) {
-    const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-    let questions = [], meta = { title: null, duration: null };
-    let currentQ = null;
-    let detectedQuestionRegex = null;
-    let detectedAnswerRegex = null;
+    <script>
+        function parseQCM(text) {
+            const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+            let questions = [], meta = { title: null, duration: null };
+            let currentQ = null;
+            let detectedQuestionRegex = null;
+            let detectedAnswerRegex = null;
 
-    const possibleQuestionRegexes = [
-        /^\d+\./, /^\d\s/, /^Q\d+[:\)]/, /^Question\s*n[°]?\s*\d+/i, /^[IVXLCDM]+\./i
-    ];
-    const possibleAnswerRegexes = [
-        /^[a-d]\)/i, /^\{\s*/, /^\-\s*/, /^R\d+/i
-    ];
-    meta.title = lines[0];
+            const possibleQuestionRegexes = [
+                /^\d+\./, /^\d\s/, /^Q\d+[:\)]/, /^Question\s*n[°]?\s*\d+/i, /^[IVXLCDM]+\./i
+            ];
+            const possibleAnswerRegexes = [
+                /^[a-d]\)/i, /^\{\s*/, /^\-\s*/, /^R\d+/i
+            ];
+            meta.title = lines[0];
 
-    for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        line = line.replace(/[◗❍]/g, '');
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                line = line.replace(/[◗❍]/g, '');
 
-        // Meta
-        if (!meta.title && /QCM|EXAMEN|Sujets/i.test(line)) meta.title = line;
-        if (!meta.duration && /durée|temps/i.test(line)) {
-            const match = line.match(/(\d+)\s*(h|H|mn|minutes)?/);
-            if (match) {
-                let value = parseInt(match[1], 10);
-                if (match[2] && /h/i.test(match[2])) value = value * 60;
-                meta.duration = value;
-            }
-        }
+                // Meta
+                if (!meta.title && /QCM|EXAMEN|Sujets/i.test(line)) meta.title = line;
+                if (!meta.duration && /durée|temps/i.test(line)) {
+                    const match = line.match(/(\d+)\s*(h|H|mn|minutes)?/);
+                    if (match) {
+                        let value = parseInt(match[1], 10);
+                        if (match[2] && /h/i.test(match[2])) value = value * 60;
+                        meta.duration = value;
+                    }
+                }
 
-        // Détection dynamique
-        if (!detectedQuestionRegex) {
-            for (let qR of possibleQuestionRegexes) {
-                if (qR.test(line)) {
-                    detectedQuestionRegex = qR;
-                    break;
+                // Détection dynamique
+                if (!detectedQuestionRegex) {
+                    for (let qR of possibleQuestionRegexes) {
+                        if (qR.test(line)) {
+                            detectedQuestionRegex = qR;
+                            break;
+                        }
+                    }
+                }
+                if (!detectedAnswerRegex) {
+                    for (let aR of possibleAnswerRegexes) {
+                        if (aR.test(line)) {
+                            detectedAnswerRegex = aR;
+                            break;
+                        }
+                    }
+                }
+
+                // Cas 1 : question détectée
+                if (detectedQuestionRegex && detectedQuestionRegex.test(line)) {
+                    if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
+                    currentQ = { question: line.replace(detectedQuestionRegex, '').trim(), answers: [] };
+                    continue;
+                }
+
+                // Cas 2 : réponses détectées
+                if (detectedAnswerRegex && detectedAnswerRegex.test(line)) {
+                    if (!currentQ) currentQ = { question: lines[i - 1] || "", answers: [] };
+                    const splitted = line.split(/(?=[a-d]\))/i)
+                        .map(s => s.replace(detectedAnswerRegex, '').trim())
+                        .filter(s => s);
+                    currentQ.answers.push(...splitted);
+                    continue;
+                }
+
+                // Cas 3 : question sans regex mais finissant par ?
+                if (!detectedQuestionRegex && line.match(/[?]$/)) {
+                    if (currentQ) questions.push(currentQ);
+                    currentQ = { question: line.trim(), answers: [] };
+                    continue;
+                }
+
+                // Cas 4 : réponses sans regex
+                if (currentQ && !detectedAnswerRegex && i > 0) {
+                    const splitted = line.split(/(?=[a-d]\.|\(?[a-d]\))/i)
+                        .map(s => s.trim())
+                        .filter(s => s);
+                    if (splitted.length) currentQ.answers.push(...splitted);
                 }
             }
-        }
-        if (!detectedAnswerRegex) {
-            for (let aR of possibleAnswerRegexes) {
-                if (aR.test(line)) {
-                    detectedAnswerRegex = aR;
-                    break;
-                }
-            }
-        }
-
-        // Cas 1 : question détectée
-        if (detectedQuestionRegex && detectedQuestionRegex.test(line)) {
             if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
-            currentQ = { question: line.replace(detectedQuestionRegex, '').trim(), answers: [] };
-            continue;
+            return { meta, questions };
         }
 
-        // Cas 2 : réponses détectées
-        if (detectedAnswerRegex && detectedAnswerRegex.test(line)) {
-            if (!currentQ) currentQ = { question: lines[i - 1] || "", answers: [] };
-            const splitted = line.split(/(?=[a-d]\))/i)
-                .map(s => s.replace(detectedAnswerRegex, '').trim())
-                .filter(s => s);
-            currentQ.answers.push(...splitted);
-            continue;
+        // =======================
+        // Extraction PDF
+        // =======================
+        async function extractTextFromPDF(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let textContent = "";
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const text = await page.getTextContent();
+                let linesMap = {};
+
+                text.items.forEach(item => {
+                    if (!item.str) return;
+                    if (!item.transform || item.transform.length < 6) return;
+                    const y = item.transform[5].toFixed(2);
+                    if (!linesMap[y]) linesMap[y] = [];
+                    linesMap[y].push(item.str);
+                });
+
+                const sortedKeys = Object.keys(linesMap).map(k => parseFloat(k)).sort((a, b) => b - a);
+                sortedKeys.forEach(y => {
+                    if (linesMap[y]) textContent += linesMap[y].join(" ") + "\n";
+                });
+
+                textContent += "\n";
+            }
+            return textContent;
         }
 
-        // Cas 3 : question sans regex mais finissant par ?
-        if (!detectedQuestionRegex && line.match(/[?]$/)) {
-            if (currentQ) questions.push(currentQ);
-            currentQ = { question: line.trim(), answers: [] };
-            continue;
+        // =======================
+        // Remplissage formulaire
+        // =======================
+        function fillForm(parsed) {
+            // Titre
+            questionCount = 0;
+            document.getElementById('testTitle').value = parsed.meta.title;
+            // Durée
+            if (parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
+
+            // Questions
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            // Réinitialiser les questions
+            container.innerHTML = '';
+
+            // Ajouter les questions avec leurs réponses
+            parsed.questions.forEach(q => {
+                addQuestion(
+                    q.question,                              // énoncé
+                    q.answers.map(r => r),                   // réponses
+                    0,                                       // index ou param optionnel
+                    5                                        // points par défaut
+                );
+            });
+
+            showToast("success", "PDF impoté avec succès !");
+
         }
 
-        // Cas 4 : réponses sans regex
-        if (currentQ && !detectedAnswerRegex && i > 0) {
-            const splitted = line.split(/(?=[a-d]\.|\(?[a-d]\))/i)
-                .map(s => s.trim())
-                .filter(s => s);
-            if (splitted.length) currentQ.answers.push(...splitted);
-        }
-    }
-    if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
-    return { meta, questions };
-}
+        // =======================
+        // Gestion import
+        // =======================
+        const fileInput = document.getElementById('fileInput');
+        const importBtn = document.getElementById('importBtn');
 
-// =======================
-// Extraction PDF
-// =======================
-async function extractTextFromPDF(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let textContent = "";
+        importBtn.addEventListener('click', () => fileInput.click());
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const text = await page.getTextContent();
-        let linesMap = {};
-
-        text.items.forEach(item => {
-            if (!item.str) return;
-            if (!item.transform || item.transform.length < 6) return;
-            const y = item.transform[5].toFixed(2);
-            if (!linesMap[y]) linesMap[y] = [];
-            linesMap[y].push(item.str);
+        fileInput.addEventListener('change', async (evt) => {
+            const file = evt.target.files[0];
+            if (!file) return;
+            try {
+                const text = await extractTextFromPDF(file);
+                const parsed = parseQCM(text);
+                fillForm(parsed);
+            } catch (err) {
+                console.error("Erreur PDF :", err);
+                showToast("danger", "Erreur lors de la lecture du PDF.");
+            }
         });
-
-        const sortedKeys = Object.keys(linesMap).map(k => parseFloat(k)).sort((a, b) => b - a);
-        sortedKeys.forEach(y => {
-            if (linesMap[y]) textContent += linesMap[y].join(" ") + "\n";
-        });
-
-        textContent += "\n";
-    }
-    return textContent;
-}
-
-// =======================
-// Remplissage formulaire
-// =======================
-function fillForm(parsed) {
-    // Titre
-    questionCount = 0;
-    document.getElementById('testTitle').value = parsed.meta.title;
-    // Durée
-    if (parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
-
-    // Questions
-    const container = document.getElementById('questionsContainer');
-    container.innerHTML = '';
-    // Réinitialiser les questions
-    container.innerHTML = '';
-
-    // Ajouter les questions avec leurs réponses
-    parsed.questions.forEach(q => {
-        addQuestion(
-            q.question,                              // énoncé
-            q.answers.map(r => r),                   // réponses
-            0,                                       // index ou param optionnel
-            5                                        // points par défaut
-        );
-    });
-
-    showToast("success", "PDF impoté avec succès !");
-
-}
-
-// =======================
-// Gestion import
-// =======================
-const fileInput = document.getElementById('fileInput');
-const importBtn = document.getElementById('importBtn');
-
-importBtn.addEventListener('click', () => fileInput.click());
-
-fileInput.addEventListener('change', async (evt) => {
-    const file = evt.target.files[0];
-    if (!file) return;
-    try {
-        const text = await extractTextFromPDF(file);
-        const parsed = parseQCM(text);
-        fillForm(parsed);
-    } catch (err) {
-        console.error("Erreur PDF :", err);
-        showToast("danger", "Erreur lors de la lecture du PDF.");
-    }
-});
-</script>
-</script>
+    </script>
 
 </body>
 
