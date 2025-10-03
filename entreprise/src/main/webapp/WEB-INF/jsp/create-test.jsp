@@ -287,7 +287,7 @@ async function extractTextFromPDF(file) {
 // =======================
 function fillForm(parsed) {
     // Titre
-    document.getElementById('testTitle').value = parsed.meta.title || "Test";
+    document.getElementById('testTitle').value = parsed.meta.title;
     // Durée
     if (parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
 
