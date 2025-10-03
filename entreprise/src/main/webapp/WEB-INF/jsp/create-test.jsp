@@ -287,6 +287,7 @@ async function extractTextFromPDF(file) {
 // =======================
 function fillForm(parsed) {
     // Titre
+    questionCount = 0;
     document.getElementById('testTitle').value = parsed.meta.title;
     // Durée
     if (parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
@@ -307,7 +308,8 @@ function fillForm(parsed) {
         );
     });
 
-    goToStep(2);
+    showToast("success", "PDF impoté avec succès !");
+
 }
 
 // =======================
@@ -327,7 +329,7 @@ fileInput.addEventListener('change', async (evt) => {
         fillForm(parsed);
     } catch (err) {
         console.error("Erreur PDF :", err);
-        alert("Erreur lors de la lecture du PDF.");
+        showToast("danger", "Erreur lors de la lecture du PDF.");
     }
 });
 </script>
