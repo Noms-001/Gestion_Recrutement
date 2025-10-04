@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
@@ -25,5 +26,36 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
             @Param("poste") String poste,
             @Param("status") String status
     );
+
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "WHERE a.ferme = false " +
+           "ORDER BY a.dateCreation DESC")
+    List<Annonce> findAllActiveAnnonces();
+    
+    // Charger une annonce spécifique avec toutes les relations (pour les détails)
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "LEFT JOIN FETCH a.competences ac " +
+           "LEFT JOIN FETCH ac.competence " +
+           "WHERE a.id = :id AND a.ferme = false")
+    Optional<Annonce> findByIdWithCompetences(@Param("id") Long id);
+    
+    // Alternative: charger une annonce avec langues
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "LEFT JOIN FETCH a.langues al " +
+           "LEFT JOIN FETCH al.langue " +
+           "WHERE a.id = :id AND a.ferme = false")
+    Optional<Annonce> findByIdWithLangues(@Param("id") Long id);
 }
 

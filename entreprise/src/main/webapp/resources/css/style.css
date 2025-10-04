@@ -667,6 +667,10 @@ body {
   overflow-wrap: break-word;
 }
 
+.btn-compact {
+    transition: all 0.4s ease-in-out;
+}
+
 
 /* Responsive */
 @media (max-width:768px){

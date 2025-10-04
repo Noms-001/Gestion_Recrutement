@@ -17,4 +17,23 @@ public class AnnonceDTO {
     public LocalDate dateCreation;
     public List<String> competences;
     public List<String> langues;
+    
+    // Critères obligatoires
+    public Boolean diplomeObligatoire;
+    public String diplomeLibelle;
+    public Double diplomeNiveau;
+    
+    public Boolean ageObligatoire;
+    public Integer ageMinimum;
+    
+    public Boolean experienceObligatoire;
+    
+    public Boolean genreObligatoire;
+    public String genreLibelle;
+    
+    public Boolean villeObligatoire;
+    
+    // Compétences et langues obligatoires
+    public List<String> competencesObligatoires;
+    public List<String> languesObligatoires;
 }
