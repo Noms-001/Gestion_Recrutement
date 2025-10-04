@@ -32,12 +32,12 @@ function showJobList(filter = "") {
 }
 
 // Afficher quand on tape
-jobInput.addEventListener("input", function() {
+jobInput.addEventListener("input", function () {
     showJobList(this.value);
 });
 
 // ✅ Afficher toute la liste au clic (focus)
-jobInput.addEventListener("focus", function() {
+jobInput.addEventListener("focus", function () {
     showJobList(this.value);
 });
 
@@ -63,5 +63,31 @@ document.querySelectorAll('.toggle-required').forEach(el => {
     });
     el.addEventListener('mouseleave', () => {
         infoText.style.display = 'none';
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Tous les toggles
+    document.querySelectorAll('.toggle-required input[type="checkbox"]').forEach(toggle => {
+        toggle.addEventListener('change', (e) => {
+            const parent = e.target.closest('.col-md-6');
+            if (!parent) return;
+
+            const input = parent.querySelector('input, select, textarea');
+            if (!input) return;
+
+            input.required = e.target.checked;
+            console.log(e.target.checked);
+        });
+    });
+
+    diplome.addEventListener('change', updateDiplomeFiliereRequired);
+    filiere.addEventListener('change', updateDiplomeFiliereRequired);
+    updateDiplomeFiliereRequired(); // Initial
+
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    toastElList.forEach(function (toastEl) {
+        var toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+        toast.show();
     });
 });

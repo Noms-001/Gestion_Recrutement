@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnnonceCompetenceRepository extends JpaRepository<AnnonceCompetence, AnnonceCompetenceId> {
+    boolean existsById_IdAnnonceAndId_IdCompetence(Long idAnnonce, Long idCompetence);
 }

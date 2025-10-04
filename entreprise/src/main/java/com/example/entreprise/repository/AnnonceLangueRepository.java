@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface AnnonceLangueRepository extends JpaRepository<AnnonceLangue, AnnonceLangueId> {
-
+    boolean existsById_IdAnnonceAndId_IdLangue(Long idAnnonce, Long idLangue);
     // Filtre par ville via la relation Annonce
     List<AnnonceLangue> findByAnnonceVilleId(Long villeId);
 }

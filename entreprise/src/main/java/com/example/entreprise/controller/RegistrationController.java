@@ -24,7 +24,7 @@ public class RegistrationController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("postes", posteService.getAll());
+        model.addAttribute("postes", posteService.findAll());
         model.addAttribute("genres", genreService.findAll());
         return "registration";
     }
