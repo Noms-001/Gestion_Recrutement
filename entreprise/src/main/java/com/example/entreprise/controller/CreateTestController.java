@@ -2,6 +2,7 @@ package com.example.entreprise.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,19 +10,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.entreprise.dto.QuestionDTO;
-import com.example.entreprise.dto.TestDTO;
-import com.example.entreprise.entity.Test;
-import com.example.entreprise.service.TestService;
+import com.example.entreprise.dto.*;
+import com.example.entreprise.entity.*;
+import com.example.entreprise.service.*;
 
 @RestController
 @RequestMapping("/tests")
 public class CreateTestController {
-    private final TestService testService;
-
-    public CreateTestController(TestService testService) {
-        this.testService = testService;
-    }
+    @Autowired
+    private TestService testService;
+    
+    @Autowired
+    private QuestionService questionService;
 
     @PostMapping
     public ResponseEntity<Test> createTest(@RequestBody TestDTO dto) {
@@ -30,13 +30,13 @@ public class CreateTestController {
     }
 
     @GetMapping
-    public List<Test> getAllTests() {
-        return testService.getAllTests();
+    public List<Test> findAll() {
+        return testService.findAll();
     }
 
     @GetMapping("/questions")
-    public List<QuestionDTO> getAllQuestions() {
-        return testService.getAllQuestionsDTO();
+    public List<QuestionDTO> findAllDTO() {
+        return questionService.findAllDTO();
     }
 
 }

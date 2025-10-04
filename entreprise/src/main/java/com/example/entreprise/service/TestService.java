@@ -84,29 +84,7 @@ public class TestService {
         return testRepository.save(test);
     }
 
-    public List<Test> getAllTests() {
+    public List<Test> findAll() {
         return testRepository.findAll();
     }
-
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
-    }
-
-    public List<QuestionDTO> getAllQuestionsDTO() {
-        return questionRepository.findAll().stream().map(q -> {
-            QuestionDTO dto = new QuestionDTO();
-            dto.setId(q.getId());
-            dto.setEnonce(q.getEnonce());
-            dto.setPoint(q.getPoint());
-            dto.setReponses(q.getReponses().stream().map(r -> {
-                ReponseDTO rdto = new ReponseDTO();
-                rdto.setId(r.getId());
-                rdto.setValeur(r.getValeur());
-                rdto.setEstCorrect(r.estCorrect(q));
-                return rdto;
-            }).collect(Collectors.toList()));
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
 }
