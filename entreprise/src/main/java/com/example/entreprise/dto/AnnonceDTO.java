@@ -32,6 +32,7 @@ public class AnnonceDTO {
     public String genreLibelle;
     
     public Boolean villeObligatoire;
+    public Boolean urgent;
     
     // Compétences et langues obligatoires
     public List<String> competencesObligatoires;

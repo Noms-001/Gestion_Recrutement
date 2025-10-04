@@ -171,6 +171,7 @@ public class AnnonceService {
             dto.anneeExperience = a.getAnneeExperience();
             dto.candidaturesCount = a.getCandidatures() != null ? a.getCandidatures().size() : 0;
             dto.dateCreation = a.getDateCreation();
+            dto.urgent = a.getUrgent();
             return dto;
         }).toList();
     }
@@ -395,13 +396,13 @@ public class AnnonceService {
         dto.ferme = annonce.getFerme();
         dto.dateLimite = annonce.getDateLimite();
         dto.anneeExperience = annonce.getAnneeExperience();
+        dto.urgent = annonce.getUrgent();
         dto.age = annonce.getAge();
         dto.genre = annonce.getGenre() != null ? annonce.getGenre().getLibelle() : null;
         dto.diplomeId = annonce.getDiplome() != null ? annonce.getDiplome().getId() : null;
         dto.filiereId = annonce.getFiliere() != null ? annonce.getFiliere().getId() : null;
         dto.testId = annonce.getTest() != null ? annonce.getTest().getId() : null;
         dto.description = annonce.getDescription();
-        dto.urgent = annonce.getUrgent();
         dto.ageObligatoire = annonce.getAgeObligatoire();
         dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
         dto.experienceObligatoire = annonce.getExperienceObligatoire();
@@ -438,10 +439,10 @@ public class AnnonceService {
             annonceRepository.save(annonce);
         });
     }
-}
+
     @Transactional(readOnly = true)
     public List<AnnonceDTO> getAllAnnonces() {
-        List<Annonce> annonces = repository.findAllActiveAnnonces();
+        List<Annonce> annonces = annonceRepository.findAllActiveAnnonces();
 
         return annonces.stream().map(annonce -> {
             AnnonceDTO dto = new AnnonceDTO();
@@ -459,6 +460,7 @@ public class AnnonceService {
             dto.anneeExperience = annonce.getAnneeExperience();
             dto.candidaturesCount = annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0;
             dto.dateCreation = annonce.getDateCreation();
+            dto.urgent = annonce.getUrgent();
 
             // Critères obligatoires
             dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
@@ -500,13 +502,14 @@ public class AnnonceService {
 
     @Transactional(readOnly = true)
     public AnnonceDTO getAnnonceById(Long id) {
-        return repository.findByIdWithCompetences(id)
+        return annonceRepository.findByIdWithCompetences(id)
                 .map(annonce -> {
                     AnnonceDTO dto = new AnnonceDTO();
 
                     // Informations de base
                     dto.id = annonce.getId();
-                    dto.posteLibelle = annonce.getPoste() != null ? annonce.getPoste().getLibelle() : "Poste non spécifié";
+                    dto.posteLibelle = annonce.getPoste() != null ? annonce.getPoste().getLibelle()
+                            : "Poste non spécifié";
                     dto.departementNom = annonce.getPoste() != null && annonce.getPoste().getDepartement() != null
                             ? annonce.getPoste().getDepartement().getNom()
                             : "Département non spécifié";
@@ -520,6 +523,7 @@ public class AnnonceService {
 
                     // Critères obligatoires
                     dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
+                    dto.urgent = annonce.getUrgent();
                     dto.diplomeLibelle = annonce.getDiplome() != null ? annonce.getDiplome().getLibelle() : null;
                     dto.diplomeNiveau = annonce.getDiplome() != null ? annonce.getDiplome().getNiveau() : null;
                     dto.ageObligatoire = annonce.getAgeObligatoire();
@@ -556,6 +560,120 @@ public class AnnonceService {
                     return dto;
                 })
                 .orElse(null);
+    }
+
+    public List<AnnonceDTO> filterAnnonces(List<Long> villes, Long diplome, Integer experience, 
+                                        List<Long> competences, List<Long> langues, Boolean urgent) {
+        
+        List<Annonce> annonces = annonceRepository.findAllActiveAnnonces();
+        
+        return annonces.stream()
+                .filter(annonce -> filterByVilles(annonce, villes))
+                .filter(annonce -> filterByDiplome(annonce, diplome))
+                .filter(annonce -> filterByExperience(annonce, experience))
+                .filter(annonce -> filterByCompetences(annonce, competences))
+                .filter(annonce -> filterByLangues(annonce, langues))
+                .filter(annonce -> filterByUrgent(annonce, urgent)) // ⬅️ AJOUTEZ CECI
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private boolean filterByUrgent(Annonce annonce, Boolean urgent) {
+        if (urgent == null || !urgent) return true;
+        return annonce.getUrgent() != null && annonce.getUrgent();
+    }
+    public List<AnnonceDTO> searchAnnonces(String query) {
+        return annonceRepository.findBySearchQuery(query).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public AnnonceDTO convertToDTO(Annonce annonce) {
+        AnnonceDTO dto = new AnnonceDTO();
+        dto.id = annonce.getId();
+        dto.posteLibelle = annonce.getPoste().getLibelle();
+        dto.departementNom = annonce.getPoste().getDepartement().getNom();
+        dto.villeNom = annonce.getVille() != null ? annonce.getVille().getNom() : "";
+        dto.description = annonce.getDescription();
+        dto.ferme = annonce.getFerme();
+        dto.urgent = annonce.getUrgent();
+        dto.dateLimite = annonce.getDateLimite();
+        dto.anneeExperience = annonce.getAnneeExperience();
+        dto.candidaturesCount = annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0;
+        dto.dateCreation = annonce.getDateCreation();
+        
+        // Critères obligatoires
+        dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
+        if (annonce.getDiplome() != null) {
+            dto.diplomeLibelle = annonce.getDiplome().getLibelle();
+            dto.diplomeNiveau = annonce.getDiplome().getNiveau();
+        }
+        
+        dto.ageObligatoire = annonce.getAgeObligatoire();
+        dto.ageMinimum = annonce.getAge();
+        
+        dto.experienceObligatoire = annonce.getExperienceObligatoire();
+        
+        dto.genreObligatoire = annonce.getGenreObligatoire();
+        if (annonce.getGenre() != null) {
+            dto.genreLibelle = annonce.getGenre().getLibelle();
+        }
+        
+        dto.villeObligatoire = annonce.getVilleObligatoire();
+        
+        // Compétences
+        if (annonce.getCompetences() != null) {
+            dto.competences = annonce.getCompetences().stream()
+                    .map(ac -> ac.getCompetence().getLibelle())
+                    .collect(Collectors.toList());
+                    
+            dto.competencesObligatoires = annonce.getCompetences().stream()
+                    .filter(AnnonceCompetence::isEstObligatoire)
+                    .map(ac -> ac.getCompetence().getLibelle())
+                    .collect(Collectors.toList());
+        }
+        
+        // Langues
+        if (annonce.getLangues() != null) {
+            dto.langues = annonce.getLangues().stream()
+                    .map(al -> al.getLangue().getLibelle())
+                    .collect(Collectors.toList());
+                    
+            dto.languesObligatoires = annonce.getLangues().stream()
+                    .filter(AnnonceLangue::isEstObligatoire)
+                    .map(al -> al.getLangue().getLibelle())
+                    .collect(Collectors.toList());
+        }
+        
+        return dto;
+    }
+
+    // Méthodes de filtrage auxiliaires
+    private boolean filterByVilles(Annonce annonce, List<Long> villes) {
+        if (villes == null || villes.isEmpty()) return true;
+        return annonce.getVille() != null && villes.contains(annonce.getVille().getId());
+    }
+
+    private boolean filterByDiplome(Annonce annonce, Long diplomeId) {
+        if (diplomeId == null) return true;
+        return annonce.getDiplome() != null && annonce.getDiplome().getId().equals(diplomeId);
+    }
+
+    private boolean filterByExperience(Annonce annonce, Integer experience) {
+        if (experience == null || experience == 0) return true;
+        return annonce.getAnneeExperience() != null && annonce.getAnneeExperience() >= experience;
+    }
+
+    private boolean filterByCompetences(Annonce annonce, List<Long> competences) {
+        if (competences == null || competences.isEmpty()) return true;
+        return annonce.getCompetences().stream()
+                .anyMatch(ac -> competences.contains(ac.getCompetence().getId()));
+    }
+
+    private boolean filterByLangues(Annonce annonce, List<Long> langues) {
+        if (langues == null || langues.isEmpty()) return true;
+        return annonce.getLangues().stream()
+                .anyMatch(al -> langues.contains(al.getLangue().getId()));
     }
 
 }

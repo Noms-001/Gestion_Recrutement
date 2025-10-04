@@ -85,8 +85,16 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-grow-1">
-                                                            <h5 class="card-title mb-1"><%= annonce.posteLibelle %></h5>
-                                                            <p class="text-muted mb-2"><%= annonce.departementNom %> • <%= annonce.villeNom %></p>
+                                                            <h5 class="card-title mb-1">
+                                                                <%= annonce.posteLibelle %>
+                                                            </h5>
+                                                            <p class="text-muted mb-2">
+                                                                <% if(annonce.urgent != null && annonce.urgent) { %>
+                                                                <span class="text-danger">
+                                                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                                                </span>
+                                                                <% } %>
+                                                                <%= annonce.departementNom %> • <%= annonce.villeNom %></p>
                                                             <p class="card-text mb-3">
                                                                 <% 
                                                                     String description = annonce.description != null ? annonce.description : "";
@@ -253,7 +261,17 @@
                     </select>
                     <div id="langsTags" class="mt-2"></div>
                 </div>
-
+                <!-- Dans votre JSP, ajoutez cette section dans l'offcanvas de filtres -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Type d'annonce</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="urgentFilter">
+                        <label class="form-check-label" for="urgentFilter">
+                            <i class="bi bi-exclamation-triangle text-danger me-1"></i>
+                            Afficher seulement les annonces urgentes
+                        </label>
+                    </div>
+                </div>
                 <!-- Boutons -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer les filtres</button>

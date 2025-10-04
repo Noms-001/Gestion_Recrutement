@@ -107,7 +107,7 @@ document.getElementById('btnFilter').addEventListener('click', function() {
             const departementId = document.getElementById('filterDepartement').value;
             const poste = document.getElementById('filterPoste').value;
             const status = document.getElementById('filterStatus').value;
-            let url = "/api/annonces?villeId="+villeId+"&departementId="+departementId+"&poste="+poste;
+            let url = "/api/annonces/filtre?villeId="+villeId+"&departementId="+departementId+"&poste="+poste;
             if(status) url += "&status="+status;
             fetch(url)
                 .then(response => response.json())
@@ -176,8 +176,9 @@ function updateAnnonceTable(annonces) {
             '<td>' +
                 '<div class="fw-medium">' + (annonce.posteLibelle || '') + '</div>' +
                 '<small class="text-muted">' +
+                    (annonce.urgent && annonce.ferme ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' : '') +
                     (annonce.anneeExperience ? annonce.anneeExperience + ' ans' : '') + 
-                    ' • ' + (annonce.villeNom || '') +
+                    (annonce.villeNom ? ' • ' : '') + (annonce.villeNom || '') +
                 '</small>' +
             '</td>' +
             '<td><span class="badge ' + badgeColor + '">' + (annonce.departementNom || '') + '</span></td>' +

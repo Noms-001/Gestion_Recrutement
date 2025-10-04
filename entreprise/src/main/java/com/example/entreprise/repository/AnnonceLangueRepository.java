@@ -1,7 +1,6 @@
 package com.example.entreprise.repository;
 
-import com.example.entreprise.entity.AnnonceLangue;
-import com.example.entreprise.entity.AnnonceLangueId;
+import com.example.entreprise.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +19,11 @@ public interface AnnonceLangueRepository extends JpaRepository<AnnonceLangue, An
     void deleteById_IdAnnonceAndId_IdLangue(Long annonceId, Long langueId);
     
     void deleteById_IdAnnonce(Long annonceId);
+    // AnnonceRepository.java
+    @Query("SELECT a FROM Annonce a WHERE " +
+        "LOWER(a.poste.libelle) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+        "LOWER(a.description) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+        "LOWER(a.poste.departement.nom) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+        "LOWER(a.ville.nom) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Annonce> findBySearchQuery(@Param("query") String query);
 }

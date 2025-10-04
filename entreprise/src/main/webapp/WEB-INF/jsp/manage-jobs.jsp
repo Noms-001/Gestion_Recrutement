@@ -138,7 +138,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
-                                                    <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
+                                                    <small class="text-muted"> <%= annonce.getUrgent() == true && annonce.getFerme() == false ? "<i class=\"bi bi-exclamation-triangle me-1 text-danger\"></i>" : ""%> <%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> <%= annonce.getVille() != null ? " • " + annonce.getVille().getNom() : "" %></small>
                                                 </td>
                                                 <td>
                                                     <span class="badge <%=color%>"><%= annonce.getPoste().getDepartement().getNom() %></span>

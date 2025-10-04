@@ -59,5 +59,24 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
            "LEFT JOIN FETCH al.langue " +
            "WHERE a.id = :id AND a.ferme = false")
     Optional<Annonce> findByIdWithLangues(@Param("id") Long id);
+
+    // Dans AnnonceRepository.java
+@Query("SELECT DISTINCT a FROM Annonce a " +
+       "LEFT JOIN a.poste p " +
+       "LEFT JOIN p.departement d " +
+       "LEFT JOIN a.ville v " +
+       "LEFT JOIN a.competences ac " +
+       "LEFT JOIN ac.competence c " +
+       "LEFT JOIN a.langues al " +
+       "LEFT JOIN al.langue l " +
+       "WHERE a.ferme = false " +
+       "AND (LOWER(p.libelle) LIKE LOWER(CONCAT('%', :query, '%')) " +
+       "OR LOWER(a.description) LIKE LOWER(CONCAT('%', :query, '%')) " +
+       "OR LOWER(d.nom) LIKE LOWER(CONCAT('%', :query, '%')) " +
+       "OR LOWER(v.nom) LIKE LOWER(CONCAT('%', :query, '%')) " +
+       "OR LOWER(c.libelle) LIKE LOWER(CONCAT('%', :query, '%')) " +
+       "OR LOWER(l.libelle) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+       "ORDER BY a.dateCreation DESC")
+List<Annonce> findBySearchQuery(@Param("query") String query);
 }
 
