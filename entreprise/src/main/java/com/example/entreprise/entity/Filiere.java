@@ -23,14 +23,43 @@ public class Filiere {
     private List<Education> educations;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getLibelle() { return libelle; }
-    public void setLibelle(String libelle) { this.libelle = libelle; }
-    public List<Experience> getExperiences() { return experiences; }
-    public void setExperiences(List<Experience> experiences) { this.experiences = experiences; }
-    public List<Annonce> getAnnonces() { return annonces; }
-    public void setAnnonces(List<Annonce> annonces) { this.annonces = annonces; }
-    public List<Education> getEducations() { return educations; }
-    public void setEducations(List<Education> educations) { this.educations = educations; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLibelle() {
+        return libelle;
+    }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
+
+    public List<Experience> getExperiences() {
+        return experiences;
+    }
+
+    public void setExperiences(List<Experience> experiences) {
+        this.experiences = experiences;
+    }
+
+    public List<Annonce> getAnnonces() {
+        return annonces;
+    }
+
+    public void setAnnonces(List<Annonce> annonces) {
+        this.annonces = annonces;
+    }
+
+    public List<Education> getEducations() {
+        return educations;
+    }
+
+    public void setEducations(List<Education> educations) {
+        this.educations = educations;
+    }
 }

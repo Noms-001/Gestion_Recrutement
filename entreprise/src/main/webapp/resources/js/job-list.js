@@ -1,8 +1,63 @@
-function toggleJobDetails(jobId) {
-    const details = document.getElementById(`details-${jobId}`);
-    details.classList.toggle('d-none');
+function openJobDetails(jobId) {
+    const jobsData = {
+        1: {
+            title: "Développeur Frontend React",
+            company: "TechCorp Solutions • Paris, France",
+            description: "Rejoignez notre équipe pour développer des interfaces utilisateur modernes...",
+            criteres: [
+                "Âge minimum: 23 ans",
+                "Diplôme: Bac+3 en Informatique",
+                "Expérience: 2-4 ans",
+                "Langues: Français, Anglais"
+            ],
+            competences: ["React.js avancé", "TypeScript", "CSS/SCSS", "Git"]
+        }
+    };
+
+    const job = jobsData[jobId];
+
+    const btnDetail = document.getElementById(`btn-detail-${jobId}`);
+
+    document.getElementById("jobDetailsTitle").textContent = job.title;
+    document.getElementById("jobDetailsContent").innerHTML = `
+        <p class="fw-bold">${job.company}</p>
+        <p>${job.description}</p>
+        <h6 class="fw-bold mt-4">Critères requis</h6>
+        <ul>
+            ${job.criteres.map(c => `<li><i class="bi bi-check-circle text-success me-2"></i>${c}</li>`).join('')}
+        </ul>
+        <h6 class="fw-bold mt-4">Compétences techniques</h6>
+        <ul>
+            ${job.competences.map(c => `<li><i class="bi bi-dot text-primary"></i>${c}</li>`).join('')}
+        </ul>
+    `;
+
+    const jobsContainer = document.getElementById("jobsContainer");
+    const jobDetails = document.getElementById("jobDetailsPanel");
+
+    jobsContainer.classList.add("shrink");
+    jobDetails.classList.remove("d-none");
+    btnDetail.classList.add("d-none");
+
+    setTimeout(() => {
+        jobDetails.classList.add("open");
+    }, 10);
+
 }
 
+function closeJobDetails(jobId) {
+    const jobsContainer = document.getElementById("jobsContainer");
+    const jobDetails = document.getElementById("jobDetailsPanel");
+    const btnDetail = document.getElementById(`btn-detail-${jobId}`);
+
+    jobDetails.classList.remove("open");
+    jobsContainer.classList.remove("shrink");
+
+    setTimeout(() => {
+        jobDetails.classList.add("d-none");
+        btnDetail.classList.remove("d-none");
+    }, 400);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const jobsList = document.querySelectorAll(".job-card");

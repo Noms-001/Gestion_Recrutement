@@ -59,219 +59,81 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Jobs List -->
-                <div id="jobsList">
-                    <!-- Job Card 1 -->
-                    <div class="card mb-3 job-card" data-job-id="1">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-building"></i>
+                <div class="row flex-nowrap" id="jobsRow">
+                    <div class="jobs-container" id="jobsContainer">
+                        <!-- Jobs List -->
+                        <div id="jobsList">
+                            <!-- Job Card 1 -->
+                            <div class="card mb-3 job-card" data-job-id="1">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-start">
+                                                <div class="company-logo me-3">
+                                                    <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h5 class="card-title mb-1">Développeur Frontend React</h5>
+                                                    <p class="text-muted mb-2">TechCorp Solutions • Paris, France</p>
+                                                    <p class="card-text mb-3">Rejoignez notre équipe pour développer des interfaces utilisateur modernes et intuitives avec React et TypeScript...</p>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <span class="badge bg-primary">React</span>
+                                                        <span class="badge bg-primary">TypeScript</span>
+                                                        <span class="badge bg-primary">CSS</span>
+                                                        <span class="badge bg-secondary">CDI</span>
+                                                        <span class="badge bg-success">45-55k €</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Développeur Frontend React</h5>
-                                            <p class="text-muted mb-2">TechCorp Solutions • Paris, France</p>
-                                            <p class="card-text mb-3">Rejoignez notre équipe pour développer des interfaces utilisateur modernes et intuitives avec React et TypeScript...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">React</span>
-                                                <span class="badge bg-primary">TypeScript</span>
-                                                <span class="badge bg-primary">CSS</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">45-55k €</span>
+                                        <div class="col-md-4 text-end">
+                                            <small class="text-muted">Publié il y a 2 jours</small>
+                                            <div class="mt-3">
+                                                <button class="btn btn-outline-primary btn-sm me-2" id="btn-detail-1" onclick="openJobDetails(1)">
+                                                    <i class="bi bi-eye me-1"></i>Voir détails
+                                                </button>
+
+                                                <button class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-send me-1"></i>Postuler
+                                                </button>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 2 jours</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(1)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Job Details (Hidden by default) -->
-                            <div class="job-details mt-4 d-none" id="details-1">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 23 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+3 en Informatique</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 2-4 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français, Anglais</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>React.js avancé</li>
-                                            <li><i class="bi bi-dot text-primary"></i>TypeScript</li>
-                                            <li><i class="bi bi-dot text-primary"></i>CSS/SCSS</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Git</li>
-                                        </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Suivant</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
-                    
-                    <!-- Job Card 2 -->
-                    <div class="card mb-3 job-card" data-job-id="2">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-success text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-briefcase"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Chef de Projet Digital</h5>
-                                            <p class="text-muted mb-2">DigitalAgency • Lyon, France</p>
-                                            <p class="card-text mb-3">Nous recherchons un chef de projet expérimenté pour piloter nos projets digitaux et coordonner les équipes...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">Gestion de projet</span>
-                                                <span class="badge bg-primary">Agile</span>
-                                                <span class="badge bg-primary">Digital</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">50-60k €</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 3 jours</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(2)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
+                    <div class="job-details d-none" id="jobDetailsPanel">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0" id="jobDetailsTitle">Détails de l'offre</h5>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="closeJobDetails(1)">
+                                    <i class="bi bi-x"></i>
+                                </button>
                             </div>
-                            
-                            <!-- Job Details -->
-                            <div class="job-details mt-4 d-none" id="details-2">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 25 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+5 en Management</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 5+ ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français, Anglais</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>Méthodologie Agile</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Outils de gestion de projet</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Leadership</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Communication</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job Card 3 -->
-                    <div class="card mb-3 job-card" data-job-id="3">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-warning text-dark rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-palette"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Designer UX/UI Senior</h5>
-                                            <p class="text-muted mb-2">CreativeStudio • Bordeaux, France</p>
-                                            <p class="card-text mb-3">Créez des expériences utilisateur exceptionnelles pour nos clients dans un environnement créatif et innovant...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">Figma</span>
-                                                <span class="badge bg-primary">Adobe Suite</span>
-                                                <span class="badge bg-primary">UI/UX</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">40-50k €</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 1 semaine</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(3)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Job Details -->
-                            <div class="job-details mt-4 d-none" id="details-3">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 24 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+3 en Design</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 3-5 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>Design thinking</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Prototypage</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Tests utilisateur</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Design system</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                            <div class="card-body" id="jobDetailsContent">
+                                <p class="text-muted">Sélectionnez une offre pour voir les détails.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Précédent</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Suivant</a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </main>
     </div>

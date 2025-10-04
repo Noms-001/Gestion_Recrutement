@@ -632,6 +632,42 @@ body {
     background-color: #f0f0f0;
 }
 
+#jobsRow {
+  display: flex;
+  position: relative;
+}
+
+.jobs-container {
+  flex: 1 1 auto;
+  min-width: 0; /* Permet au texte de se réduire proprement */
+  transition: flex-basis 0.4s ease-in-out;
+}
+
+.jobs-container.shrink {
+  flex-basis: 67%;
+}
+
+
+.job-details {
+  min-width: 0;
+  max-width: 0;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: max-width 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.job-details.open {
+  max-width: 400px; /* largeur finale */
+  transform: translateX(0);
+}
+
+.jobs-container,
+.job-details {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+
 /* Responsive */
 @media (max-width:768px){
     .sidebar { width:100%; transform:translateX(-100%); }
