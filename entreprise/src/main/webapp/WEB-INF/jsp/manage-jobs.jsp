@@ -76,10 +76,10 @@
                                         </div>
 
                                         <div class="col-md-2">
-                                            <select class="form-select" id="filterVille" name="ville">
-                                                <option value="">Ville</option>
-                                                <% for(Ville ville : villes) { %>
-                                                    <option value="<%= ville.getId() %>"><%= ville.getNom() %></option>
+                                            <select class="form-select" id="filterDepartement" name="departement">
+                                                <option value="">Département</option>
+                                                <% for(Departement dep : departements) { %>
+                                                    <option value="<%= dep.getId() %>"><%= dep.getNom() %></option>
                                                 <% } %>
                                             </select>
                                         </div>
@@ -110,7 +110,7 @@
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="annonceTableBody">
                                             <% for(Annonce annonce : annonces) { %>
                                                 <tr>
                                                     <td>
@@ -192,7 +192,7 @@
                                                 <!-- Titre du poste avec autocomplete -->
                                                 <div class="col-md-6 position-relative">
                                                     <label for="jobTitle" class="form-label">Titre du poste *</label>
-                                                    <input type="text" class="form-control" id="jobTitle" autocomplete="off" required placeholder="Ex: Développeur Java">
+                                                    <input type="text" class="form-control" id="jobTitle" autocomplete="off" name='poste' required placeholder="Ex: Développeur Java">
                                                     <div id="jobTitleList" class="autocomplete-list position-absolute w-100"></div>
                                                 </div>
 
@@ -363,12 +363,12 @@
                 id: "<%= session.getAttribute("id_utilisateur") %>",
                 poste: "<%= session.getAttribute("poste") %>"
             };
-                console.log("ok");
         </script>
         <script src="${pageContext.request.contextPath}/resources/js/manage-job.js"></script>
         <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
         <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
         <script>
+            console.log(currentUser);
             document.getElementById('btnFilter').addEventListener('click', function() {
                 const villeId = document.getElementById('filterVille').value;
                 const departementId = document.getElementById('filterDepartement').value;
