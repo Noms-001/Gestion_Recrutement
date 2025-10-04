@@ -1,22 +1,24 @@
 package com.example.entreprise.controller;
 
 import com.example.entreprise.dto.AnnonceDTO;
+import com.example.entreprise.dto.AnnonceDetailDTO;
+import com.example.entreprise.dto.CompetenceDTO;
+import com.example.entreprise.dto.LangueDTO;
 import com.example.entreprise.service.AnnonceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 
 @RestController
+@RequestMapping("/api/annonces")
 public class AnnonceRestController {
     @Autowired
     private AnnonceService annonceService;
 
-    @GetMapping("/api/annonces")
+    @GetMapping 
     public List<AnnonceDTO> filterAnnonces(
             @RequestParam(required = false) Long villeId,
             @RequestParam(required = false) Long departementId,
@@ -24,6 +26,23 @@ public class AnnonceRestController {
             @RequestParam(required = false) String status) {
 
         return annonceService.filter(villeId, departementId, poste, status);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AnnonceDetailDTO> getAnnonceDetail(@PathVariable Long id) {
+        Optional<AnnonceDetailDTO> annonce = annonceService.findAnnonceDetailById(id);
+        return annonce.map(ResponseEntity::ok)
+                     .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/competences")
+    public List<CompetenceDTO> getAnnonceCompetences(@PathVariable Long id) {
+        return annonceService.findCompetencesByAnnonceId(id);
+    }
+
+    @GetMapping("/{id}/langues")
+    public List<LangueDTO> getAnnonceLangues(@PathVariable Long id) {
+        return annonceService.findLanguesByAnnonceId(id);
     }
 
 }

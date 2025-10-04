@@ -167,93 +167,6 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
 
     <script>
-        function parseQCM(text) {
-            const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-            let questions = [], meta = { title: null, duration: null };
-            let currentQ = null;
-            let detectedQuestionRegex = null;
-            let detectedAnswerRegex = null;
-
-            const possibleQuestionRegexes = [
-                /^\d+\./, /^\d\s/, /^Q\d+[:\)]/, /^Question\s*n[°]?\s*\d+/i, /^[IVXLCDM]+\./i
-            ];
-            const possibleAnswerRegexes = [
-                /^[a-d]\)/i, /^\{\s*/, /^\-\s*/, /^R\d+/i
-            ];
-            meta.title = lines[0];
-
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                line = line.replace(/[◗❍]/g, '');
-
-                // Meta
-                if (!meta.title && /QCM|EXAMEN|Sujets/i.test(line)) meta.title = line;
-                if (!meta.duration && /durée|temps/i.test(line)) {
-                    const match = line.match(/(\d+)\s*(h|H|mn|minutes)?/);
-                    if (match) {
-                        let value = parseInt(match[1], 10);
-                        if (match[2] && /h/i.test(match[2])) value = value * 60;
-                        meta.duration = value;
-                    }
-                }
-
-                // Détection dynamique
-                if (!detectedQuestionRegex) {
-                    for (let qR of possibleQuestionRegexes) {
-                        if (qR.test(line)) {
-                            detectedQuestionRegex = qR;
-                            break;
-                        }
-                    }
-                }
-                if (!detectedAnswerRegex) {
-                    for (let aR of possibleAnswerRegexes) {
-                        if (aR.test(line)) {
-                            detectedAnswerRegex = aR;
-                            break;
-                        }
-                    }
-                }
-
-                // Cas 1 : question détectée
-                if (detectedQuestionRegex && detectedQuestionRegex.test(line)) {
-                    if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
-                    currentQ = { question: line.replace(detectedQuestionRegex, '').trim(), answers: [] };
-                    continue;
-                }
-
-                // Cas 2 : réponses détectées
-                if (detectedAnswerRegex && detectedAnswerRegex.test(line)) {
-                    if (!currentQ) currentQ = { question: lines[i - 1] || "", answers: [] };
-                    const splitted = line.split(/(?=[a-d]\))/i)
-                        .map(s => s.replace(detectedAnswerRegex, '').trim())
-                        .filter(s => s);
-                    currentQ.answers.push(...splitted);
-                    continue;
-                }
-
-                // Cas 3 : question sans regex mais finissant par ?
-                if (!detectedQuestionRegex && line.match(/[?]$/)) {
-                    if (currentQ) questions.push(currentQ);
-                    currentQ = { question: line.trim(), answers: [] };
-                    continue;
-                }
-
-                // Cas 4 : réponses sans regex
-                if (currentQ && !detectedAnswerRegex && i > 0) {
-                    const splitted = line.split(/(?=[a-d]\.|\(?[a-d]\))/i)
-                        .map(s => s.trim())
-                        .filter(s => s);
-                    if (splitted.length) currentQ.answers.push(...splitted);
-                }
-            }
-            if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
-            return { meta, questions };
-        }
-
-        // =======================
-        // Extraction PDF
-        // =======================
         async function extractTextFromPDF(file) {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -267,49 +180,112 @@
                 text.items.forEach(item => {
                     if (!item.str) return;
                     if (!item.transform || item.transform.length < 6) return;
-                    const y = item.transform[5].toFixed(2);
+                    const y = Math.round(item.transform[5]);
                     if (!linesMap[y]) linesMap[y] = [];
                     linesMap[y].push(item.str);
                 });
 
-                const sortedKeys = Object.keys(linesMap).map(k => parseFloat(k)).sort((a, b) => b - a);
+                const sortedKeys = Object.keys(linesMap).map(k => parseFloat(k)).sort((a,b)=>b-a);
                 sortedKeys.forEach(y => {
-                    if (linesMap[y]) textContent += linesMap[y].join(" ") + "\n";
+                    textContent += linesMap[y].join(" ") + "\n";
                 });
-
                 textContent += "\n";
             }
+
             return textContent;
+        }
+
+        function parseQCM(text) {
+            const lines = text.split("\n").map(l => l.trim()).filter(l => l.length>0);
+            let questions=[], meta={title:null,duration:null}, currentQ=null;
+            let inCorrection = false;
+            let correctionMap = {};
+
+            const questionRegex = /^\d+\.\s*(.*)/;
+            const answerRegex = /^([a-d])\)\s*(.*)/i;
+            const correctionRegex = /^(\d+)\.\s*([a-d])\)/i;
+
+            // Titre
+            meta.title = lines[0] || "Test QCM";
+
+            for(let i=0;i<lines.length;i++){
+                let line = lines[i];
+                // Détecte début de correction
+                if (/correction/i.test(line)) { inCorrection = true; continue; }
+
+                if(inCorrection){
+                    let cMatch = line.match(correctionRegex);
+                    if(cMatch){
+                        let qNum = parseInt(cMatch[1])-1; // index question
+                        let correctKey = cMatch[2].toLowerCase();
+                        correctionMap[qNum] = correctKey;
+                    }
+                    continue;
+                }
+
+                // Question
+                let qMatch = line.match(questionRegex);
+                if(qMatch){
+                    if(currentQ && currentQ.answers.length > 0) questions.push(currentQ);
+                    currentQ = { question: qMatch[1].trim(), answers: [] };
+                    continue;
+                }
+
+                // Réponse
+                let aMatch = line.match(answerRegex);
+                if(aMatch && currentQ){
+                    currentQ.answers.push({
+                        value: aMatch[2].trim(),
+                        key: aMatch[1].toLowerCase(),
+                        estCorrect:false
+                    });
+                    continue;
+                }
+
+                // Cas réponses multiples sur une seule ligne
+                if(currentQ && line.match(/[a-d]\)/i)){
+                    const splitted = line.split(/(?=[a-d]\))/i).map(s=>s.trim()).filter(s=>s);
+                    splitted.forEach(s=>{
+                        let m = s.match(answerRegex);
+                        if(m) currentQ.answers.push({value:m[2].trim(), key:m[1].toLowerCase(), estCorrect:false});
+                    });
+                }
+            }
+
+            if (currentQ && currentQ.answers.length > 0) questions.push(currentQ);
+
+            // Applique corrections
+            questions.forEach((q, idx)=>{
+                if(correctionMap[idx]){
+                    q.answers.forEach(a=>{
+                        if(a.key===correctionMap[idx]) a.estCorrect=true;
+                    });
+                }
+            });
+            return {meta, questions};
         }
 
         // =======================
         // Remplissage formulaire
         // =======================
-        function fillForm(parsed) {
-            // Titre
-            questionCount = 0;
+        function fillForm(parsed){
             document.getElementById('testTitle').value = parsed.meta.title;
-            // Durée
-            if (parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
+            if(parsed.meta.duration) document.getElementById('testDuration').value = parsed.meta.duration;
 
-            // Questions
             const container = document.getElementById('questionsContainer');
-            container.innerHTML = '';
-            // Réinitialiser les questions
-            container.innerHTML = '';
+            container.innerHTML='';
 
-            // Ajouter les questions avec leurs réponses
             parsed.questions.forEach(q => {
                 addQuestion(
-                    q.question,                              // énoncé
-                    q.answers.map(r => r),                   // réponses
-                    0,                                       // index ou param optionnel
-                    5                                        // points par défaut
+                    q.question,
+                    q.answers.map(a => a.value), // <-- on ne garde que le texte
+                    q.answers.findIndex(a => a.estCorrect), // <-- index de la bonne réponse
+                    5
                 );
             });
 
-            showToast("success", "PDF impoté avec succès !");
 
+            showToast("success","PDF importé avec succès !");
         }
 
         // =======================
@@ -318,18 +294,18 @@
         const fileInput = document.getElementById('fileInput');
         const importBtn = document.getElementById('importBtn');
 
-        importBtn.addEventListener('click', () => fileInput.click());
+        importBtn.addEventListener('click',()=>fileInput.click());
 
-        fileInput.addEventListener('change', async (evt) => {
+        fileInput.addEventListener('change', async (evt)=>{
             const file = evt.target.files[0];
-            if (!file) return;
-            try {
+            if(!file) return;
+            try{
                 const text = await extractTextFromPDF(file);
                 const parsed = parseQCM(text);
                 fillForm(parsed);
-            } catch (err) {
-                console.error("Erreur PDF :", err);
-                showToast("danger", "Erreur lors de la lecture du PDF.");
+            } catch(err){
+                console.error("Erreur PDF:", err);
+                showToast("danger","Erreur lors de la lecture du PDF.");
             }
         });
     </script>

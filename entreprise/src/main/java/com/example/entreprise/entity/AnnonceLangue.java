@@ -29,7 +29,7 @@ public class AnnonceLangue {
         this.annonce = annonce;
         this.langue = langue;
         this.estObligatoire = estObligatoire;
-        this.id = new AnnonceLangueId(annonce.getId(), Long.valueOf(langue.getId()));
+        this.id = new AnnonceLangueId(annonce.getId(), langue.getId());
     }
 
     // getters et setters

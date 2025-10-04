@@ -117,7 +117,6 @@
                                         <tr>
                                             <th>Poste</th>
                                             <th>Departement</th>
-                                            <th>Type</th>
                                             <th>Statut</th>
                                             <th>Candidatures</th>
                                             <th>Date de création</th>
@@ -126,16 +125,24 @@
                                         </tr>
                                     </thead>
                                     <tbody id="annonceTableBody">
-                                        <% for(Annonce annonce : annonces) { %>
+                                        <% int i = 0;
+                                        for(Annonce annonce : annonces) { 
+                                            String color = "bg-secondary";
+                                            if(i % 3 == 0) {
+                                                color = "bg-primary";
+                                            } else if(i % 3 == 1) {
+                                                color = "bg-info";
+                                            }
+                                            i++;
+                                            %>
                                             <tr>
                                                 <td>
                                                     <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
                                                     <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-primary"><%= annonce.getPoste().getDepartement().getNom() %></span>
+                                                    <span class="badge <%=color%>"><%= annonce.getPoste().getDepartement().getNom() %></span>
                                                 </td>
-                                                <td>CDI</td> <!-- ou autre type selon ton modèle -->
                                                 <td>
                                                     <% 
                                                         if(annonce.getFerme() != null && annonce.getFerme()) { %>
@@ -160,11 +167,14 @@
                                                                 Actions
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <li><a class="dropdown-item" href="#" onclick="editJobOffer(<%= annonce.getId() %>)"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                                                <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
-                                                                <hr class="dropdown-divider">
-                                                                <li><a class="dropdown-item" href="#"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
-                                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Supprimer</a></li>
+                                                                <% if(!annonce.getFerme()) { %>
+                                                                    <li><a class="dropdown-item" href="#" onclick="editJobOffer(<%= annonce.getId() %>)"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
+                                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
+                                                                    <hr class="dropdown-divider">
+                                                                    <li><a class="dropdown-item" href="#" onclick="closeJobOffer(<%= annonce.getId() %>)"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
+                                                                <% } else { %>
+                                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
+                                                                <% } %>
                                                             </ul>
                                                         </div>
                                                     </td>
@@ -194,9 +204,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="needs-validation" method="post" action="${pageContext.request.contextPath}/annonces/create">
+                    <form class="needs-validation" id="annonceForm" method="post" action="${pageContext.request.contextPath}/annonces/create">
                         <div class="row">
                             <div class="col-md-8">
+                                <input type="hidden" id="annonceId" name="id">
                                 <!-- Basic Information -->
                                 <div class="card border-0 bg-light mb-4">
                                     <div class="card-header bg-primary text-white">
@@ -417,89 +428,6 @@
     <script src="${pageContext.request.contextPath}/resources/js/manage-job.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
-    <script>
-        console.log(currentUser);
-        document.getElementById('btnFilter').addEventListener('click', function() {
-            const villeId = document.getElementById('filterVille').value;
-            const departementId = document.getElementById('filterDepartement').value;
-            const poste = document.getElementById('filterPoste').value;
-            const status = document.getElementById('filterStatus').value;
-
-            // Construire l'URL avec query params
-            const params = new URLSearchParams();
-            if(villeId) params.append('villeId', villeId);
-            if(departementId) params.append('departementId', departementId);
-            if(poste) params.append('poste', poste);
-            if(status) params.append('status', status);
-
-            fetch(`${window.location.origin}/api/annonces?villeId=${villeId}&departementId=${departementId}&poste=${poste}&status=${status}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    updateAnnonceTable(data);
-                })
-                .catch(error => console.error('Erreur fetch annonces:', error));
-        });
-        function updateAnnonceTable(annonces) {
-            const tbody = document.getElementById('annonceTableBody');
-            tbody.innerHTML = ''; // vider l'ancien contenu
-
-            let rowIndex = 0;
-            annonces.forEach(annonce => {
-                let badgeColor = '';
-                switch (rowIndex % 3) {
-                    case 0: badgeColor = 'bg-primary'; break;
-                    case 1: badgeColor = 'bg-info'; break;
-                    case 2: badgeColor = 'bg-secondary'; break;
-                }
-                rowIndex++;
-
-                let statusBadge = '';
-                if (annonce.ferme) {
-                    statusBadge = '<span class="badge bg-dark">Fermée</span>';
-                } else if (annonce.dateLimite && new Date(annonce.dateLimite) < new Date()) {
-                    statusBadge = '<span class="badge bg-danger">Expirée</span>';
-                } else {
-                    statusBadge = '<span class="badge bg-success">Active</span>';
-                }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>
-                            <div class="fw-medium">${annonce.posteLibelle || ''}</div>
-                            <small class="text-muted">
-                                ${annonce.anneeExperience ? annonce.anneeExperience + ' ans' : ''} 
-                                • ${annonce.villeNom || ''}
-                            </small>
-                        </td>
-                        <td><span class="badge ${badgeColor}">${annonce.departementNom || ''}</span></td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <div class="fw-bold">${annonce.candidaturesCount}</div>
-                            <small class="text-muted">candidatures</small>
-                        </td>
-                        <td>${annonce.dateCreation || ''}</td>
-                        <td>${annonce.dateLimite || ''}</td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    Actions
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" onclick="editJobOffer(${annonce.id})"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
-                                    <hr class="dropdown-divider">
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
-                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Supprimer</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-    </script>
 </body>
 
 </html>

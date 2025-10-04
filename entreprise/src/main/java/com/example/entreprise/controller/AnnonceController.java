@@ -1,23 +1,37 @@
 package com.example.entreprise.controller;
 
 import com.example.entreprise.service.AnnonceService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.*;
 
 @Controller
+@RequestMapping("/annonces")
 public class AnnonceController {
 
     @Autowired
     private AnnonceService annonceService;
 
-    @PostMapping("/annonces/create")
+    // Dans AnnonceController.java
+    @PostMapping("/close")
+    public String closeAnnonce(
+            @RequestParam Long id,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            annonceService.closeAnnonce(id);
+            redirectAttributes.addFlashAttribute("success", "Annonce fermée avec succès!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de la fermeture: " + e.getMessage());
+        }
+
+        return "redirect:/manage-jobs";
+    }
+
+    @PostMapping("/create")
     public String createAnnonce(
             @RequestParam(value = "poste", required = true) String posteLibelle,
             @RequestParam(value = "filiere", required = true) Long filiereId,
@@ -34,9 +48,9 @@ public class AnnonceController {
             @RequestParam(value = "diplome", required = false) Long diplomeId,
             @RequestParam(value = "diplomeObligatoire", required = false) Boolean diplomeObligatoire,
             @RequestParam(value = "urgent", required = false) Boolean urgent,
-            @RequestParam(value = "competences[]", required = false) Long[] competencesIds,
+            @RequestParam(value = "competences[]", required = false) Long[] competences,
             @RequestParam(value = "competencesObligatoires[]", required = false) Boolean[] competencesObligatoires,
-            @RequestParam(value = "langues[]", required = false) Long[] languesIds,
+            @RequestParam(value = "langues[]", required = false) Long[] langues,
             @RequestParam(value = "languesObligatoires[]", required = false) Boolean[] languesObligatoires,
             @RequestParam("departement") Long departementId,
             RedirectAttributes redirectAttributes) {
@@ -67,9 +81,9 @@ public class AnnonceController {
                     diplomeId,
                     diplomeObligatoire,
                     urgent,
-                    competencesIds != null ? Arrays.asList(competencesIds) : null,
+                    competences != null ? Arrays.asList(competences) : null,
                     competencesObligatoires != null ? Arrays.asList(competencesObligatoires) : null,
-                    languesIds != null ? Arrays.asList(languesIds) : null,
+                    langues != null ? Arrays.asList(langues) : null,
                     languesObligatoires != null ? Arrays.asList(languesObligatoires) : null,
                     departementId);
 
@@ -78,6 +92,50 @@ public class AnnonceController {
             redirectAttributes.addFlashAttribute("error",
                     "Erreur lors de la création de l'annonce : " + e.getMessage());
             e.printStackTrace();
+        }
+
+        return "redirect:/manage-jobs";
+    }
+
+    @PostMapping("/update")
+    public String updateAnnonce(
+            @RequestParam Long id,
+            @RequestParam String poste,
+            @RequestParam Long filiere,
+            @RequestParam Long test,
+            @RequestParam String dateLimite,
+            @RequestParam String description,
+            @RequestParam(required = false) Integer age,
+            @RequestParam(required = false, defaultValue = "false") Boolean ageObligatoire,
+            @RequestParam(required = false) Integer anneeExperience,
+            @RequestParam(required = false, defaultValue = "false") Boolean experienceObligatoire,
+            @RequestParam(required = false) Long ville,
+            @RequestParam(required = false, defaultValue = "false") Boolean villeObligatoire,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false, defaultValue = "false") Boolean genreObligatoire,
+            @RequestParam(required = false) Long diplome,
+            @RequestParam(required = false, defaultValue = "false") Boolean diplomeObligatoire,
+            @RequestParam(required = false, defaultValue = "false") Boolean urgent,
+            @RequestParam(required = false) List<Long> competences,
+            @RequestParam(required = false) List<Boolean> competencesObligatoires,
+            @RequestParam(required = false) List<Long> langues,
+            @RequestParam(required = false) List<Boolean> languesObligatoires,
+            @RequestParam Long departement,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            annonceService.updateAnnonce(
+                    id, poste, filiere, test, LocalDate.parse(dateLimite), description,
+                    age, ageObligatoire, anneeExperience, experienceObligatoire,
+                    ville, villeObligatoire, genre, genreObligatoire,
+                    diplome, diplomeObligatoire, urgent,
+                    competences, competencesObligatoires,
+                    langues, languesObligatoires,
+                    departement);
+
+            redirectAttributes.addFlashAttribute("success", "Annonce modifiée avec succès!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de la modification: " + e.getMessage());
         }
 
         return "redirect:/manage-jobs";
