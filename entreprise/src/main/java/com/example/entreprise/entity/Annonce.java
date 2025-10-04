@@ -20,55 +20,77 @@ public class Annonce {
     private LocalDate dateCreation;
 
     private String description;
+    
     @Column(name = "annee_experience")
     private Integer anneeExperience;
+    
     private Integer age;
     private Boolean urgent = false;
     private Boolean ferme = false;
 
     @Column(name = "age_obligatoire")
     private Boolean ageObligatoire = false;
+    
     @Column(name = "diplome_obligatoire")
     private Boolean diplomeObligatoire = false;
+    
     @Column(name = "experience_obligatoire")
     private Boolean experienceObligatoire = false;
+    
     @Column(name = "genre_obligatoire")
     private Boolean genreObligatoire = false;
+    
     @Column(name = "ville_obligatoire")
     private Boolean villeObligatoire = false;
 
-    @ManyToOne
+    // Relations avec FetchType.LAZY pour éviter les problèmes
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_diplome")
     private Diplome diplome;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_genre")
     private Genre genre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ville")
     private Ville ville;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_filiere", nullable = false)
     private Filiere filiere;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_test", nullable = false)
     private Test test;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_poste", nullable = false)
     private Poste poste;
 
-    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Collections avec FetchType.LAZY et List (pas besoin de Set)
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Candidature> candidatures;
 
-    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AnnonceCompetence> competences;
 
-    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AnnonceLangue> langues;
+
+    // Constructeurs
+    public Annonce() {
+        this.dateCreation = LocalDate.now();
+    }
+
+    public Annonce(String description, Poste poste, Ville ville) {
+        this();
+        this.description = description;
+        this.poste = poste;
+        this.ville = ville;
+        this.ferme = false;
+        this.urgent = false;
+    }
 
     // Getters & Setters
     public Long getId() {
@@ -245,5 +267,49 @@ public class Annonce {
 
     public void setLangues(List<AnnonceLangue> langues) {
         this.langues = langues;
+    }
+}
+    public List<AnnonceLangue> getLangues() { return langues; }
+    public void setLangues(List<AnnonceLangue> langues) { this.langues = langues; }
+
+    // Méthodes utilitaires
+    public void addCompetence(AnnonceCompetence annonceCompetence) {
+        this.competences.add(annonceCompetence);
+        annonceCompetence.setAnnonce(this);
+    }
+
+    public void removeCompetence(AnnonceCompetence annonceCompetence) {
+        this.competences.remove(annonceCompetence);
+        annonceCompetence.setAnnonce(null);
+    }
+
+    public void addLangue(AnnonceLangue annonceLangue) {
+        this.langues.add(annonceLangue);
+        annonceLangue.setAnnonce(this);
+    }
+
+    public void removeLangue(AnnonceLangue annonceLangue) {
+        this.langues.remove(annonceLangue);
+        annonceLangue.setAnnonce(null);
+    }
+
+    public void addCandidature(Candidature candidature) {
+        this.candidatures.add(candidature);
+        candidature.setAnnonce(this);
+    }
+
+    public void removeCandidature(Candidature candidature) {
+        this.candidatures.remove(candidature);
+        candidature.setAnnonce(null);
+    }
+
+    // Méthode pour vérifier si l'annonce est expirée
+    public boolean isExpired() {
+        return dateLimite != null && LocalDate.now().isAfter(dateLimite);
+    }
+
+    // Méthode pour vérifier si l'annonce est active
+    public boolean isActive() {
+        return !ferme && !isExpired();
     }
 }

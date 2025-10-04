@@ -2,16 +2,38 @@
 package com.example.entreprise.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class AnnonceDTO {
     public Long id;
     public String posteLibelle;
     public String departementNom;
     public String villeNom;
+    public String description;
     public Boolean ferme;
     public LocalDate dateLimite;
     public Integer anneeExperience;
     public int candidaturesCount;
-    public String typeContrat; // si tu veux
     public LocalDate dateCreation;
+    public List<String> competences;
+    public List<String> langues;
+    
+    // Critères obligatoires
+    public Boolean diplomeObligatoire;
+    public String diplomeLibelle;
+    public Double diplomeNiveau;
+    
+    public Boolean ageObligatoire;
+    public Integer ageMinimum;
+    
+    public Boolean experienceObligatoire;
+    
+    public Boolean genreObligatoire;
+    public String genreLibelle;
+    
+    public Boolean villeObligatoire;
+    
+    // Compétences et langues obligatoires
+    public List<String> competencesObligatoires;
+    public List<String> languesObligatoires;
 }

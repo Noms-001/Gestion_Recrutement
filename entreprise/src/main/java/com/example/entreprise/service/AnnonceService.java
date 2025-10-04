@@ -4,6 +4,7 @@ import com.example.entreprise.entity.*;
 import com.example.entreprise.dto.*;
 import com.example.entreprise.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
@@ -437,4 +438,124 @@ public class AnnonceService {
             annonceRepository.save(annonce);
         });
     }
+}
+    @Transactional(readOnly = true)
+    public List<AnnonceDTO> getAllAnnonces() {
+        List<Annonce> annonces = repository.findAllActiveAnnonces();
+
+        return annonces.stream().map(annonce -> {
+            AnnonceDTO dto = new AnnonceDTO();
+
+            // Informations de base
+            dto.id = annonce.getId();
+            dto.posteLibelle = annonce.getPoste() != null ? annonce.getPoste().getLibelle() : "Poste non spécifié";
+            dto.departementNom = annonce.getPoste() != null && annonce.getPoste().getDepartement() != null
+                    ? annonce.getPoste().getDepartement().getNom()
+                    : "Département non spécifié";
+            dto.villeNom = annonce.getVille() != null ? annonce.getVille().getNom() : "Lieu non spécifié";
+            dto.description = annonce.getDescription();
+            dto.ferme = annonce.getFerme();
+            dto.dateLimite = annonce.getDateLimite();
+            dto.anneeExperience = annonce.getAnneeExperience();
+            dto.candidaturesCount = annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0;
+            dto.dateCreation = annonce.getDateCreation();
+
+            // Critères obligatoires
+            dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
+            dto.diplomeLibelle = annonce.getDiplome() != null ? annonce.getDiplome().getLibelle() : null;
+            dto.diplomeNiveau = annonce.getDiplome() != null ? annonce.getDiplome().getNiveau() : null;
+            dto.ageObligatoire = annonce.getAgeObligatoire();
+            dto.ageMinimum = annonce.getAge();
+            dto.experienceObligatoire = annonce.getExperienceObligatoire();
+            dto.genreObligatoire = annonce.getGenreObligatoire();
+            dto.genreLibelle = annonce.getGenre() != null ? annonce.getGenre().getLibelle() : null;
+            dto.villeObligatoire = annonce.getVilleObligatoire();
+
+            // Compétences et langues (chargées en lazy)
+            if (annonce.getCompetences() != null) {
+                dto.competences = annonce.getCompetences().stream()
+                        .map(annonceCompetence -> annonceCompetence.getCompetence().getLibelle())
+                        .collect(Collectors.toList());
+
+                dto.competencesObligatoires = annonce.getCompetences().stream()
+                        .filter(AnnonceCompetence::isEstObligatoire)
+                        .map(annonceCompetence -> annonceCompetence.getCompetence().getLibelle())
+                        .collect(Collectors.toList());
+            }
+
+            if (annonce.getLangues() != null) {
+                dto.langues = annonce.getLangues().stream()
+                        .map(annonceLangue -> annonceLangue.getLangue().getLibelle())
+                        .collect(Collectors.toList());
+
+                dto.languesObligatoires = annonce.getLangues().stream()
+                        .filter(AnnonceLangue::isEstObligatoire)
+                        .map(annonceLangue -> annonceLangue.getLangue().getLibelle())
+                        .collect(Collectors.toList());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AnnonceDTO getAnnonceById(Long id) {
+        return repository.findByIdWithCompetences(id)
+                .map(annonce -> {
+                    AnnonceDTO dto = new AnnonceDTO();
+
+                    // Informations de base
+                    dto.id = annonce.getId();
+                    dto.posteLibelle = annonce.getPoste() != null ? annonce.getPoste().getLibelle() : "Poste non spécifié";
+                    dto.departementNom = annonce.getPoste() != null && annonce.getPoste().getDepartement() != null
+                            ? annonce.getPoste().getDepartement().getNom()
+                            : "Département non spécifié";
+                    dto.villeNom = annonce.getVille() != null ? annonce.getVille().getNom() : "Lieu non spécifié";
+                    dto.description = annonce.getDescription();
+                    dto.ferme = annonce.getFerme();
+                    dto.dateLimite = annonce.getDateLimite();
+                    dto.anneeExperience = annonce.getAnneeExperience();
+                    dto.candidaturesCount = annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0;
+                    dto.dateCreation = annonce.getDateCreation();
+
+                    // Critères obligatoires
+                    dto.diplomeObligatoire = annonce.getDiplomeObligatoire();
+                    dto.diplomeLibelle = annonce.getDiplome() != null ? annonce.getDiplome().getLibelle() : null;
+                    dto.diplomeNiveau = annonce.getDiplome() != null ? annonce.getDiplome().getNiveau() : null;
+                    dto.ageObligatoire = annonce.getAgeObligatoire();
+                    dto.ageMinimum = annonce.getAge();
+                    dto.experienceObligatoire = annonce.getExperienceObligatoire();
+                    dto.genreObligatoire = annonce.getGenreObligatoire();
+                    dto.genreLibelle = annonce.getGenre() != null ? annonce.getGenre().getLibelle() : null;
+                    dto.villeObligatoire = annonce.getVilleObligatoire();
+
+                    // Compétences (déjà chargées avec la requête)
+                    if (annonce.getCompetences() != null) {
+                        dto.competences = annonce.getCompetences().stream()
+                                .map(annonceCompetence -> annonceCompetence.getCompetence().getLibelle())
+                                .collect(Collectors.toList());
+
+                        dto.competencesObligatoires = annonce.getCompetences().stream()
+                                .filter(AnnonceCompetence::isEstObligatoire)
+                                .map(annonceCompetence -> annonceCompetence.getCompetence().getLibelle())
+                                .collect(Collectors.toList());
+                    }
+
+                    // Langues (chargées en lazy)
+                    if (annonce.getLangues() != null) {
+                        dto.langues = annonce.getLangues().stream()
+                                .map(annonceLangue -> annonceLangue.getLangue().getLibelle())
+                                .collect(Collectors.toList());
+
+                        dto.languesObligatoires = annonce.getLangues().stream()
+                                .filter(AnnonceLangue::isEstObligatoire)
+                                .map(annonceLangue -> annonceLangue.getLangue().getLibelle())
+                                .collect(Collectors.toList());
+                    }
+
+                    return dto;
+                })
+                .orElse(null);
+    }
+
 }

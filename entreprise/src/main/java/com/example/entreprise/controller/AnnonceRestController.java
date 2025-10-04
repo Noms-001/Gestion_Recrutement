@@ -36,13 +36,21 @@ public class AnnonceRestController {
     }
 
     @GetMapping("/{id}/competences")
-    public List<CompetenceDTO> getAnnonceCompetences(@PathVariable Long id) {
         return annonceService.findCompetencesByAnnonceId(id);
     }
 
     @GetMapping("/{id}/langues")
     public List<LangueDTO> getAnnonceLangues(@PathVariable Long id) {
         return annonceService.findLanguesByAnnonceId(id);
+
+    @GetMapping("/api/annonces/{id}")
+    public ResponseEntity<AnnonceDTO> getAnnonceDetails(@PathVariable Long id) {
+        AnnonceDTO annonce = annonceService.getAnnonceById(id);
+        if (annonce != null) {
+            return ResponseEntity.ok(annonce);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

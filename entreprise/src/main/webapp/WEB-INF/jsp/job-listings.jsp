@@ -3,6 +3,18 @@
     response.sendRedirect("/");
 } %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.example.entreprise.dto.AnnonceDTO" %>
+<%@ page import="com.example.entreprise.entity.*" %>
+
+<%
+    List<AnnonceDTO> annonces = (List<AnnonceDTO>) request.getAttribute("annonces");
+    List<Competence> competences = (List<Competence>) request.getAttribute("competences");
+    List<Langue> langues = (List<Langue>) request.getAttribute("langues");
+    List<Ville> villes = (List<Ville>) request.getAttribute("villes");
+    List<Diplome> diplomes = (List<Diplome>) request.getAttribute("diplomes");
+
+%>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,8 +46,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#">Date de publication</a></li>
-                                <li><a class="dropdown-item" href="#">Salaire</a></li>
-                                <li><a class="dropdown-item" href="#">Pertinence</a></li>
+                                <li><a class="dropdown-item" href="#">Urgent</a></li>
                             </ul>
                         </div>
                     </div>
@@ -45,11 +56,8 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control form-control-lg" placeholder="Rechercher un poste, une entreprise...">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-lg" placeholder="Ville, région...">
+                            <div class="col-md-10">
+                                <input type="text" class="form-control form-control-lg" placeholder="Rechercher un poste, un département, une ville...">
                             </div>
                             <div class="col-md-2">
                                 <button class="btn btn-primary btn-lg w-100">
@@ -59,219 +67,115 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Jobs List -->
-                <div id="jobsList">
-                    <!-- Job Card 1 -->
-                    <div class="card mb-3 job-card" data-job-id="1">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-building"></i>
+                <div class="row flex-nowrap" id="jobsRow">
+                    <div class="jobs-container" id="jobsContainer">
+                        <!-- Jobs List -->
+                        <div id="jobsList">
+                            <!-- Job Cards dynamiques -->
+                            <% if (annonces != null && !annonces.isEmpty()) { %>
+                                <% for (AnnonceDTO annonce : annonces) { %>
+                                    <div class="card mb-3 job-card" data-job-id="<%= annonce.id %>">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="d-flex align-items-start">
+                                                        <div class="company-logo me-3">
+                                                            <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                                <i class="bi bi-building"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h5 class="card-title mb-1"><%= annonce.posteLibelle %></h5>
+                                                            <p class="text-muted mb-2"><%= annonce.departementNom %> • <%= annonce.villeNom %></p>
+                                                            <p class="card-text mb-3">
+                                                                <% 
+                                                                    String description = annonce.description != null ? annonce.description : "";
+                                                                    if (description.length() > 150) {
+                                                                        description = description.substring(0, 150) + "...";
+                                                                    }
+                                                                %>
+                                                                <%= description %>
+                                                            </p>
+                                                            <div class="d-flex flex-wrap gap-2">
+                                                                <!-- Compétences -->
+                                                                <% if (annonce.competences != null) { %>
+                                                                    <% for (String competence : annonce.competences) { %>
+                                                                        <span class="badge bg-primary"><%= competence %></span>
+                                                                    <% } %>
+                                                                <% } %>
+                                                                
+                                                                <!-- Langues -->
+                                                                <% if (annonce.langues != null) { %>
+                                                                    <% for (String langue : annonce.langues) { %>
+                                                                        <span class="badge bg-info"><%= langue %></span>
+                                                                    <% } %>
+                                                                <% } %>
+                                                                
+                                                                <!-- Expérience -->
+                                                                <% if (annonce.anneeExperience != null && annonce.anneeExperience > 0) { %>
+                                                                    <span class="badge bg-warning"><%= annonce.anneeExperience %> an(s) exp.</span>
+                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-end">
+                                                    <!-- Calcul du temps écoulé -->
+                                                    <small class="text-muted date-creation" 
+                                                        data-date-creation="<%= annonce.dateCreation != null ? annonce.dateCreation.toString() : "" %>">
+                                                        Chargement...
+                                                    </small>
+                                                    <div class="mt-3 d-flex justify-content-end">
+                                                        <button class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
+                                                            <i class="bi bi-eye me-1"></i>Voir détails
+                                                        </button>
+                                                        <button class="btn btn-primary btn-sm btn-postuler">
+                                                            <i class="bi bi-send me-1"></i>Postuler
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Développeur Frontend React</h5>
-                                            <p class="text-muted mb-2">TechCorp Solutions • Paris, France</p>
-                                            <p class="card-text mb-3">Rejoignez notre équipe pour développer des interfaces utilisateur modernes et intuitives avec React et TypeScript...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">React</span>
-                                                <span class="badge bg-primary">TypeScript</span>
-                                                <span class="badge bg-primary">CSS</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">45-55k €</span>
-                                            </div>
-                                        </div>
                                     </div>
+                                <% } %>
+                            <% } else { %>
+                                <div class="alert alert-info">
+                                    Aucune annonce disponible pour le moment.
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 2 jours</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(1)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Job Details (Hidden by default) -->
-                            <div class="job-details mt-4 d-none" id="details-1">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 23 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+3 en Informatique</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 2-4 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français, Anglais</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>React.js avancé</li>
-                                            <li><i class="bi bi-dot text-primary"></i>TypeScript</li>
-                                            <li><i class="bi bi-dot text-primary"></i>CSS/SCSS</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Git</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            <% } %>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Suivant</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                     
-                    <!-- Job Card 2 -->
-                    <div class="card mb-3 job-card" data-job-id="2">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-success text-white rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-briefcase"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Chef de Projet Digital</h5>
-                                            <p class="text-muted mb-2">DigitalAgency • Lyon, France</p>
-                                            <p class="card-text mb-3">Nous recherchons un chef de projet expérimenté pour piloter nos projets digitaux et coordonner les équipes...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">Gestion de projet</span>
-                                                <span class="badge bg-primary">Agile</span>
-                                                <span class="badge bg-primary">Digital</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">50-60k €</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 3 jours</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(2)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
+                    <!-- Détails de l'annonce -->
+                    <div class="job-details d-none" id="jobDetailsPanel">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0" id="jobDetailsTitle">Détails de l'offre</h5>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="closeJobDetails()">
+                                    <i class="bi bi-x"></i>
+                                </button>
                             </div>
-                            
-                            <!-- Job Details -->
-                            <div class="job-details mt-4 d-none" id="details-2">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 25 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+5 en Management</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 5+ ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français, Anglais</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>Méthodologie Agile</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Outils de gestion de projet</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Leadership</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Communication</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Job Card 3 -->
-                    <div class="card mb-3 job-card" data-job-id="3">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-start">
-                                        <div class="company-logo me-3">
-                                            <div class="bg-warning text-dark rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                <i class="bi bi-palette"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1">Designer UX/UI Senior</h5>
-                                            <p class="text-muted mb-2">CreativeStudio • Bordeaux, France</p>
-                                            <p class="card-text mb-3">Créez des expériences utilisateur exceptionnelles pour nos clients dans un environnement créatif et innovant...</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                <span class="badge bg-primary">Figma</span>
-                                                <span class="badge bg-primary">Adobe Suite</span>
-                                                <span class="badge bg-primary">UI/UX</span>
-                                                <span class="badge bg-secondary">CDI</span>
-                                                <span class="badge bg-success">40-50k €</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <small class="text-muted">Publié il y a 1 semaine</small>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm me-2" onclick="toggleJobDetails(3)">
-                                            <i class="bi bi-eye me-1"></i>Voir détails
-                                        </button>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-send me-1"></i>Postuler
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Job Details -->
-                            <div class="job-details mt-4 d-none" id="details-3">
-                                <hr>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Critères requis</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Âge minimum: 24 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Diplôme: Bac+3 en Design</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Expérience: 3-5 ans</li>
-                                            <li><i class="bi bi-check-circle text-success me-2"></i>Langues: Français</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="fw-bold">Compétences techniques</h6>
-                                        <ul class="list-unstyled">
-                                            <li><i class="bi bi-dot text-primary"></i>Design thinking</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Prototypage</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Tests utilisateur</li>
-                                            <li><i class="bi bi-dot text-primary"></i>Design system</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                            <div class="card-body" id="jobDetailsContent">
+                                <p class="text-muted">Sélectionnez une offre pour voir les détails.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Précédent</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Suivant</a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </main>
     </div>
@@ -284,73 +188,73 @@
         </div>
         <div class="offcanvas-body">
             <form>
+                <!-- Villes -->
                 <div class="mb-4">
                     <label for="cityFilter" class="form-label fw-semibold">Ville</label>
-                    <select class="form-select" id="cityFilter" multiple>
-                        <option value="paris">Paris</option>
-                        <option value="lyon">Lyon</option>
-                        <option value="marseille">Marseille</option>
-                        <option value="toulouse">Toulouse</option>
-                        <option value="bordeaux">Bordeaux</option>
+                    <select class="form-select" id="cityFilter">
+                        <option value="">Selectionnez des villes</option>
+                        <% if(villes != null) { 
+                            for(Ville ville : villes) {  %>
+                            <option value="<%= ville.getId() %>"><%= ville.getNom() %></option>
+                            <% } 
+                        } %>
                     </select>
+                    <div id="cityTags" class="mt-2"></div>
                 </div>
-                
+
+                <!-- Diplôme -->
                 <div class="mb-4">
                     <label for="diplomeFilter" class="form-label fw-semibold">Diplôme minimum</label>
                     <select class="form-select" id="diplomeFilter">
                         <option value="">Tous les diplômes</option>
-                        <option value="bac">Baccalauréat</option>
-                        <option value="bac+2">Bac+2</option>
-                        <option value="bac+3">Bac+3</option>
-                        <option value="bac+5">Bac+5</option>
+                        <% if(diplomes != null) { 
+                            for(Diplome diplome : diplomes) {  %>
+                            <option value="<%= diplome.getId() %>"><%= diplome.getLibelle() %></option>
+                            <% } 
+                        } %>
                     </select>
                 </div>
-                
+
+                <!-- Expérience -->
                 <div class="mb-4">
                     <label for="experienceFilter" class="form-label fw-semibold">Années d'expérience</label>
+                    <div id="experienceValue" class="fw-bold text-primary mb-2">2 ans</div>
                     <input type="range" class="form-range" min="0" max="10" value="2" id="experienceFilter">
                     <div class="d-flex justify-content-between">
                         <span>0 an</span>
                         <span>10+ ans</span>
                     </div>
                 </div>
-                
+
+                <!-- Compétences -->
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Compétences</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="react" id="skillReact">
-                        <label class="form-check-label" for="skillReact">React</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="js" id="skillJS">
-                        <label class="form-check-label" for="skillJS">JavaScript</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="python" id="skillPython">
-                        <label class="form-check-label" for="skillPython">Python</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="design" id="skillDesign">
-                        <label class="form-check-label" for="skillDesign">Design</label>
-                    </div>
+                    <label for="skillsFilter" class="form-label fw-semibold">Compétences</label>
+                    <select class="form-select" id="skillsFilter">
+                        <option value="">Selectionner des compétences</option>
+                        <% if(competences != null) { 
+                            for(Competence competence : competences) {  %>
+                            <option value="<%= competence.getId() %>"><%= competence.getLibelle() %></option>
+                            <% } 
+                        } %>
+                    </select>
+                    <div id="skillsTags" class="mt-2"></div>
                 </div>
-                
+
+                <!-- Langues -->
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Langues</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="francais" id="langFR">
-                        <label class="form-check-label" for="langFR">Français</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="anglais" id="langEN">
-                        <label class="form-check-label" for="langEN">Anglais</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="espagnol" id="langES">
-                        <label class="form-check-label" for="langES">Espagnol</label>
-                    </div>
+                    <label for="langsFilter" class="form-label fw-semibold">Langues</label>
+                    <select class="form-select" id="langsFilter">
+                        <option value="">Selectionner des langues</option>
+                        <% if(langues != null) { 
+                            for(Langue langue : langues) {  %>
+                            <option value="<%= langue.getId() %>"><%= langue.getLibelle() %></option>
+                            <% } 
+                        } %>
+                    </select>
+                    <div id="langsTags" class="mt-2"></div>
                 </div>
-                
+
+                <!-- Boutons -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
                     <button type="reset" class="btn btn-outline-secondary">Réinitialiser</button>
@@ -370,7 +274,8 @@
             poste: "<%= session.getAttribute("poste") %>"
         };
     </script>
-<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/job-list.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/system-tag.js"></script>
 </body>
 </html>

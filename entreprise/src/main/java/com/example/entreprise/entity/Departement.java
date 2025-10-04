@@ -17,10 +17,27 @@ public class Departement {
     private List<Poste> postes;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
-    public List<Poste> getPostes() { return postes; }
-    public void setPostes(List<Poste> postes) { this.postes = postes; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public List<Poste> getPostes() {
+        return postes;
+    }
+
+    public void setPostes(List<Poste> postes) {
+        this.postes = postes;
+    }
 }

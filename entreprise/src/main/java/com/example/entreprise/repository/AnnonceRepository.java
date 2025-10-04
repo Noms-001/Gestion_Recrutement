@@ -28,5 +28,36 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
     Optional<Annonce> findByIdWithDetails(@Param("id") Long id);
     
     List<Annonce> findByPosteId(Long posteId);
+
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "WHERE a.ferme = false " +
+           "ORDER BY a.dateCreation DESC")
+    List<Annonce> findAllActiveAnnonces();
+    
+    // Charger une annonce spécifique avec toutes les relations (pour les détails)
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "LEFT JOIN FETCH a.competences ac " +
+           "LEFT JOIN FETCH ac.competence " +
+           "WHERE a.id = :id AND a.ferme = false")
+    Optional<Annonce> findByIdWithCompetences(@Param("id") Long id);
+    
+    // Alternative: charger une annonce avec langues
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " + // JUSTE AJOUTÉ ICI
+           "LEFT JOIN FETCH a.langues al " +
+           "LEFT JOIN FETCH al.langue " +
+           "WHERE a.id = :id AND a.ferme = false")
+    Optional<Annonce> findByIdWithLangues(@Param("id") Long id);
 }
 

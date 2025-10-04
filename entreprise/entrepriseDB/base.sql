@@ -7,4 +7,3 @@ COLLATE utf8mb4_unicode_ci;
 
 -- Utilise la nouvelle base de données
 USE entrepriseDB; 
-
