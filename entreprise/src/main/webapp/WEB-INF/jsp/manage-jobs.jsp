@@ -90,22 +90,6 @@
                                         </select>
                                     </div>
 
-<<<<<<< Updated upstream
-                                        <div class="col-md-2">
-                                            <select class="form-select" id="filterDepartement" name="departement">
-                                                <option value="">Département</option>
-                                                <% for(Departement dep : departements) { %>
-                                                    <option value="<%= dep.getId() %>"><%= dep.getNom() %></option>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button class="btn btn-primary w-100" id="btnFilter">
-                                                <i class="bi bi-funnel me-1"></i>
-                                                Filtrer
-                                            </button>
-                                        </div>
-=======
                                     <div class="col-md-2">
                                         <select class="form-select" id="filterDepartement" name="departement">
                                             <option value="">Département</option>
@@ -119,7 +103,6 @@
                                             <i class="bi bi-funnel me-1"></i>
                                             Filtrer
                                         </button>
->>>>>>> Stashed changes
                                     </div>
                                 </div>
                             </div>
@@ -145,24 +128,6 @@
                                     <tbody id="annonceTableBody">
                                         <% for(Annonce annonce : annonces) { %>
                                             <tr>
-<<<<<<< Updated upstream
-                                                <th>Poste</th>
-                                                <th>Departement</th>
-                                                <th>Type</th>
-                                                <th>Statut</th>
-                                                <th>Candidatures</th>
-                                                <th>Date de création</th>
-                                                <th>Date d'expiration</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="annonceTableBody">
-                                            <% for(Annonce annonce : annonces) { %>
-                                                <tr>
-                                                    <td>
-                                                        <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
-                                                        <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
-=======
                                                 <td>
                                                     <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
                                                     <small class="text-muted"><%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> • <%= annonce.getVille() != null ? annonce.getVille().getNom() : "" %></small>
@@ -181,7 +146,6 @@
                                                             <span class="badge bg-success">Active</span>
                                                     <% } %>
 
->>>>>>> Stashed changes
                                                     </td>
                                                     <td>
                                                         <div class="fw-bold"><%= annonce.getCandidatures() != null ? annonce.getCandidatures().size() : 0 %></div>
@@ -218,36 +182,6 @@
         </main>
     </div>
 
-<<<<<<< Updated upstream
-        <!-- Job Offer Modal -->
-        <div class="modal fade" id="jobOfferModal" tabindex="-1">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="bi bi-briefcase me-2"></i>
-                            <span id="modalTitle">Nouvelle annonce d'emploi</span>
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form class="needs-validation" novalidate>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <!-- Basic Information -->
-                                    <div class="card border-0 bg-light mb-4">
-                                        <div class="card-header bg-primary text-white">
-                                            <h6 class="mb-0">Informations générales</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row g-3">
-                                                <!-- Titre du poste avec autocomplete -->
-                                                <div class="col-md-6 position-relative">
-                                                    <label for="jobTitle" class="form-label">Titre du poste *</label>
-                                                    <input type="text" class="form-control" id="jobTitle" autocomplete="off" name='poste' required placeholder="Ex: Développeur Java">
-                                                    <div id="jobTitleList" class="autocomplete-list position-absolute w-100"></div>
-                                                </div>
-=======
     <!-- Job Offer Modal -->
     <div class="modal fade" id="jobOfferModal" tabindex="-1">
         <div class="modal-dialog modal-xl">
@@ -276,7 +210,6 @@
                                                 <input type="text" class="form-control" id="jobTitle" autocomplete="off" name='poste' required placeholder="Ex: Développeur Java">
                                                 <div id="jobTitleList" class="autocomplete-list position-absolute w-100"></div>
                                             </div>
->>>>>>> Stashed changes
 
                                             <div class="col-md-6">
                                                 <label for="jobDepartment" class="form-label">Département *</label>
@@ -445,29 +378,6 @@
         </div>
     </div>
 
-<<<<<<< Updated upstream
-        <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
-        <script>
-            const currentUser = {
-                name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
-                initials: "<%= session.getAttribute("initiales") != null ? session.getAttribute("initiales") : "" %>",
-            avatar: "<%= session.getAttribute("avatarColor")%>",
-                id: "<%= session.getAttribute("id_utilisateur") %>",
-                poste: "<%= session.getAttribute("poste") %>"
-            };
-        </script>
-        <script src="${pageContext.request.contextPath}/resources/js/manage-job.js"></script>
-        <script src="${pageContext.request.contextPath}/resources/js/tag-job.js"></script>
-        <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
-        <script>
-            console.log(currentUser);
-            document.getElementById('btnFilter').addEventListener('click', function() {
-                const villeId = document.getElementById('filterVille').value;
-                const departementId = document.getElementById('filterDepartement').value;
-                const poste = document.getElementById('filterPoste').value;
-                const status = document.getElementById('filterStatus').value;
-=======
     <div aria-live="polite" aria-atomic="true" class="position-relative">
         <div class="toast-container position-fixed top-0 end-0 p-3">
             <% if(request.getAttribute("success") != null) { %>
@@ -492,7 +402,6 @@
             <% } %>
         </div>
     </div>
->>>>>>> Stashed changes
 
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
