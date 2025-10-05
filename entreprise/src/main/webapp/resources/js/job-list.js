@@ -1,3 +1,45 @@
+function postulerAnnonce(annonceId) {
+    // Afficher un loader
+    const originalText = event.target.innerHTML;
+    event.target.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Postulation...';
+    event.target.disabled = true;
+
+    const formData = new FormData();
+    formData.append('annonceId', annonceId);
+
+    fetch('/api/candidatures/postuler', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            showToast('danger', 'Erreur réseau');
+        }
+        return response.json();
+    })
+    .then(result => {
+        if (result.eligible) {
+            // Redirection vers la page de succès avec l'ID de candidature
+            window.location.href = '/candidature-succes?candidatureId=' + result.candidatureId;
+        } else {
+            // Redirection vers le CV avec les problèmes
+            const problemes = encodeURIComponent(JSON.stringify(result.problemes));
+            
+            window.location.href = '/cv-submission?problemes=' + problemes + '&annonceId=' + annonceId;
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showToast("danger", 'Erreur lors de la postulation');
+        // Restaurer le bouton
+        event.target.innerHTML = originalText;
+        event.target.disabled = false;
+    });
+}
+
 function openJobDetails(jobId) {
     document.querySelectorAll('.job-card').forEach(card => {
         const btnDetail = card.querySelector('.btn-detailler');

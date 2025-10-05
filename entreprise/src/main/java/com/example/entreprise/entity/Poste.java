@@ -20,8 +20,8 @@ public class Poste {
     @OneToMany(mappedBy = "poste")
     private List<Employe> employes;
 
-    @OneToMany(mappedBy = "poste")
-    private List<Annonce> annonces;
+    @OneToOne(mappedBy = "poste", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Annonce annonce;
 
     @OneToMany(mappedBy = "poste")
     private List<CandidatEssai> candidatsEssai;
@@ -35,8 +35,8 @@ public class Poste {
     public void setDepartement(Departement departement) { this.departement = departement; }
     public List<Employe> getEmployes() { return employes; }
     public void setEmployes(List<Employe> employes) { this.employes = employes; }
-    public List<Annonce> getAnnonces() { return annonces; }
-    public void setAnnonces(List<Annonce> annonces) { this.annonces = annonces; }
+    public Annonce getAnnonce() { return annonce; }
+    public void setAnnonce(Annonce annonce) { this.annonce = annonce; }
     public List<CandidatEssai> getCandidatsEssai() { return candidatsEssai; }
     public void setCandidatsEssai(List<CandidatEssai> candidatsEssai) { this.candidatsEssai = candidatsEssai; }
 }

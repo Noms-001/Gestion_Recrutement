@@ -28,7 +28,7 @@ public class AnnonceRestController {
         return annonceService.filter(villeId, departementId, poste, status);
     }
 
-    @GetMapping("/api/annonces/{id}")
+    @GetMapping("/api/annonces/details/{id}")
     public ResponseEntity<AnnonceDTO> getAnnonceDetails(@PathVariable Long id) {
         AnnonceDTO annonce = annonceService.getAnnonceById(id);
         if (annonce != null) {

@@ -57,5 +57,18 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
            "LEFT JOIN FETCH al.langue " +
            "WHERE a.id = :id AND a.ferme = false")
     Optional<Annonce> findByIdWithLangues(@Param("id") Long id);
+    
+    @Query("SELECT a FROM Annonce a " +
+           "LEFT JOIN FETCH a.poste p " +
+           "LEFT JOIN FETCH p.departement " +
+           "LEFT JOIN FETCH a.ville " +
+           "LEFT JOIN FETCH a.diplome " +
+           "LEFT JOIN FETCH a.genre " +
+           "LEFT JOIN FETCH a.competences ac " +
+           "LEFT JOIN FETCH ac.competence " +
+           "LEFT JOIN FETCH a.langues al " +
+           "LEFT JOIN FETCH al.langue " +
+           "WHERE a.id = :id AND a.ferme = false")
+    Optional<Annonce> findByIdWithDetails(@Param("id") Long id);
 }
 

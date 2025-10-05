@@ -61,7 +61,10 @@ public class Candidat {
     }
 
     @ManyToMany
-    @JoinTable(name = "candidat_competence", joinColumns = @JoinColumn(name = "id_candidat"), inverseJoinColumns = @JoinColumn(name = "id_competence"))
+    @JoinTable(
+        name = "candidat_competence", 
+        joinColumns = @JoinColumn(name = "id_candidat"), 
+        inverseJoinColumns = @JoinColumn(name = "id_competence"))
     private List<Competence> competences;
 
     @OneToMany(mappedBy = "candidat")
