@@ -137,9 +137,11 @@
                                                         <button class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
                                                             <i class="bi bi-eye me-1"></i>Voir détails
                                                         </button>
-                                                        <button class="btn btn-primary btn-sm btn-postuler">
-                                                            <i class="bi bi-send me-1"></i>Postuler
-                                                        </button>
+                                                        <form id="postuler" action="/candidature/postuler/<%= annonce.id %>" method="post">
+                                                            <button class="btn btn-primary btn-sm btn-postuler"></a>
+                                                                <i class="bi bi-send me-1"></i>Postuler
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -195,7 +197,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <form>
+            <form id="form">
                 <!-- Villes -->
                 <div class="mb-4">
                     <label for="cityFilter" class="form-label fw-semibold">Ville</label>
@@ -291,6 +293,11 @@
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"
         };
+        const error = "<%= request.getAttribute("error") %>";
+        if(error != 'null') {
+            showToast('danger', error);
+        }
+        
     </script>
     <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/job-list.js"></script>

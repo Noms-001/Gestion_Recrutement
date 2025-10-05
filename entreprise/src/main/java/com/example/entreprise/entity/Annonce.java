@@ -75,9 +75,10 @@ public class Annonce {
     @JoinColumn(name = "id_test", nullable = false)
     private Test test;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_poste", nullable = false)
     private Poste poste;
+
 
     // Collections avec FetchType.LAZY et List (pas besoin de Set)
     @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

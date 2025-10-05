@@ -174,9 +174,9 @@ function updateAnnonceTable(annonces) {
         // Construction de la ligne avec concaténation de strings
         var row = '<tr>' +
             '<td>' +
-                '<div class="fw-medium">' + (annonce.posteLibelle || '') + '</div>' +
-                '<small class="text-muted">' +
-                    (annonce.urgent && annonce.ferme ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' : '') +
+                '<div class="fw-medium">' + (annonce.posteLibelle || '')
+                (annonce.urgent && annonce.ferme ? '<span class="btn btn-outline-danger"><i class="bi bi-exclamation-triangle me-1 text-danger"></i> <small>Urgent</small></span></i>' : '') +
+                 + '</div>' + '<small class="text-muted">' +
                     (annonce.anneeExperience ? annonce.anneeExperience + ' ans' : '') + 
                     (annonce.villeNom ? ' • ' : '') + (annonce.villeNom || '') +
                 '</small>' +
@@ -237,7 +237,7 @@ function populateModalWithData(annonce) {
     
     // Mettre à jour l'action du formulaire
     const form = document.getElementById('annonceForm');
-    form.action = '${pageContext.request.contextPath}/annonces/update';
+    form.action = '/annonces/update';
     
     // Remplir les champs avec les données
     document.getElementById('annonceId').value = annonce.id;
@@ -386,7 +386,7 @@ function addExistingTag(containerType, id, libelle, estObligatoire = false) {
 // Fonction pour réinitialiser le modal (pour nouvelle annonce)
 function resetModal() {
     document.getElementById('modalTitle').textContent = 'Nouvelle annonce d\'emploi';
-    document.getElementById('annonceForm').action = '${pageContext.request.contextPath}/annonces/create';
+    document.getElementById('annonceForm').action = '/annonces/create';
     document.getElementById('annonceForm').reset();
     document.getElementById('annonceId').value = '';
     

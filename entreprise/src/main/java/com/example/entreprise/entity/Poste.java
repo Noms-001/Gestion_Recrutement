@@ -20,8 +20,8 @@ public class Poste {
     @OneToMany(mappedBy = "poste")
     private List<Employe> employes;
 
-    @OneToOne(mappedBy = "poste")
-    private Annonce annonce;
+    @OneToMany(mappedBy = "poste", fetch = FetchType.LAZY)
+    private List<Annonce> annonces;
 
     @OneToMany(mappedBy = "poste")
     private List<CandidatEssai> candidatsEssai;
@@ -59,12 +59,12 @@ public class Poste {
         this.employes = employes;
     }
 
-    public Annonce getAnnonce() {
-        return annonce;
+    public List<Annonce> getAnnonce() {
+        return annonces;
     }
 
-    public void setAnnonce(Annonce annonce) {
-        this.annonce = annonce;
+    public void setAnnonce(List<Annonce> annonce) {
+        this.annonces = annonces;
     }
 
     public List<CandidatEssai> getCandidatsEssai() {

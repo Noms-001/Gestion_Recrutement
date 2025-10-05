@@ -105,6 +105,55 @@ if (submitBtn) {
         saveCv();
     });
 }
+// Gestion des champs manquants après redirection
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier s'il y a des champs manquants dans le flash attribute
+    const urlParams = new URLSearchParams(window.location.search);
+    const champsManquants = urlParams.get('champsManquants');
+    
+    if (champsManquants) {
+        const champs = champsManquants.split(',');
+        
+        champs.forEach(champ => {
+            const element = document.getElementById(champ);
+            if (element) {
+                element.classList.add('is-invalid');
+                element.style.borderColor = '#dc3545';
+            }
+        });
+        
+        // Afficher un toast d'erreur
+        showToast('danger', 'Veuillez compléter les informations manquantes avant de postuler');
+    }
+});
 
+function checkAllRequiredFields() {
+    const requiredFields = ['nom', 'prenom', 'email', 'telephone', 'dateNaissance', 'ville'];
+    let allFieldsValid = true;
+
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value.trim()) {
+            field.classList.add('is-invalid');
+            field.style.borderColor = '#dc3545';
+            allFieldsValid = false;
+        }
+    });
+
+    return allFieldsValid;
+}
+
+function handleMissingFields() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const missingField = urlParams.get('field');
+    
+    if (missingField) {
+        checkAllRequiredFields();
+        showToast('danger', 'Veuillez compléter les informations manquantes avant de postuler');
+    }
+}
 // ------------------ Initialisation ------------------
-document.addEventListener('DOMContentLoaded', loadCv);
+document.addEventListener('DOMContentLoaded', function() {
+    loadCv();
+    handleMissingFields();
+});

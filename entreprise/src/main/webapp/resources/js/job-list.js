@@ -42,7 +42,7 @@ function openJobDetails(jobId) {
         if (btnPostuler) btnPostuler.classList.add('btn-compact');
     });
 
-    fetch('/api/annonces/' + jobId)
+    fetch('/api/annonces/details/' + jobId)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Annonce non trouvée');
@@ -121,7 +121,7 @@ function openJobDetails(jobId) {
 
                 if (competencesOptionnelles.length > 0) {
                     detailsContent += `
-                        <h6 class="fw-bold mt-3">Compétences appréciées</h6>
+                        <h6 class="fw-bold mt-3">Autres</h6>
                         <div class="d-flex flex-wrap gap-2 mb-3">
                             ${competencesOptionnelles.map(c => `<span class="badge bg-primary">${c}</span>`).join('')}
                         </div>
@@ -147,7 +147,7 @@ function openJobDetails(jobId) {
 
                 if (languesOptionnelles.length > 0) {
                     detailsContent += `
-                        <h6 class="fw-bold mt-3">Langues appréciées</h6>
+                        <h6 class="fw-bold mt-3">Autres</h6>
                         <div class="d-flex flex-wrap gap-2">
                             ${languesOptionnelles.map(l => `<span class="badge bg-info">${l}</span>`).join('')}
                         </div>
@@ -259,7 +259,8 @@ function initializeFilters() {
     initializeUrgentFilter();
     
     // Événement pour appliquer les filtres
-    document.querySelector('form').addEventListener('submit', function(e) {
+    const form = document.getElementById('form');
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
         applyFilters();
     });
@@ -542,7 +543,7 @@ function updateJobsList(annonces) {
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="card-title mb-1">${annonce.posteLibelle || 'Poste non spécifié'}</h5>
-                                <p class="text-muted mb-2">${annonce.urgent ? '<i class="bi bi-exclamation-triangle me-1"></i>' : ''} ${annonce.departementNom || ''} • ${annonce.villeNom || 'Lieu non spécifié'}</p>
+                                <p class="text-muted mb-2">${annonce.urgent ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' : ''} ${annonce.departementNom || ''} • ${annonce.villeNom || 'Lieu non spécifié'}</p>
                                 <p class="card-text mb-3">
                                     ${(annonce.description || '').substring(0, 150)}...
                                 </p>
@@ -571,9 +572,11 @@ function updateJobsList(annonces) {
                                     onclick="openJobDetails(${annonce.id})">
                                 <i class="bi bi-eye me-1"></i>Voir détails
                             </button>
-                            <button class="btn btn-primary btn-sm btn-postuler">
-                                <i class="bi bi-send me-1"></i>Postuler
-                            </button>
+                            <form id="postuler" action="/candidature/postuler/${annonce.id}" method="post">
+                                <button class="btn btn-primary btn-sm btn-postuler"></a>
+                                    <i class="bi bi-send me-1"></i>Postuler
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
