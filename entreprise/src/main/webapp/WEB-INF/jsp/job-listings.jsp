@@ -134,11 +134,11 @@
                                                         Chargement...
                                                     </small>
                                                     <div class="mt-3 d-flex justify-content-end">
-                                                        <button class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
+                                                        <button  style="height: 30px; overflow: hidden;" class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
                                                             <i class="bi bi-eye me-1"></i>Voir détails
                                                         </button>
                                                         <form id="postuler" action="/candidature/postuler/<%= annonce.id %>" method="post">
-                                                            <button class="btn btn-primary btn-sm btn-postuler"></a>
+                                                            <button  style="height: 30px; overflow: hidden;" class="btn btn-primary btn-sm btn-postuler"></a>
                                                                 <i class="bi bi-send me-1"></i>Postuler
                                                             </button>
                                                         </form>

@@ -42,7 +42,7 @@ function openJobDetails(jobId) {
         if (btnPostuler) btnPostuler.classList.add('btn-compact');
     });
 
-    fetch('/api/annonces/details/' + jobId)
+    fetch('/api/annonces/' + jobId)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Annonce non trouvée');

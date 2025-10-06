@@ -1,7 +1,6 @@
 package com.example.entreprise.controller;
 
 import com.example.entreprise.dto.AnnonceDTO;
-import com.example.entreprise.dto.AnnonceDetailDTO;
 import com.example.entreprise.dto.CompetenceDTO;
 import com.example.entreprise.dto.LangueDTO;
 import com.example.entreprise.service.AnnonceService;
@@ -47,13 +46,6 @@ public class AnnonceRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnnonceDetailDTO> getAnnonceDetail(@PathVariable Long id) {
-        Optional<AnnonceDetailDTO> annonce = annonceService.findAnnonceDetailById(id);
-        return annonce.map(ResponseEntity::ok)
-                     .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/details/{id}")
     public ResponseEntity<AnnonceDTO> getAnnonceDetails(@PathVariable Long id) {
         AnnonceDTO annonce = annonceService.getAnnonceById(id);
         if(annonce != null) {

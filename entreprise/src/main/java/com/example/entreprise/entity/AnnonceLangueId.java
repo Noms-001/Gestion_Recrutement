@@ -8,11 +8,11 @@ import java.util.Objects;
 public class AnnonceLangueId implements Serializable {
 
     private Long idAnnonce;
-    private Integer idLangue;
+    private Long idLangue;
 
     public AnnonceLangueId() {}
 
-    public AnnonceLangueId(Long idAnnonce, Integer idLangue) {
+    public AnnonceLangueId(Long idAnnonce, Long idLangue) {
         this.idAnnonce = idAnnonce;
         this.idLangue = idLangue;
     }
@@ -20,8 +20,8 @@ public class AnnonceLangueId implements Serializable {
     // getters et setters
     public Long getIdAnnonce() { return idAnnonce; }
     public void setIdAnnonce(Long idAnnonce) { this.idAnnonce = idAnnonce; }
-    public Integer getIdLangue() { return idLangue; }
-    public void setIdLangue(Integer idLangue) { this.idLangue = idLangue; }
+    public Long getIdLangue() { return idLangue; }
+    public void setIdLangue(Long idLangue) { this.idLangue = idLangue; }
 
     @Override
     public boolean equals(Object o) {

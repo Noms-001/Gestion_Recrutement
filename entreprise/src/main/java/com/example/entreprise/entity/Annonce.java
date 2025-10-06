@@ -277,7 +277,7 @@ public class Annonce {
         return langues;
     }
 
-    public void setLangues(List<AnnonceLangue> Langues) {
+    public void setLangues(List<AnnonceLangue> langues) {
         this.langues = langues;
     }
 

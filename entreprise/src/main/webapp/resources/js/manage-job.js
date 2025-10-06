@@ -168,42 +168,50 @@ function updateAnnonceTable(annonces) {
             statusBadge = '<span class="badge bg-success">Active</span>';
         }
 
-        // Déterminer si l'action "Fermer" doit être affichée
         const showCloseAction = !annonce.ferme && (!annonce.dateLimite || new Date(annonce.dateLimite) >= new Date());
+        const urgentBadge = annonce.urgent && !annonce.ferme 
+            ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' 
+            : '';
 
-        // Construction de la ligne avec concaténation de strings
-        var row = '<tr>' +
-            '<td>' +
-                '<div class="fw-medium">' + (annonce.posteLibelle || '')
-                (annonce.urgent && annonce.ferme ? '<span class="btn btn-outline-danger"><i class="bi bi-exclamation-triangle me-1 text-danger"></i> <small>Urgent</small></span></i>' : '') +
-                 + '</div>' + '<small class="text-muted">' +
-                    (annonce.anneeExperience ? annonce.anneeExperience + ' ans' : '') + 
-                    (annonce.villeNom ? ' • ' : '') + (annonce.villeNom || '') +
-                '</small>' +
-            '</td>' +
-            '<td><span class="badge ' + badgeColor + '">' + (annonce.departementNom || '') + '</span></td>' +
-            '<td>' + statusBadge + '</td>' +
-            '<td>' +
-                '<div class="fw-bold">' + annonce.candidaturesCount + '</div>' +
-                '<small class="text-muted">candidatures</small>' +
-            '</td>' +
-            '<td>' + (annonce.dateCreation || '') + '</td>' +
-            '<td>' + (annonce.dateLimite || '') + '</td>' +
-            '<td>' +
-                '<div class="dropdown">' +
-                    '<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">' +
-                        'Actions' +
-                    '</button>' +
-                    '<ul class="dropdown-menu">' +
-                        (showCloseAction ? '<li><a class="dropdown-item" href="#" onclick="editJobOffer(' + annonce.id + ')"><i class="bi bi-pencil me-2"></i>Modifier</a></li>' : '') +
-                        '<li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>' +
-                        (showCloseAction ? 
-                            '<hr class="dropdown-divider">' +
-                            '<li><a class="dropdown-item" href="#" onclick="closeJobOffer(' + annonce.id + ')"><i class="bi bi-x-circle me-2"></i>Fermer l\'annonce</a></li>' : '') +
-                    '</ul>' +
-                '</div>' +
-            '</td>' +
-        '</tr>';
+        // Version avec Template Literals (plus lisible)
+        const row = `
+            <tr>
+                <td>
+                    <div class="fw-medium">
+                        ${annonce.posteLibelle || ''}
+                    </div>
+                    <small class="text-muted">
+                        ${urgentBadge}
+                        ${annonce.anneeExperience ? annonce.anneeExperience + ' ans' : ''}
+                        ${annonce.villeNom && annonce.anneeExperience ? ' • ' : ''}
+                        ${annonce.villeNom || ''}
+                    </small>
+                </td>
+                <td><span class="badge ${badgeColor}">${annonce.departementNom || ''}</span></td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="fw-bold">${annonce.candidaturesCount}</div>
+                    <small class="text-muted">candidatures</small>
+                </td>
+                <td>${annonce.dateCreation || ''}</td>
+                <td>${annonce.dateLimite || ''}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            ${showCloseAction ? `<li><a class="dropdown-item" href="#" onclick="editJobOffer(${annonce.id})"><i class="bi bi-pencil me-2"></i>Modifier</a></li>` : ''}
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
+                            ${showCloseAction ? `
+                                <hr class="dropdown-divider">
+                                <li><a class="dropdown-item text-danger" href="#" onclick="closeJobOffer(${annonce.id})"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
+                            ` : ''}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        `;
 
         tbody.innerHTML += row;
     });
@@ -243,7 +251,7 @@ function populateModalWithData(annonce) {
     document.getElementById('annonceId').value = annonce.id;
     document.getElementById('jobTitle').value = annonce.posteLibelle || '';
     document.getElementById('jobDepartment').value = annonce.departementId || '';
-    document.getElementById('age').value = annonce.age || '';
+    document.getElementById('age').value = annonce.ageMinimun || '';
     document.getElementById('experience').value = annonce.anneeExperience || '';
     document.getElementById('location').value = annonce.villeId || '';
     document.getElementById('gender').value = annonce.genre || '';
