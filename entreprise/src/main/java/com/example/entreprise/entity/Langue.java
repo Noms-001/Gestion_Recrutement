@@ -10,7 +10,7 @@ public class Langue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_langue")
-    private Integer id;
+    private Long id;
 
     @Column(name = "libelle", nullable = false, unique = true, length = 100)
     private String libelle;
@@ -23,8 +23,8 @@ public class Langue {
     public Langue(String libelle) { this.libelle = libelle; }
 
     // Getters & Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getLibelle() { return libelle; }
     public void setLibelle(String libelle) { this.libelle = libelle; }
