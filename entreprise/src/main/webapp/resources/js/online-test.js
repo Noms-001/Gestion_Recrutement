@@ -1,92 +1,54 @@
 // Online Test JavaScript
-let test = generateSampleQuestions();
-let testData = {
-    totalQuestions: test.length,
-    currentQuestion: 1,
-    timeRemaining: 45 * 60, // 45 minutes in seconds
-    answers: {},
-    questions: test
-};
+let testData = {};
 
 let timerInterval;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeTest();
-    startTimer();
-    setupEventListeners();
-    generateQuestionNavigation();
-    updateProgress();
 });
 
-function initializeTest() {
-    displayQuestion(testData.currentQuestion);
-    updateNavigationButtons();
+async function initializeTest() {
+    generateSampleQuestions().then(data => {
+        testData = data;
+        document.getElementById('titre').textContent = testData.titre;
+        document.getElementById('info').textContent = `${testData.totalQuestions} questions • Durée: ${testData.dureeMin} minutes • Score minimum: ${testData.scoreMin}%`
+        document.getElementById('sur').textContent = `sur ${testData.totalQuestions}`;
+        document.getElementById('remainingCount').textContent = `${testData.totalQuestions}`;
+        updateTimerDisplay();
+        displayQuestion(testData.currentQuestion);
+        document.querySelector('body').style.display = 'block';
+        updateNavigationButtons();
+        startTimer();
+        setupEventListeners();
+        generateQuestionNavigation();
+        updateProgress();
+    });
 }
 
 function generateSampleQuestions() {
-    return[
-        {
-            id: 1,
-            text: "Quelle est la méthode recommandée pour gérer l'état local dans un composant React?",
-            options: {
-                a: "Utiliser des variables globales",
-                b: "Utiliser le hook useState()",
-                c: "Stocker les données dans localStorage",
-                d: "Utiliser des cookies"
-            },
-            correct: "b"
-        },
-        {
-            id: 2,
-            text: "Quelle propriété CSS est utilisée pour créer une disposition flexbox?",
-            options: {
-                a: "display: grid",
-                b: "display: block",
-                c: "display: flex",
-                d: "display: inline"
-            },
-            correct: "c"
-        },
-        {
-            id: 3,
-            text: "Quel est le rôle principal du Virtual DOM dans React?",
-            options: {
-                a: "Stocker les données de l'application",
-                b: "Optimiser les performances de rendu",
-                c: "Gérer les requêtes HTTP",
-                d: "Créer des animations"
-            },
-            correct: "b"
-        },
-        {
-            id: 4,
-            text: "Comment déclare-t-on une variable constante en JavaScript ES6?",
-            options: {
-                a: "var myVar = 'value'",
-                b: "let myVar = 'value'",
-                c: "const myVar = 'value'",
-                d: "constant myVar = 'value'"
-            },
-            correct: "c"
-        },
-        {
-            id: 5,
-            text: "Quelle méthode JavaScript permet d'ajouter un élément à la fin d'un tableau?",
-            options: {
-                a: "unshift()",
-                b: "push()",
-                c: "pop()",
-                d: "shift()"
-            },
-            correct: "b"
-        }
-    ];
+    return fetch(`/api/test/${testId}`)
+        .then(res => res.json())
+        .then(data => {
+            return {
+                titre: data.titre,
+                totalQuestions: data.totalQuestions,
+                currentQuestion: 1,
+                dureeMin: data.dureeMinutes,
+                timeRemaining: data.dureeMinutes * 60,
+                answers: {},
+                questions: data.questions,
+                scoreMin: data.scoreMinimum
+            };
+        })
+        .catch(() => {
+            console.log("Erreur");
+        });
 }
 
 function displayQuestion(questionNumber) {
     const question = testData.questions.find(q => q.id === questionNumber);
     if (!question) return;
-    
+
     const questionContent = document.getElementById('questionContent');
     questionContent.innerHTML = `
         <div class="mb-4">
@@ -105,7 +67,7 @@ function displayQuestion(questionNumber) {
             `).join('')}
         </div>
     `;
-    
+
     // Restore previous answer if exists
     if (testData.answers[questionNumber]) {
         const radio = questionContent.querySelector(`input[value="${testData.answers[questionNumber]}"]`);
@@ -114,25 +76,25 @@ function displayQuestion(questionNumber) {
             radio.closest('.answer-option').classList.add('border-primary', 'bg-light');
         }
     }
-    
+
     // Add click handlers for answer options
     const answerOptions = questionContent.querySelectorAll('.answer-option');
     answerOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const radio = this.querySelector('input[type="radio"]');
             radio.checked = true;
-            
+
             // Remove previous selection styling
             answerOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-light'));
-            
+
             // Style selected option
             this.classList.add('border-primary', 'bg-light');
-            
+
             // Save answer
             saveAnswer(questionNumber, radio.value);
         });
     });
-    
+
     // Update current question display
     document.getElementById('currentQuestion').textContent = questionNumber;
     document.getElementById('totalCount').textContent = testData.totalQuestions;
@@ -148,7 +110,7 @@ function saveAnswer(questionNumber, answer) {
 function setupEventListeners() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    
+
     prevBtn.addEventListener('click', () => {
         if (testData.currentQuestion > 1) {
             testData.currentQuestion--;
@@ -157,7 +119,7 @@ function setupEventListeners() {
             updateQuestionNavigation();
         }
     });
-    
+
     nextBtn.addEventListener('click', () => {
         if (testData.currentQuestion < testData.totalQuestions) {
             testData.currentQuestion++;
@@ -181,26 +143,26 @@ function setupEventListeners() {
 function generateQuestionNavigation() {
     const questionNav = document.getElementById('questionNav');
     questionNav.innerHTML = '';
-    
+
     testData.totalQuestions = testData.questions.length; // mise à jour
-    
+
     for (let i = 1; i <= testData.questions.length; i++) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline-secondary btn-sm me-1 mb-1';
         btn.textContent = i;
         btn.style.width = '35px';
         btn.style.height = '35px';
-        
+
         btn.addEventListener('click', () => {
             testData.currentQuestion = i;
             displayQuestion(i);
             updateNavigationButtons();
             updateQuestionNavigation();
         });
-        
+
         questionNav.appendChild(btn);
     }
-    
+
     updateQuestionNavigation();
 }
 
@@ -219,39 +181,39 @@ function updateNavigationButtons() {
 function generateQuestionNavigation() {
     const questionNav = document.getElementById('questionNav');
     questionNav.innerHTML = '';
-    
+
     for (let i = 1; i <= testData.totalQuestions; i++) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline-secondary btn-sm me-1 mb-1';
         btn.textContent = i;
         btn.style.width = '35px';
         btn.style.height = '35px';
-        
+
         btn.addEventListener('click', () => {
             testData.currentQuestion = i;
             displayQuestion(i);
             updateNavigationButtons();
             updateQuestionNavigation();
         });
-        
+
         questionNav.appendChild(btn);
     }
-    
+
     updateQuestionNavigation();
 }
 
 function updateQuestionNavigation() {
     const questionNav = document.getElementById('questionNav');
     const buttons = questionNav.querySelectorAll('button');
-    
+
     buttons.forEach((btn, index) => {
         const questionNumber = index + 1;
-        
+
         // Reset classes
         btn.className = 'btn btn-sm me-1 mb-1';
         btn.style.width = '35px';
         btn.style.height = '35px';
-        
+
         if (questionNumber === testData.currentQuestion) {
             btn.classList.add('btn-primary');
         } else if (testData.answers[questionNumber]) {
@@ -265,14 +227,14 @@ function updateQuestionNavigation() {
 function updateProgress() {
     const answeredQuestions = Object.keys(testData.answers).length;
     const percentage = (answeredQuestions / testData.totalQuestions) * 100;
-    
+
     // Update progress circle
     const progressCircle = document.getElementById('progressCircle');
     const circumference = 2 * Math.PI * 35; // radius = 35
     const offset = circumference - (percentage / 100) * circumference;
-    
+
     progressCircle.style.strokeDashoffset = offset;
-    
+
     // Update percentage text
     document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
 }
@@ -280,7 +242,7 @@ function updateProgress() {
 function updateAnswerCounts() {
     const answeredCount = Object.keys(testData.answers).length;
     const remainingCount = testData.totalQuestions - answeredCount;
-    
+
     document.getElementById('answeredCount').textContent = answeredCount;
     document.getElementById('remainingCount').textContent = remainingCount;
 }
@@ -288,7 +250,7 @@ function updateAnswerCounts() {
 function startTimer() {
     timerInterval = setInterval(() => {
         testData.timeRemaining--;
-        
+
         if (testData.timeRemaining <= 0) {
             clearInterval(timerInterval);
             showModal(
@@ -298,13 +260,13 @@ function startTimer() {
             );
             return;
         }
-        
+
         updateTimerDisplay();
-        
+
         if (testData.timeRemaining === 30) {
             showToast('danger', 'Attention: Il ne vous reste que 30 secondes !');
         }
-        
+
         // Warning when 1 minute left
         if (testData.timeRemaining === 60) {
             showToast('warning', 'Attention: Il ne vous reste qu\'1 minute !');
@@ -316,9 +278,9 @@ function updateTimerDisplay() {
     const minutes = Math.floor(testData.timeRemaining / 60);
     const seconds = testData.timeRemaining % 60;
     const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
+
     document.getElementById('timeDisplay').textContent = display;
-    
+
     // Change color based on time remaining
     const timerElement = document.getElementById('timeDisplay');
     if (testData.timeRemaining <= 300) { // 5 minutes
@@ -332,7 +294,7 @@ function updateTimerDisplay() {
 
 function finishTest() {
     clearInterval(timerInterval);
-    
+
     // Calculate score
     let correctAnswers = 0;
     testData.questions.forEach(question => {
@@ -340,10 +302,10 @@ function finishTest() {
             correctAnswers++;
         }
     });
-    
+
     const score = Math.round((correctAnswers / testData.totalQuestions) * 100);
-    const passed = score >= 70;
-    
+    const passed = score >= testData.scoreMin;
+
     // Show results
     showTestResults(score, correctAnswers, passed);
 }
@@ -373,11 +335,11 @@ function showTestResults(score, correctAnswers, passed) {
             
             <div class="alert ${passed ? 'alert-success' : 'alert-danger'}">
                 <i class="bi ${passed ? 'bi-check-circle' : 'bi-x-circle'} me-2"></i>
-                ${passed ? 'Félicitations ! Vous avez réussi le test.' : 'Vous n\'avez pas atteint le score minimum requis (70%).'}
+                ${passed ? 'Félicitations ! Vous avez réussi le test.' : `Vous n\'avez pas atteint le score minimum requis (${testData.scoreMin}%).`}
             </div>
         </div>
     `;
-    
+
     showModal(
         'Résultats du test',
         resultContent,
@@ -394,7 +356,7 @@ function reviewAnswers() {
 }
 
 // Handle page visibility change (prevent cheating)
-document.addEventListener('visibilitychange', function() {
+document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
         console.log('User switched tab/window');
         // You could implement warnings or automatic submission here
@@ -402,14 +364,14 @@ document.addEventListener('visibilitychange', function() {
 });
 
 // Prevent right-click context menu
-document.addEventListener('contextmenu', function(e) {
+document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
 // Prevent common keyboard shortcuts
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     // Prevent F12, Ctrl+Shift+I, Ctrl+U, etc.
-    if (e.key === 'F12' || 
+    if (e.key === 'F12' ||
         (e.ctrlKey && e.shiftKey && e.key === 'I') ||
         (e.ctrlKey && e.key === 'u')) {
         e.preventDefault();

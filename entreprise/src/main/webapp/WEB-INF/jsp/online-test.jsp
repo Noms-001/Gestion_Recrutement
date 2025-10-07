@@ -1,8 +1,8 @@
 <%@ page session="true" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% if(session.getAttribute("id_utilisateur") == null) {
     response.sendRedirect("/");
 } %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -16,7 +16,7 @@
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/img/logo.png">
 </head>
 
-<body>
+<body style="display: none">
     <div id="navbar-placeholder"></div>
 
     <div class="d-flex">
@@ -29,19 +29,19 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-md-7">
-                                <h1 class="h4 fw-bold mb-1">Test technique - Développeur Frontend</h1>
-                                <p class="text-muted mb-0">20 questions • Durée: 45 minutes • Score minimum: 70%</p>
+                                <h1 class="h4 fw-bold mb-1" id="titre"></h1>
+                                <p class="text-muted mb-0" id="info"></p>
                             </div>
                             <div class="col-md-5 text-end">
                                 <div class="d-flex align-items-center justify-content-end gap-3">
                                     <div class="test-timer card" id="testTimer">
                                         <div class="text-center">
-                                            <div class="h4 mb-1 text-primary" id="timeDisplay">45:00</div>
+                                            <div class="h4 mb-1 text-primary" id="timeDisplay"></div>
                                         </div>
                                     </div>
                                     <div class="text-center">
                                         <div class="h5 mb-0 text-primary" id="currentQuestion">1</div>
-                                        <small class="text-muted">sur 20</small>
+                                        <small class="text-muted" id="sur"></small>
                                     </div>
                                     <button class="btn btn-warning" data-bs-toggle="modal"
                                         data-bs-target="#finishModal">
@@ -210,6 +210,7 @@
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"
         };
+        const testId = "<%= request.getParameter("testId") %>";
     </script>
 <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/online-test.js"></script>

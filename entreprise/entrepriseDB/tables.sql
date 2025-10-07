@@ -224,12 +224,12 @@ CREATE TABLE candidat_competence (
 
 CREATE TABLE test_passage (
   id_candidat INT NOT NULL,
-  id_test INT NOT NULL,
+  id_annonce INT NOT NULL,
   date_passage DATE NOT NULL,
   PRIMARY KEY (id_candidat, id_test),
   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
     ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_test) REFERENCES test(id_test)
+  FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

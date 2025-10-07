@@ -89,6 +89,9 @@ public class Annonce {
 
     @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AnnonceLangue> langues;
+    
+    @OneToMany(mappedBy = "annonce")
+    private List<TestPassage> passages;
 
     // Constructeurs
     public Annonce() {
@@ -102,6 +105,14 @@ public class Annonce {
         this.ville = ville;
         this.ferme = false;
         this.urgent = false;
+    }
+    
+    public List<TestPassage> getPassages() {
+        return passages;
+    }
+
+    public void setPassages(List<TestPassage> passages) {
+        this.passages = passages;
     }
 
     // Getters & Setters
