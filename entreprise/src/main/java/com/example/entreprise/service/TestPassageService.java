@@ -9,10 +9,10 @@ import java.util.Optional;
 @Service
 public class TestPassageService {
     @Autowired
-    TestPassageRepository testPassageRepository;
+    private TestPassageRepository testPassageRepository;
 
     @Autowired
-    UtilisateurRepository utilisateurRepository;
+    private UtilisateurRepository utilisateurRepository;
 
     public boolean aDejaPasseTest(Long utilisateurId, Long annonceId) {
         Optional<Utilisateur> opt = utilisateurRepository.findById(utilisateurId);

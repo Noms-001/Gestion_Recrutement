@@ -216,7 +216,6 @@ function initializeSidebar() {
         }
     });
 }
-
 function showModal(title, content, actions = '', closable = true) {
     const modalHtml = `
         <div class="modal fade" id="dynamicModal" tabindex="-1">
@@ -224,7 +223,7 @@ function showModal(title, content, actions = '', closable = true) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">${title}</h5>
-                        ${ closable ? '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>':''}
+                        ${ closable ? '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' : ''}
                     </div>
                     <div class="modal-body">
                         ${content}
@@ -244,7 +243,10 @@ function showModal(title, content, actions = '', closable = true) {
     }
 
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    const modal = new bootstrap.Modal(document.getElementById('dynamicModal'));
+    const modal = new bootstrap.Modal(document.getElementById('dynamicModal'), {
+        backdrop: closable ? true : 'static',
+        keyboard: closable
+    });
     modal.show();
 }
 

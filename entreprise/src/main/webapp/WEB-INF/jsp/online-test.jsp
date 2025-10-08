@@ -211,8 +211,9 @@
             poste: "<%= session.getAttribute("poste") %>"
         };
         const testId = "<%= request.getParameter("testId") %>";
+        const annonceId = "<%= request.getParameter("annonceId") %>";
     </script>
-<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/online-test.js"></script>
 </body>
 

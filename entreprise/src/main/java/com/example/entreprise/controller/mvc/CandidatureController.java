@@ -25,7 +25,7 @@ public class CandidatureController {
             RedirectAttributes redirectAttributes) {
         try {
             Long utilisateurId = (Long) session.getAttribute("id_utilisateur");
-            Candiature candidature = candidatureService.aDejaPostule(utilisateurId, annonceId);
+            Candidature candidature = candidatureService.aDejaPostule(utilisateurId, annonceId);
             Long candidatureId = candidature != null ? candidature.getId() : null;
             if (utilisateurId == null) {
                 redirectAttributes.addFlashAttribute("error", "Vous devez être connecté pour postuler");
@@ -57,14 +57,27 @@ public class CandidatureController {
         }
     }
 
-    @GetMapping("/candidature/success")
-    public String success(@ModelAttribute("testId") Long testId, @ModelAttribute("AnnonceId") Long AnnonceId, Model model) {
+    @GetMapping("/success")
+    public String success(Model model,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Long utilisateurId = (Long) session.getAttribute("id_utilisateur");
+        if (utilisateurId == null) {
+            redirectAttributes.addFlashAttribute("error", "Vous devez être connecté pour postuler");
+            return "redirect:/login";
+        }
+        Long testId = (Long) model.getAttribute("testId");
+        Long annonceId = (Long) model.getAttribute("annonceId");
+        if (testPassageService.aDejaPasseTest(utilisateurId, annonceId)) {
+            redirectAttributes.addFlashAttribute("error", "Vous avez déjà postulé à cette annonce");
+            return "redirect:/job-listings";
+        }
         model.addAttribute("testId", testId);
-        model.addAttribute("AnnonceId", testId);
+        model.addAttribute("AnnonceId", annonceId);
         return "success-candidature";
     }
 
-    @GetMapping("/candidature/error")
+    @GetMapping("/error")
     public String error(@ModelAttribute("error") String error, Model model) {
         model.addAttribute("errorMessage", error);
         return "error-candidature";

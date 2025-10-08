@@ -226,7 +226,7 @@ CREATE TABLE test_passage (
   id_annonce INT NOT NULL,
   score INT,
   date_passage DATE NOT NULL,
-  PRIMARY KEY (id_candidat, id_test),
+  PRIMARY KEY (id_candidat, id_annonce),
   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)

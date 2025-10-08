@@ -49,7 +49,6 @@ public class TestRestController {
             @PathVariable Long annonceId,
             @RequestParam Integer score,
             HttpSession session) {
-        
         try {
             Long utilisateurId = (Long) session.getAttribute("id_utilisateur");
             
@@ -57,6 +56,7 @@ public class TestRestController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Utilisateur non connecté"));
             }
             
+            testService.demarrerTest(utilisateurId, annonceId);
             testPassageService.save(utilisateurId, annonceId, score);
             return ResponseEntity.ok(Map.of("success", true));
             
