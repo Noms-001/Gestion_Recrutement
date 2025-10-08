@@ -485,13 +485,6 @@ function initializeSearch() {
             performSearch(this.value);
         }
     });
-    
-    // Recherche en temps réel (optionnel)
-    searchInput.addEventListener('input', function() {
-        if (this.value.length >= 3 || this.value.length === 0) {
-            performSearch(this.value);
-        }
-    });
 }
 
 // Effectuer la recherche

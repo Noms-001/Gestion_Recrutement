@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 @Repository
 public interface CandidatureRepository extends JpaRepository<Candidature, Long> {
     
-    boolean existsByCandidatIdAndAnnonceId(Long candidatId, Long annonceId);
+    Optional<Candidature> findByCandidatIdAndAnnonceId(Long candidatId, Long annonceId);
     
     @Query("SELECT COUNT(c) FROM Candidature c WHERE c.annonce.id = :annonceId")
     long countByAnnonceId(@Param("annonceId") Long annonceId);

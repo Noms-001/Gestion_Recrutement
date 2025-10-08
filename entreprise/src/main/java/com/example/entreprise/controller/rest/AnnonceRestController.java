@@ -1,4 +1,4 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.rest;
 
 import com.example.entreprise.dto.AnnonceDTO;
 import com.example.entreprise.dto.CompetenceDTO;

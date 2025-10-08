@@ -10,8 +10,13 @@ import com.example.entreprise.entity.Annonce;
 public class AnnonceDTO {
     public Long id;
     public String posteLibelle;
+    public Long filiereId;
+    public Long diplomeId;
     public String departementNom;
+    public Long departementId;
     public String villeNom;
+    public Long villeId;
+    public Long genreId;
     public String description;
     public Boolean ferme;
     public LocalDate dateLimite;
@@ -51,7 +56,13 @@ public class AnnonceDTO {
         this.posteLibelle = annonce.getPoste() != null ? annonce.getPoste().getLibelle() : null;
         this.departementNom = annonce.getPoste() != null && annonce.getPoste().getDepartement() != null 
                 ? annonce.getPoste().getDepartement().getNom() : null;
+        this.departementId = annonce.getPoste() != null && annonce.getPoste().getDepartement() != null 
+                ? annonce.getPoste().getDepartement().getId() : null;
         this.villeNom = annonce.getVille() != null ? annonce.getVille().getNom() : null;
+        this.villeId = annonce.getVille() != null ? annonce.getVille().getId() : null;
+        this.diplomeId = annonce.getDiplome() != null ? annonce.getDiplome().getId() : null;
+        this.filiereId = annonce.getFiliere() != null ? annonce.getFiliere().getId() : null;
+        this.genreId = annonce.getGenre() != null ? annonce.getGenre().getId() : null;
         this.description = annonce.getDescription();
         this.ferme = annonce.getFerme() != null ? annonce.getFerme() : false;
         this.dateLimite = annonce.getDateLimite();

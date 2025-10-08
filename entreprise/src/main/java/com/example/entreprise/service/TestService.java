@@ -18,8 +18,6 @@ public class TestService {
     @Autowired
     private TestPassageRepository testPassageRepository;
     @Autowired
-    private CandidatRepository candidatRepository;
-    @Autowired
     private UtilisateurRepository utilisateurRepository;
     @Autowired
     private QuestionRepository questionRepository;
@@ -116,7 +114,7 @@ public class TestService {
 
         for (QuestionDTO qdto : dto.getQuestions()) {
             // Vérifier si la question existe déjà (par enonce)
-            Question question = questionRepository.findByEnonce(qdto.getEnonce())
+            Question question = questionRepository.findFirstByEnonce(qdto.getEnonce())
                     .orElseGet(() -> {
                         Question newQ = new Question();
                         newQ.setEnonce(qdto.getEnonce());
@@ -126,7 +124,7 @@ public class TestService {
 
                         for (ReponseDTO rdto : qdto.getReponses()) {
                             // Vérifier si la réponse existe déjà (par valeur)
-                            Reponse reponse = reponseRepository.findByValeur(rdto.getValeur())
+                            Reponse reponse = reponseRepository.findFirstByValeur(rdto.getValeur())
                                     .orElseGet(() -> {
                                         Reponse newR = new Reponse();
                                         newR.setValeur(rdto.getValeur());

@@ -47,7 +47,7 @@
                             </c:if>
                             
                             <div class="d-flex gap-2 justify-content-center">
-                                <a href="/test/${testId}" class="btn btn-primary btn-lg">
+                                <a href="/online-test?testId=${testId}&annonceId=${annonceId}" class="btn btn-primary btn-lg">
                                     <i class="bi bi-pencil-square me-2"></i>Passer le test
                                 </a>
                                 <a href="/job-listings" class="btn btn-outline-secondary btn-lg">

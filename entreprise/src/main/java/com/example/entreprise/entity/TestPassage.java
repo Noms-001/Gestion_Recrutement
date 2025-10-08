@@ -19,6 +19,9 @@ public class TestPassage {
     @JoinColumn(name = "id_annonce")
     private Annonce annonce;
 
+    private Integer score;
+
+    @Column(name = "date_passage")
     private LocalDate datePassage;
 
     // Getters & Setters
@@ -44,6 +47,14 @@ public class TestPassage {
 
     public void setAnnonce(Annonce annonce) { 
         this.annonce = annonce; 
+    }
+
+    public Integer getScore() { 
+        return score; 
+    }
+
+    public void setScore(Integer score) { 
+        this.score = score; 
     }
 
     public LocalDate getDatePassage() { 

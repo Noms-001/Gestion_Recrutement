@@ -1,4 +1,4 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.mvc;
 
 import java.util.List;
 

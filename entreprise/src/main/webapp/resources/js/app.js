@@ -217,14 +217,14 @@ function initializeSidebar() {
     });
 }
 
-function showModal(title, content, actions = '') {
+function showModal(title, content, actions = '', closable = true) {
     const modalHtml = `
         <div class="modal fade" id="dynamicModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">${title}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        ${ closable ? '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>':''}
                     </div>
                     <div class="modal-body">
                         ${content}

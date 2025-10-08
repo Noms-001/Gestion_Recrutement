@@ -1,7 +1,11 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.mvc;
 
+import com.example.entreprise.dto.AnnonceDTO;
 import com.example.entreprise.entity.*;
 import com.example.entreprise.service.*;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Controller
-public class ManageJobsController {
+public class PosteController {
 
     @Autowired
     private AnnonceService annonceService;
@@ -64,5 +68,20 @@ public class ManageJobsController {
         return "manage-jobs";
     }
 
+    @GetMapping("/job-listings")
+    public String showAnnoncesPage(HttpServletRequest request) {
+        List<AnnonceDTO> annonces = annonceService.getAllAnnonces();
+        List<Competence> competences = competenceService.findAll();
+        List<Langue> langues = langueService.findAll();
+        List<Ville> villes = villeService.findAll();
+        List<Diplome> diplomes = diplomeService.findAll();
+        request.setAttribute("annonces", annonces);
+        request.setAttribute("competences", competences);
+        request.setAttribute("langues", langues);
+        request.setAttribute("villes", villes);
+        request.setAttribute("diplomes", diplomes);
+
+        return "/job-listings";
+    }
     
 }

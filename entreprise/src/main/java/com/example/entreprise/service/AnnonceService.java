@@ -414,9 +414,6 @@ public class AnnonceService {
                 .collect(Collectors.toList());
     }
 
-    // Suppression de la méthode convertToDTO redondante puisque nous utilisons fromEntity
-
-    // Méthodes de filtrage auxiliaires
     private boolean filterByVilles(Annonce annonce, List<Long> villes) {
         if (villes == null || villes.isEmpty()) return true;
         return annonce.getVille() != null && villes.contains(annonce.getVille().getId());

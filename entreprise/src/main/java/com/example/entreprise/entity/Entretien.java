@@ -11,6 +11,8 @@ public class Entretien {
     @Column(name = "id_entretien")
     private Long id;
 
+    private Double score;
+
     @ManyToOne
     @JoinColumn(name = "id_candidature", nullable = false)
     private Candidature candidature;
@@ -23,14 +25,51 @@ public class Entretien {
     private String compteRendu;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Candidature getCandidature() { return candidature; }
-    public void setCandidature(Candidature candidature) { this.candidature = candidature; }
-    public Employe getEmploye() { return employe; }
-    public void setEmploye(Employe employe) { this.employe = employe; }
-    public LocalDate getDateEntretien() { return dateEntretien; }
-    public void setDateEntretien(LocalDate dateEntretien) { this.dateEntretien = dateEntretien; }
-    public String getCompteRendu() { return compteRendu; }
-    public void setCompteRendu(String compteRendu) { this.compteRendu = compteRendu; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public Candidature getCandidature() {
+        return candidature;
+    }
+
+    public void setCandidature(Candidature candidature) {
+        this.candidature = candidature;
+    }
+
+    public Employe getEmploye() {
+        return employe;
+    }
+
+    public void setEmploye(Employe employe) {
+        this.employe = employe;
+    }
+
+    public LocalDate getDateEntretien() {
+        return dateEntretien;
+    }
+
+    public void setDateEntretien(LocalDate dateEntretien) {
+        this.dateEntretien = dateEntretien;
+    }
+
+    public String getCompteRendu() {
+        return compteRendu;
+    }
+
+    public void setCompteRendu(String compteRendu) {
+        this.compteRendu = compteRendu;
+    }
 }

@@ -69,7 +69,6 @@ CREATE TABLE reponse (
   valeur VARCHAR(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 CREATE TABLE question_reponse (
   id_question INT NOT NULL,
   id_reponse INT NOT NULL,
@@ -225,6 +224,7 @@ CREATE TABLE candidat_competence (
 CREATE TABLE test_passage (
   id_candidat INT NOT NULL,
   id_annonce INT NOT NULL,
+  score INT,
   date_passage DATE NOT NULL,
   PRIMARY KEY (id_candidat, id_test),
   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
@@ -238,6 +238,7 @@ CREATE TABLE entretien (
   id_candidature INT NOT NULL,
   id_employe INT NOT NULL,
   date_entretien DATE NOT NULL,
+  score FLOAT,
   compte_rendu TEXT,
   FOREIGN KEY (id_candidature) REFERENCES candidature(id_candidature)
     ON DELETE CASCADE ON UPDATE CASCADE,

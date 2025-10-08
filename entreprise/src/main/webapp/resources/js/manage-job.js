@@ -254,7 +254,7 @@ function populateModalWithData(annonce) {
     document.getElementById('age').value = annonce.ageMinimun || '';
     document.getElementById('experience').value = annonce.anneeExperience || '';
     document.getElementById('location').value = annonce.villeId || '';
-    document.getElementById('gender').value = annonce.genre || '';
+    document.getElementById('gender').value = annonce.genreId || '';
     document.getElementById('diplome').value = annonce.diplomeId || '';
     document.getElementById('filiere').value = annonce.filiereId || '';
     document.getElementById('jobDescription').value = annonce.description || '';

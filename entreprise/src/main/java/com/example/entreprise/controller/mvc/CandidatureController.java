@@ -1,6 +1,7 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.mvc;
 
-import com.example.entreprise.service.CandidatureService;
+import com.example.entreprise.service.*;
+import com.example.entreprise.entity.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,33 +16,37 @@ public class CandidatureController {
     @Autowired
     private CandidatureService candidatureService;
 
+    @Autowired
+    private TestPassageService testPassageService;
+
     @PostMapping("/postuler/{annonceId}")
     public String postuler(@PathVariable Long annonceId,
-                         HttpSession session,
-                         RedirectAttributes redirectAttributes) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         try {
             Long utilisateurId = (Long) session.getAttribute("id_utilisateur");
-            
+            Candiature candidature = candidatureService.aDejaPostule(utilisateurId, annonceId);
+            Long candidatureId = candidature != null ? candidature.getId() : null;
             if (utilisateurId == null) {
                 redirectAttributes.addFlashAttribute("error", "Vous devez être connecté pour postuler");
                 return "redirect:/login";
             }
-            
             // Vérifier si déjà postulé
-            if (candidatureService.aDejaPostule(utilisateurId, annonceId)) {
+            if (testPassageService.aDejaPasseTest(utilisateurId, annonceId)) {
                 redirectAttributes.addFlashAttribute("error", "Vous avez déjà postulé à cette annonce");
                 return "redirect:/job-listings";
             }
-            
+
             // Traiter la candidature
-            Long testId = candidatureService.postuler(utilisateurId, annonceId);
-            
+            Long testId = candidatureService.postuler(utilisateurId, annonceId, candidatureId);
+
             redirectAttributes.addFlashAttribute("success", "Candidature envoyée avec succès !");
             redirectAttributes.addFlashAttribute("testId", testId);
+            redirectAttributes.addFlashAttribute("annonceId", annonceId);
             return "redirect:/candidature/success";
-            
+
         } catch (IllegalStateException ie) {
-            return "redirect:/cv-submission?field="+ie.getMessage();
+            return "redirect:/cv-submission?field=" + ie.getMessage();
         } catch (IllegalArgumentException ie) {
             // Critères non remplis - redirection vers page d'erreur
             redirectAttributes.addFlashAttribute("error", ie.getMessage());
@@ -52,13 +57,14 @@ public class CandidatureController {
         }
     }
 
-    @GetMapping("/success")
-    public String success(@ModelAttribute("testId") Long testId, Model model) {
+    @GetMapping("/candidature/success")
+    public String success(@ModelAttribute("testId") Long testId, @ModelAttribute("AnnonceId") Long AnnonceId, Model model) {
         model.addAttribute("testId", testId);
+        model.addAttribute("AnnonceId", testId);
         return "success-candidature";
     }
 
-    @GetMapping("/error")
+    @GetMapping("/candidature/error")
     public String error(@ModelAttribute("error") String error, Model model) {
         model.addAttribute("errorMessage", error);
         return "error-candidature";

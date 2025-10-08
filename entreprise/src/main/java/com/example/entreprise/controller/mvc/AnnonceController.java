@@ -1,4 +1,4 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.mvc;
 
 import java.util.*;
 import java.time.*;
@@ -6,32 +6,18 @@ import java.time.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.example.entreprise.dto.*;
-import com.example.entreprise.entity.*;
 import com.example.entreprise.service.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
+@RequestMapping("/annonces")
 public class AnnonceController {
 
     @Autowired
     private AnnonceService annonceService;
 
-    @Autowired
-    private CompetenceService competenceService;
-
-    @Autowired
-    private LangueService langueService;
-
-    @Autowired
-    private VilleService villeService;
-
-    @Autowired
-    private DiplomeService diplomeService;
-
     // Dans AnnonceController.java
-    @PostMapping("/annonces/close")
+    @PostMapping("/close")
     public String closeAnnonce(
             @RequestParam Long id,
             RedirectAttributes redirectAttributes) {
@@ -46,7 +32,7 @@ public class AnnonceController {
         return "redirect:/manage-jobs";
     }
 
-    @PostMapping("/annonces/create")
+    @PostMapping("/create")
     public String createAnnonce(
             @RequestParam(value = "poste", required = true) String posteLibelle,
             @RequestParam(value = "filiere", required = true) Long filiereId,
@@ -112,7 +98,7 @@ public class AnnonceController {
         return "redirect:/manage-jobs";
     }
 
-    @PostMapping("/annonces/update")
+    @PostMapping("/update")
     public String updateAnnonce(
             @RequestParam Long id,
             @RequestParam String poste,
@@ -154,21 +140,5 @@ public class AnnonceController {
         }
 
         return "redirect:/manage-jobs";
-    }
-
-    @GetMapping("/job-listings")
-    public String showAnnoncesPage(HttpServletRequest request) {
-        List<AnnonceDTO> annonces = annonceService.getAllAnnonces();
-        List<Competence> competences = competenceService.findAll();
-        List<Langue> langues = langueService.findAll();
-        List<Ville> villes = villeService.findAll();
-        List<Diplome> diplomes = diplomeService.findAll();
-        request.setAttribute("annonces", annonces);
-        request.setAttribute("competences", competences);
-        request.setAttribute("langues", langues);
-        request.setAttribute("villes", villes);
-        request.setAttribute("diplomes", diplomes);
-
-        return "/job-listings"; // nom du fichier JSP
     }
 }

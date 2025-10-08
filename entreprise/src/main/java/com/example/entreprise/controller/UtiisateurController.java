@@ -8,18 +8,66 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.entreprise.entity.Employe;
 import com.example.entreprise.entity.Utilisateur;
-import com.example.entreprise.service.AuthService;
+import com.example.entreprise.service.UtilisateurService;
+import com.example.entreprise.service.GenreService;
+import com.example.entreprise.service.PosteService;
+import com.example.entreprise.service.UtilisateurService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class AuthController {
+public class UtiisateurController {
 
     @Autowired
-    private AuthService authService;
+    private UtilisateurService utilisateurService;
+
+    @Autowired
+    private PosteService posteService;
+
+    @Autowired
+    private GenreService genreService;
+
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("postes", posteService.findAll());
+        model.addAttribute("genres", genreService.findAll());
+        return "registration";
+    }
+
+    @PostMapping("/register")
+    public String register(HttpServletRequest request, RedirectAttributes redirectAttrs) {
+        String nom = request.getParameter("nom");
+        String prenom = request.getParameter("prenom");
+        String email = request.getParameter("email");
+        String motDePasse = request.getParameter("password");
+        String profil = request.getParameter("profil");
+        String posteStr = request.getParameter("poste");
+        String genreStr = request.getParameter("genre");
+
+        Long posteId = null;
+        if (posteStr != null && !posteStr.isEmpty()) {
+            posteId = Long.parseLong(posteStr);
+        }
+
+        Long genreId = null;
+        if (genreStr != null && !genreStr.isEmpty()) {
+            genreId = Long.parseLong(genreStr);
+        }
+
+        try {
+            utilisateurService.inscrireUtilisateur(nom, prenom, email, motDePasse, profil, posteId, genreId);
+            return "redirect:/";
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+            return "redirect:/register";
+
+        }
+    }
 
     @GetMapping("/")
     public String showLoginPage() {
@@ -32,7 +80,7 @@ public class AuthController {
                         HttpSession session,
                         Model model) {
 
-        Optional<Utilisateur> optUser = authService.authenticate(email, password);
+        Optional<Utilisateur> optUser = utilisateurService.authenticate(email, password);
 
         if (optUser.isEmpty()) {
             model.addAttribute("error", "Email ou mot de passe incorrect.");
@@ -47,7 +95,7 @@ public class AuthController {
         session.setAttribute("initiales", initials.toUpperCase());
 
         // Vérifier rôle employé
-        Optional<Employe> employe = authService.getEmploye(user);
+        Optional<Employe> employe = utilisateurService.getEmploye(user);
         if (employe.isPresent()) {
             session.setAttribute("poste", employe.get().getPoste().getId());
             session.setAttribute("profil", "recruteur");

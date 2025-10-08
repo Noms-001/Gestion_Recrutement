@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface TestPassageRepository extends JpaRepository<TestPassage, TestPassageId> {
     
     @Query("SELECT tp FROM TestPassage tp WHERE tp.candidat.id = :candidatId AND tp.annonce.id = :annonceId")
-    Optional<TestPassage> findByCandidatIdAndTestId(@Param("candidatId") Long candidatId, @Param("annonceId") Long annonceId);
+    Optional<TestPassage> findByCandidatIdAndAnnonceId(@Param("candidatId") Long candidatId, @Param("annonceId") Long annonceId);
     
     boolean existsByCandidatIdAndAnnonceId(Long candidatId, Long AnnonceId);
 }

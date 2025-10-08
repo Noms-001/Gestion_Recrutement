@@ -1,4 +1,4 @@
-package com.example.entreprise.controller;
+package com.example.entreprise.controller.rest;
 
 import com.example.entreprise.service.PosteService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -60,7 +60,7 @@
                                 <input type="text" class="form-control form-control-lg" placeholder="Rechercher un poste, un département, une ville...">
                             </div>
                             <div class="col-md-2">
-                                <button class="btn btn-primary btn-lg w-100">
+                                <button class="btn btn-primary btn-lg w-100" id="btnSearch">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>

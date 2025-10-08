@@ -134,7 +134,7 @@ function setupEventListeners() {
                 `
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Revoir mes réponses</button>
                 <button type="button" class="btn btn-primary" onclick="finishTest(); bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();">Terminer le test</button>
-                `
+                `, false
             );
         }
     });
@@ -292,10 +292,47 @@ function updateTimerDisplay() {
     }
 }
 
+function setReadOnlyMode() {
+    // Désactiver tous les boutons
+    document.querySelectorAll('button').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+    });
+
+    // Désactiver tous les inputs (radio, etc.)
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.disabled = true;
+    });
+
+    // Enlever tous les listeners de clic sur les réponses
+    document.querySelectorAll('.answer-option').forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        opt.classList.add('opacity-75');
+    });
+
+    // Griser la zone principale
+    const mainCard = document.querySelector('.main-content');
+    if (mainCard) {
+        mainCard.classList.add('readonly-mode');
+        mainCard.style.opacity = '0.7';
+    }
+
+    // Supprimer le timer visuellement
+    const timer = document.getElementById('testTimer');
+    if (timer) {
+        timer.style.opacity = '0.5';
+    }
+
+    // Empêcher toute interaction clavier
+    document.addEventListener('keydown', e => e.preventDefault(), { capture: true });
+
+    // Optionnel : message visuel
+    showToast('info', 'Le test est maintenant en lecture seule.');
+}
+
 function finishTest() {
     clearInterval(timerInterval);
 
-    // Calculate score
     let correctAnswers = 0;
     testData.questions.forEach(question => {
         if (testData.answers[question.id] === question.correct) {
@@ -306,8 +343,28 @@ function finishTest() {
     const score = Math.round((correctAnswers / testData.totalQuestions) * 100);
     const passed = score >= testData.scoreMin;
 
-    // Show results
-    showTestResults(score, correctAnswers, passed);
+    fetch(`/annonces/${testData.annonceId}/soumettre`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+            score: score
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            setReadOnlyMode();
+            showTestResults(score, correctAnswers, passed);
+        } else {
+            alert("Erreur : " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur lors de l’envoi du score :", error);
+        alert("Une erreur est survenue lors de la soumission du test.");
+    });
 }
 
 function showTestResults(score, correctAnswers, passed) {

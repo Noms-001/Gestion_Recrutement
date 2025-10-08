@@ -1,19 +1,30 @@
-package com.example.entreprise.controller;
-
-import java.util.List;
+package com.example.entreprise.controller.mvc;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 
-import com.example.entreprise.entity.*;
-import com.example.entreprise.service.*;
+import com.example.entreprise.entity.Candidat;
+import com.example.entreprise.entity.Competence;
+import com.example.entreprise.entity.Education;
+import com.example.entreprise.entity.Experience;
+import com.example.entreprise.entity.Langue;
+import com.example.entreprise.service.CandidatService;
+import com.example.entreprise.service.CompetenceService;
+import com.example.entreprise.service.DiplomeService;
+import com.example.entreprise.service.EducationService;
+import com.example.entreprise.service.ExperienceService;
+import com.example.entreprise.service.FiliereService;
+import com.example.entreprise.service.GenreService;
+import com.example.entreprise.service.LangueService;
+import com.example.entreprise.service.VilleService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class CvController {
+public class CandidatController {
 
     @Autowired
     private CandidatService candidatService;
@@ -83,5 +94,4 @@ public class CvController {
         return "cv-submission";
     }
 
-    
 }
