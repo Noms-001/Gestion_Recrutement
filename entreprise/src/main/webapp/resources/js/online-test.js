@@ -633,3 +633,14 @@ function showTestResults(score) {
 }
 
 window.finishTest = finishTest;
+
+document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    showToast('warning', 'Clic droit désactivé pendant le test');
+});
+document.addEventListener('keydown', e => {
+    if(e.key==='F12' || (e.ctrlKey && e.shiftKey && ['I','C'].includes(e.key)) || (e.ctrlKey && e.key==='u')){
+        e.preventDefault();
+        showToast('warning', 'Outils développeur désactivés pendant le test');
+    }
+});
