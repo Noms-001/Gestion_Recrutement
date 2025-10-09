@@ -32,9 +32,9 @@
                 </div>
                 <div class="calendar col-md-8">
                     <div class="calendar-header">
-                        <button id="prevMonth" class="btn btn-outline-secondary">&lt;</button>
+                        <button id="prevMonth" class="btn btn-outline-secondary"><i class="bi bi-chevron-left"></i></button>
                         <h4 id="monthYear"></h4>
-                        <button id="nextMonth" class="btn btn-outline-secondary">&gt;</button>
+                        <button id="nextMonth" class="btn btn-outline-secondary"><i class="bi bi-chevron-right"></i></button>
                     </div>
                     <div class="calendar-days" id="calendarDays">
                         <!-- Jours générés par JS -->
