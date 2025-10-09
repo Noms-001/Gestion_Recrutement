@@ -3,6 +3,8 @@
     response.sendRedirect("/");
 } %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import= "com.example.entreprise.dto.*, java.util.List" %>
+<% List<CandidatureDTO> candidatures = (List<CandidatureDTO>) request.getAttribute("candidatures");%>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -10,10 +12,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TalentSphere - Tableau de bord</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/img/logo.png">
 </head>
 
 <body>
@@ -159,7 +161,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="text-muted">
                                 <i class="bi bi-info-circle me-1"></i>
-                                247 candidats trouvés
+                                <% if(candidatures != null) { %> <%= candidatures.size() %> <% } %> candidats trouvés
                             </div>
                             <div class="d-flex align-items-center">
                                 <span class="text-muted me-2">Trier par:</span>
@@ -175,365 +177,77 @@
                         <!-- Candidates List -->
                         <div class="row g-4">
                             <!-- Candidate 1 -->
+                             <% if(candidatures != null) { %>
+                                <% for(CandidatureDTO candidature : candidatures) { %>
                             <div class="col-lg-4 col-md-4">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-body">
                                         <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Marie Dubois" class="avatar rounded-circle me-3">
+                                            <img src="${pageContext.request.contextPath}/<%= candidature.photo %>"
+                                                alt="Photo" class="avatar rounded-circle me-3">
                                             <div class="flex-grow-1">
-                                                <h6 class="mb-1">Marie Dubois</h6>
-                                                <p class="text-muted mb-1">Développeur Frontend</p>
+                                                <h6 class="mb-1"><%= candidature.nom %> <%= candidature.prenom %></h6>
+                                                <p class="text-muted mb-1"><%= candidature.descriptionExperience %></p>
                                                 <div class="d-flex align-items-center">
                                                     <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Paris, France</small>
+                                                    <small class="text-muted"><%= candidature.adresse %></small>
                                                 </div>
                                             </div>
-                                            <span class="badge bg-success">Disponible</span>
+                                            <!-- <span class="badge bg-success">Disponible</span> -->
                                         </div>
 
                                         <div class="row g-2 mb-3 text-center">
                                             <div class="col-4">
-                                                <div class="fw-bold text-primary">3 ans</div>
+                                                <div class="fw-bold text-primary"><%= candidature.anneeExperience %> ans</div>
                                                 <small class="text-muted">Expérience</small>
                                             </div>
                                             <div class="col-4">
-                                                <div class="fw-bold text-success">85/100</div>
+                                                <div class="fw-bold text-success"><%= candidature.scoreTest %></div>
                                                 <small class="text-muted">Score test</small>
                                             </div>
                                             <div class="col-4">
-                                                <div class="fw-bold text-info">27 ans</div>
+                                                <div class="fw-bold text-info"><%= candidature.age %> ans</div>
                                                 <small class="text-muted">Âge</small>
                                             </div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <span class="badge bg-primary me-1">React</span>
-                                            <span class="badge bg-primary me-1">JavaScript</span>
-                                            <span class="badge bg-primary">TypeScript</span>
+                                            <% if(candidature.competences != null) { %>
+                                                <% for(String competence : candidature.competences) { %>
+                                                    <span class="badge bg-primary me-1"><%= competence %></span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <small class="text-center">Aucune compétence technique</small>
+                                            <% } %>
                                             <br>
-                                            <span class="badge bg-secondary mt-1 me-1">Anglais</span>
-                                            <span class="badge bg-secondary mt-1">Espagnol</span>
+                                            <% if (candidature.langues != null) { %>
+                                                <% for (String langue : candidature.langues) { %>
+                                                    <span class="badge bg-secondary mt-1 me-1"><%= langue %></span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <small class="text-center">Aucune compétence linguistique</small>
+                                            <% } %>
+
                                         </div>
 
                                         <div class="mb-3">
                                             <small class="text-muted">
                                                 <i class="bi bi-mortarboard me-1"></i>
-                                                Master en Informatique
+                                                <%= candidature.filiere %>
                                             </small>
                                         </div>
 
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-primary btn-sm" onclick="sendEmail('marie-dubois')">
-                                                <i class="bi bi-envelope me-1"></i>
-                                                Envoyer email
+                                                <i class="bi bi-search me-1"></i>
+                                                Voir compatibilité
                                             </button>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Candidate 2 -->
-                            <div class="col-lg-4 col-md-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Thomas Leroy" class="avatar rounded-circle me-3">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">Thomas Leroy</h6>
-                                                <p class="text-muted mb-1">Chef de projet</p>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Lyon, France</small>
-                                                </div>
-                                            </div>
-                                            <span class="badge bg-warning">En entretien</span>
-                                        </div>
-
-                                        <div class="row g-2 mb-3 text-center">
-                                            <div class="col-4">
-                                                <div class="fw-bold text-primary">5 ans</div>
-                                                <small class="text-muted">Expérience</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-warning">72/100</div>
-                                                <small class="text-muted">Score test</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-info">32 ans</div>
-                                                <small class="text-muted">Âge</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <span class="badge bg-success me-1">Agile</span>
-                                            <span class="badge bg-success me-1">Scrum</span>
-                                            <span class="badge bg-info">Management</span>
-                                            <br>
-                                            <span class="badge bg-secondary mt-1 me-1">Français</span>
-                                            <span class="badge bg-secondary mt-1">Anglais</span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                École de Commerce
-                                            </small>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-primary btn-sm" onclick="sendEmail('thomas-leroy')">
-                                                <i class="bi bi-envelope me-1"></i>
-                                                Envoyer email
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Candidate 3 -->
-                            <div class="col-lg-4 col-md-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/1036627/pexels-photo-1036627.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Sophie Bernard" class="avatar rounded-circle me-3">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">Sophie Bernard</h6>
-                                                <p class="text-muted mb-1">Designer UX/UI</p>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Bordeaux, France</small>
-                                                </div>
-                                            </div>
-                                            <span class="badge bg-success">Disponible</span>
-                                        </div>
-
-                                        <div class="row g-2 mb-3 text-center">
-                                            <div class="col-4">
-                                                <div class="fw-bold text-primary">4 ans</div>
-                                                <small class="text-muted">Expérience</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-success">92/100</div>
-                                                <small class="text-muted">Score test</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-info">29 ans</div>
-                                                <small class="text-muted">Âge</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <span class="badge bg-info me-1">Figma</span>
-                                            <span class="badge bg-info me-1">Sketch</span>
-                                            <span class="badge bg-info">Photoshop</span>
-                                            <br>
-                                            <span class="badge bg-secondary mt-1 me-1">Français</span>
-                                            <span class="badge bg-secondary mt-1">Anglais</span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                École d'Art et Design
-                                            </small>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-primary btn-sm"
-                                                onclick="sendEmail('sophie-bernard')">
-                                                <i class="bi bi-envelope me-1"></i>
-                                                Envoyer email
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Candidate 4 -->
-                            <div class="col-lg-4 col-md-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Pierre Martin" class="avatar rounded-circle me-3">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">Pierre Martin</h6>
-                                                <p class="text-muted mb-1">Développeur Backend</p>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Télétravail</small>
-                                                </div>
-                                            </div>
-                                            <span class="badge bg-danger">Non retenu</span>
-                                        </div>
-
-                                        <div class="row g-2 mb-3 text-center">
-                                            <div class="col-4">
-                                                <div class="fw-bold text-primary">2 ans</div>
-                                                <small class="text-muted">Expérience</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-danger">58/100</div>
-                                                <small class="text-muted">Score test</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-info">25 ans</div>
-                                                <small class="text-muted">Âge</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <span class="badge bg-warning me-1">Python</span>
-                                            <span class="badge bg-warning me-1">Django</span>
-                                            <span class="badge bg-secondary">PostgreSQL</span>
-                                            <br>
-                                            <span class="badge bg-secondary mt-1">Français</span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                DUT Informatique
-                                            </small>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-outline-secondary btn-sm" disabled>
-                                                <i class="bi bi-x-circle me-1"></i>
-                                                Non retenu
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Candidate 5 -->
-                            <div class="col-lg-4 col-md-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Lisa Garcia" class="avatar rounded-circle me-3">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">Lisa Garcia</h6>
-                                                <p class="text-muted mb-1">Commerciale</p>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Marseille, France</small>
-                                                </div>
-                                            </div>
-                                            <span class="badge bg-info">Recruté</span>
-                                        </div>
-
-                                        <div class="row g-2 mb-3 text-center">
-                                            <div class="col-4">
-                                                <div class="fw-bold text-primary">6 ans</div>
-                                                <small class="text-muted">Expérience</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-success">88/100</div>
-                                                <small class="text-muted">Score test</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-info">31 ans</div>
-                                                <small class="text-muted">Âge</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <span class="badge bg-success me-1">Vente</span>
-                                            <span class="badge bg-success me-1">CRM</span>
-                                            <span class="badge bg-success">Négociation</span>
-                                            <br>
-                                            <span class="badge bg-secondary mt-1 me-1">Français</span>
-                                            <span class="badge bg-secondary mt-1 me-1">Anglais</span>
-                                            <span class="badge bg-secondary mt-1">Espagnol</span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                Master Commerce International
-                                            </small>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-outline-info btn-sm" disabled>
-                                                <i class="bi bi-check-circle me-1"></i>
-                                                Recruté
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Candidate 6 -->
-                            <div class="col-lg-4 col-md-4">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-start mb-3">
-                                            <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop"
-                                                alt="Alex Johnson" class="avatar rounded-circle me-3">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">Alex Johnson</h6>
-                                                <p class="text-muted mb-1">Data Analyst</p>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="bi bi-geo-alt text-muted me-1"></i>
-                                                    <small class="text-muted">Nantes, France</small>
-                                                </div>
-                                            </div>
-                                            <span class="badge bg-primary">Nouveau</span>
-                                        </div>
-
-                                        <div class="row g-2 mb-3 text-center">
-                                            <div class="col-4">
-                                                <div class="fw-bold text-primary">3 ans</div>
-                                                <small class="text-muted">Expérience</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-success">89/100</div>
-                                                <small class="text-muted">Score test</small>
-                                            </div>
-                                            <div class="col-4">
-                                                <div class="fw-bold text-info">28 ans</div>
-                                                <small class="text-muted">Âge</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <span class="badge bg-warning me-1">Python</span>
-                                            <span class="badge bg-warning me-1">SQL</span>
-                                            <span class="badge bg-warning">Tableau</span>
-                                            <br>
-                                            <span class="badge bg-secondary mt-1 me-1">Français</span>
-                                            <span class="badge bg-secondary mt-1">Anglais</span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="bi bi-mortarboard me-1"></i>
-                                                Master Data Science
-                                            </small>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button class="btn btn-primary btn-sm" onclick="sendEmail('alex-johnson')">
-                                                <i class="bi bi-envelope me-1"></i>
-                                                Envoyer email
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <% } %>
+                            <% } %>
                         </div>
 
                         <!-- Pagination -->

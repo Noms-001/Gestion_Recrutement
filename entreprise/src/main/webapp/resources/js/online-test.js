@@ -251,11 +251,11 @@ function startTimer() {
 
         // Alertes de temps
         if (testData.timeRemaining === 30) {
-            showToast('danger', 'Attention: Il ne vous reste que 30 secondes !');
+            showToast('danger', 'Attention: Il ne vous reste que 30 s !');
         } else if (testData.timeRemaining === 60) {
-            showToast('warning', 'Attention: Il ne vous reste qu\'1 minute !');
+            showToast('warning', 'Attention: Il ne vous reste qu\'1 min !');
         } else if (testData.timeRemaining === 300) {
-            showToast('warning', 'Attention: Il ne vous reste que 5 minutes !');
+            showToast('warning', 'Attention: Il ne vous reste que 5 min !');
         }
     }, 1000);
 }

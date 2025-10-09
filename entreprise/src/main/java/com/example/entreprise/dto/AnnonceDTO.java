@@ -10,6 +10,7 @@ import com.example.entreprise.entity.Annonce;
 public class AnnonceDTO {
     public Long id;
     public String posteLibelle;
+    public String filiereLibelle;
     public Long filiereId;
     public Long diplomeId;
     public String departementNom;
@@ -61,6 +62,7 @@ public class AnnonceDTO {
         this.villeNom = annonce.getVille() != null ? annonce.getVille().getNom() : null;
         this.villeId = annonce.getVille() != null ? annonce.getVille().getId() : null;
         this.diplomeId = annonce.getDiplome() != null ? annonce.getDiplome().getId() : null;
+        this.filiereLibelle = annonce.getFiliere() != null ? annonce.getFiliere().getLibelle() : null;
         this.filiereId = annonce.getFiliere() != null ? annonce.getFiliere().getId() : null;
         this.genreId = annonce.getGenre() != null ? annonce.getGenre().getId() : null;
         this.description = annonce.getDescription();

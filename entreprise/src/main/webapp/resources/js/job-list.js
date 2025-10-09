@@ -53,7 +53,10 @@ function openJobDetails(jobId) {
             document.getElementById("jobDetailsTitle").textContent = job.posteLibelle;
 
             let detailsContent = `
-                <p class="fw-bold">${job.departementNom} • ${job.villeNom}</p>
+                <p class="fw-bold">
+                    <i class="bi bi-building"></i> ${job.departementNom} • ${job.villeNom} </br>
+                    <small><i class="bi bi-mortarboard"></i> ${job.filiereLibelle}</small>
+                </p>
                 <p>${job.description}</p>
                 
                 <div class="row mt-4">

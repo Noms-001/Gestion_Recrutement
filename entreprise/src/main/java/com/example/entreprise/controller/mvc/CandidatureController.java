@@ -1,8 +1,12 @@
 package com.example.entreprise.controller.mvc;
 
 import com.example.entreprise.service.*;
+import com.example.entreprise.dto.CandidatureDTO;
 import com.example.entreprise.entity.*;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -81,5 +85,12 @@ public class CandidatureController {
     public String error(@ModelAttribute("error") String error, Model model) {
         model.addAttribute("errorMessage", error);
         return "error-candidature";
+    }
+
+    @GetMapping("/annonce/{id}")
+    public String getCandidaturesByAnnonce(@PathVariable("id") Long annonceId, Model model) {
+        List<CandidatureDTO> candidatures = candidatureService.getCandidaturesByAnnonceId(annonceId);
+        model.addAttribute("candidatures", candidatures);
+        return "candidates";
     }
 }

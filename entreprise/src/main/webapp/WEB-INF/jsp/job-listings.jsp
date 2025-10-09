@@ -106,6 +106,12 @@
                                                             </p>
                                                             <div class="d-flex flex-wrap gap-2">
                                                                 <!-- Compétences -->
+                                                                 <% if (annonce.competencesObligatoires != null) { %>
+                                                                    <% for (String competence : annonce.competencesObligatoires) { %>
+                                                                        <span class="badge bg-primary"><%= competence %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.competences != null) { %>
                                                                     <% for (String competence : annonce.competences) { %>
                                                                         <span class="badge bg-primary"><%= competence %></span>
@@ -113,6 +119,12 @@
                                                                 <% } %>
                                                                 
                                                                 <!-- Langues -->
+                                                                 <% if (annonce.languesObligatoires != null) { %>
+                                                                    <% for (String langue : annonce.languesObligatoires) { %>
+                                                                        <span class="badge bg-info"><%= langue %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.langues != null) { %>
                                                                     <% for (String langue : annonce.langues) { %>
                                                                         <span class="badge bg-info"><%= langue %></span>

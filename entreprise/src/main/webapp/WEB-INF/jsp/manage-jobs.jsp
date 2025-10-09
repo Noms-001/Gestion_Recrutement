@@ -169,11 +169,11 @@
                                                             <ul class="dropdown-menu">
                                                                 <% if(!annonce.getFerme()) { %>
                                                                     <li><a class="dropdown-item" href="#" onclick="editJobOffer(<%= annonce.getId() %>)"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
-                                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
+                                                                    <li><a class="dropdown-item" href="/candidature/annonce/<%= annonce.getId() %>"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
                                                                     <hr class="dropdown-divider">
                                                                     <li><a class="dropdown-item" href="#" onclick="closeJobOffer(<%= annonce.getId() %>)"><i class="bi bi-x-circle me-2"></i>Fermer l'annonce</a></li>
                                                                 <% } else { %>
-                                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
+                                                                    <li><a class="dropdown-item" href="/candidature/annonce/<%= annonce.getId() %>"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
                                                                 <% } %>
                                                             </ul>
                                                         </div>

@@ -4,6 +4,7 @@ import com.example.entreprise.entity.Candidature;
 import com.example.entreprise.entity.Education;
 import com.example.entreprise.entity.Experience;
 import com.example.entreprise.entity.Candidat;
+import com.example.entreprise.dto.CandidatureDTO;
 import com.example.entreprise.entity.Annonce;
 import com.example.entreprise.entity.AnnonceCompetence;
 import com.example.entreprise.entity.AnnonceLangue;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CandidatureService {
@@ -180,5 +182,12 @@ public class CandidatureService {
         return candidatureRepository
                     .findByCandidatIdAndAnnonceId(candidatId, annonceId)
                     .orElse(null);
+    }
+
+    public List<CandidatureDTO> getCandidaturesByAnnonceId(Long annonceId) {
+        List<Candidature> candidatures = candidatureRepository.findByAnnonceId(annonceId);
+        return candidatures.stream()
+                .map(CandidatureDTO::fromCandidature)
+                .collect(Collectors.toList());
     }
 }
