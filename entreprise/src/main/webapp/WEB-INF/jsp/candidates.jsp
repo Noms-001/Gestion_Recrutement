@@ -3,8 +3,13 @@
     response.sendRedirect("/");
 } %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import= "com.example.entreprise.dto.*, java.util.List" %>
-<% List<CandidatureDTO> candidatures = (List<CandidatureDTO>) request.getAttribute("candidatures");%>
+<%@ page import= "com.example.entreprise.dto.*, com.example.entreprise.entity.*, java.util.List" %>
+<% List<CandidatureDTO> candidatures = (List<CandidatureDTO>) request.getAttribute("candidatures"); %>
+<% List<Ville> villes = (List<Ville>) request.getAttribute("villes"); %>
+<% List<Competence> competences = (List<Competence>) request.getAttribute("competences"); %>
+<% List<Langue> langues = (List<Langue>) request.getAttribute("langues"); %>
+<% List<Diplome> diplomes = (List<Diplome>) request.getAttribute("diplomes"); %>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -15,6 +20,7 @@
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/compatibilite.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/img/logo.png">
 </head>
 
@@ -69,10 +75,11 @@
                                         <label for="proximityFilter" class="form-label">Proximité</label>
                                         <select class="form-select" id="proximityFilter">
                                             <option value="">Toute localisation</option>
-                                            <option value="local">Local (Paris)</option>
-                                            <option value="idf">Île-de-France</option>
-                                            <option value="france">France</option>
-                                            <option value="remote">Télétravail</option>
+                                            <% if(villes != null) { %>
+                                                <% for(Ville ville : villes) { %>
+                                                    <option value="<%= ville.getId() %>"><%= ville.getNom() %></option>
+                                                <% } %>
+                                            <% } %>
                                         </select>
                                     </div>
 
@@ -81,11 +88,11 @@
                                         <label for="degreeFilter" class="form-label">Diplôme minimum</label>
                                         <select class="form-select" id="degreeFilter">
                                             <option value="">Tous niveaux</option>
-                                            <option value="bac">Baccalauréat</option>
-                                            <option value="bac2">Bac+2</option>
-                                            <option value="bac3">Bac+3</option>
-                                            <option value="bac5">Bac+5</option>
-                                            <option value="doctorat">Doctorat</option>
+                                            <% if(diplomes != null) { %>
+                                                <% for(Diplome diplome : diplomes) { %>
+                                                    <option value="<%= diplome.getId() %>"><%= diplome.getLibelle() %></option>
+                                                <% } %>
+                                            <% } %>
                                         </select>
                                     </div>
                                 </div>
@@ -98,16 +105,11 @@
                                         <div class="input-group">
                                             <select class="form-select" id="skillsFilter">
                                                 <option value="">Choisir...</option>
-                                                <option value="javascript">JavaScript</option>
-                                                <option value="react">React</option>
-                                                <option value="typescript">TypeScript</option>
-                                                <option value="python">Python</option>
-                                                <option value="php">PHP</option>
-                                                <option value="java">Java</option>
-                                                <option value="css">CSS</option>
-                                                <option value="html">HTML</option>
-                                                <option value="nodejs">Node.js</option>
-                                                <option value="angular">Angular</option>
+                                                <% if(competences != null) { %>
+                                                    <% for(Competence competence : competences) { %>
+                                                        <option value="<%= competence.getId() %>"><%= competence.getLibelle() %></option>
+                                                    <% } %>
+                                                <% } %>
                                             </select>
                                             <button type="button" class="btn btn-outline-primary"
                                                 onclick="addTag('skills')">
@@ -123,13 +125,11 @@
                                         <div class="input-group">
                                             <select class="form-select" id="languagesFilter">
                                                 <option value="">Choisir...</option>
-                                                <option value="francais">Français</option>
-                                                <option value="anglais">Anglais</option>
-                                                <option value="espagnol">Espagnol</option>
-                                                <option value="allemand">Allemand</option>
-                                                <option value="italien">Italien</option>
-                                                <option value="chinois">Chinois</option>
-                                                <option value="japonais">Japonais</option>
+                                                <% if(langues != null) { %>
+                                                    <% for(Langue langue : langues) { %>
+                                                        <option value="<%= langue.getId() %>"><%= langue.getLibelle() %></option>
+                                                    <% } %>
+                                                <% } %>
                                             </select>
                                             <button type="button" class="btn btn-outline-primary"
                                                 onclick="addTag('languages')">
@@ -202,8 +202,10 @@
                                                 <small class="text-muted">Expérience</small>
                                             </div>
                                             <div class="col-4">
-                                                <div class="fw-bold text-success"><%= candidature.scoreTest %></div>
-                                                <small class="text-muted">Score test</small>
+                                                <% if(candidature.scoreTest != null) { %>
+                                                    <div class="fw-bold text-success"><%= candidature.scoreTest %></div>
+                                                    <small class="text-muted">Score test</small>
+                                                <% } %>
                                             </div>
                                             <div class="col-4">
                                                 <div class="fw-bold text-info"><%= candidature.age %> ans</div>
@@ -238,7 +240,7 @@
                                         </div>
 
                                         <div class="d-grid gap-2">
-                                            <button class="btn btn-primary btn-sm" onclick="sendEmail('marie-dubois')">
+                                            <button class="btn btn-primary btn-sm" onclick="evaluateCompatibility('<%= candidature.getId() %>')">
                                                 <i class="bi bi-search me-1"></i>
                                                 Voir compatibilité
                                             </button>
@@ -251,26 +253,12 @@
                         </div>
 
                         <!-- Pagination -->
+                        <% if(candidatures.size() != 0) { %>
                         <div class="d-flex justify-content-center mt-4">
                             <nav>
                                 <ul class="pagination">
                                     <li class="page-item disabled">
                                         <span class="page-link">Précédent</span>
-                                    </li>
-                                    <li class="page-item active">
-                                        <span class="page-link">1</span>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">2</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">3</a>
-                                    </li>
-                                    <li class="page-item">
-                                        <span class="page-link">...</span>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">12</a>
                                     </li>
                                     <li class="page-item">
                                         <a class="page-link" href="#">Suivant</a>
@@ -278,10 +266,28 @@
                                 </ul>
                             </nav>
                         </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
+
+
+    <div class="modal fade" id="compatibilityModal" tabindex="-1" aria-labelledby="compatibilityModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="compatibilityModalLabel">
+                        <i class="bi bi-graph-up-arrow me-2"></i>Compatibility Evaluation Result
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent">
+                    <!-- Content will be dynamically populated -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
@@ -295,8 +301,9 @@
             poste: "<%= session.getAttribute("poste") %>"
         };
     </script>
-<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/candidat-tag.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/compatibilite.js"></script>
 </body>
 
 </html>

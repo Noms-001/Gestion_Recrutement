@@ -1,14 +1,23 @@
 package com.example.entreprise.dto;
 
-import com.example.entreprise.entity.*;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.entreprise.entity.Annonce;
+import com.example.entreprise.entity.Candidat;
+import com.example.entreprise.entity.Candidature;
+import com.example.entreprise.entity.Competence;
+import com.example.entreprise.entity.Experience;
+import com.example.entreprise.entity.Langue;
+import com.example.entreprise.entity.TestPassage;
+
 public class CandidatureDTO {
+    private Long id;
     public String nom;
     public String prenom;
     public String adresse;
@@ -21,8 +30,28 @@ public class CandidatureDTO {
     public List<String> competences;
     public List<String> langues;
     public String filiere;
+    private double scoreGlobal;
+    
+    public double getScoreGlobal() {
+        return scoreGlobal;
+    }
 
-    private CandidatureDTO() {}
+    public void setScoreGlobal(double scoreGlobal) {
+        this.scoreGlobal = scoreGlobal;
+    }
+
+    private Map<String, Double> scores = new HashMap<>();
+    private Map<String, List<String>> correspondances = new HashMap<>();
+
+    public void addScore(String critere, double score) {
+        scores.put(critere, score);
+    }
+
+    public void addCorrespondance(String critere, List<String> valeurs) {
+        correspondances.put(critere, valeurs);
+    }
+
+    public CandidatureDTO() {}
 
     public static CandidatureDTO fromCandidature(Candidature candidature) {
         if (candidature == null || candidature.getCandidat() == null) return null;
@@ -30,6 +59,7 @@ public class CandidatureDTO {
         Candidat candidat = candidature.getCandidat();
         CandidatureDTO dto = new CandidatureDTO();
 
+        dto.setId(candidature.getId());
         dto.nom = candidat.getUtilisateur() != null ? candidat.getUtilisateur().getNom() : null;
         dto.prenom = candidat.getUtilisateur() != null ? candidat.getUtilisateur().getPrenom() : null;
         dto.adresse = candidat.getAdresse();
@@ -82,5 +112,21 @@ public class CandidatureDTO {
                         .collect(Collectors.toList()) : List.of();
 
         return dto;
+    }
+
+    public Map<String, Double> getScores() {
+        return scores;
+    }
+
+    public Map<String, List<String>> getCorrespondances() {
+        return correspondances;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
