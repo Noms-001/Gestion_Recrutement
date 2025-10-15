@@ -203,7 +203,7 @@
                                             </div>
                                             <div class="col-4">
                                                 <% if(candidature.scoreTest != null) { %>
-                                                    <div class="fw-bold text-success"><%= candidature.scoreTest %></div>
+                                                    <div class="fw-bold text-success"><%= candidature.scoreTest %>/<%= candidature.scoreTotal %></div>
                                                     <small class="text-muted">Score test</small>
                                                 <% } %>
                                             </div>
@@ -235,14 +235,14 @@
                                         <div class="mb-3">
                                             <small class="text-muted">
                                                 <i class="bi bi-mortarboard me-1"></i>
-                                                <%= candidature.filiere %>
+                                                <%= candidature.diplome %> en <%= candidature.filiere %>
                                             </small>
                                         </div>
 
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-primary btn-sm" onclick="evaluateCompatibility('<%= candidature.getId() %>')">
                                                 <i class="bi bi-search me-1"></i>
-                                                Voir compatibilité
+                                                Compatibilité du profil
                                             </button>
                                         </div>
                                     </div>

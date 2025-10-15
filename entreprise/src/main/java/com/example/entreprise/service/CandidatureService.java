@@ -266,6 +266,9 @@ public class CandidatureService {
 
         CandidatureDTO dto = new CandidatureDTO();
         dto.setId(candidatureId);
+        dto.nom = candidat.getUtilisateur().getNom();
+        dto.prenom = candidat.getUtilisateur().getPrenom();
+        dto.photo = candidat.getPhoto();
 
         double totalScore = 0;
 

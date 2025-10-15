@@ -170,7 +170,7 @@ function updateAnnonceTable(annonces) {
 
         const showCloseAction = !annonce.ferme && (!annonce.dateLimite || new Date(annonce.dateLimite) >= new Date());
         const urgentBadge = annonce.urgent && !annonce.ferme 
-            ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' 
+            ? '<i class="fs-6 bi bi-exclamation-triangle-fill me-1 text-danger"></i>' 
             : '';
 
         // Version avec Template Literals (plus lisible)
@@ -251,7 +251,7 @@ function populateModalWithData(annonce) {
     document.getElementById('annonceId').value = annonce.id;
     document.getElementById('jobTitle').value = annonce.posteLibelle || '';
     document.getElementById('jobDepartment').value = annonce.departementId || '';
-    document.getElementById('age').value = annonce.ageMinimun || '';
+    document.getElementById('age').value = annonce.ageMinimum || '';
     document.getElementById('experience').value = annonce.anneeExperience || '';
     document.getElementById('location').value = annonce.villeId || '';
     document.getElementById('gender').value = annonce.genreId || '';

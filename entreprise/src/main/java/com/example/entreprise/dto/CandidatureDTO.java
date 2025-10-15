@@ -8,13 +8,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.entreprise.entity.Annonce;
-import com.example.entreprise.entity.Candidat;
-import com.example.entreprise.entity.Candidature;
-import com.example.entreprise.entity.Competence;
-import com.example.entreprise.entity.Experience;
-import com.example.entreprise.entity.Langue;
-import com.example.entreprise.entity.TestPassage;
+import com.example.entreprise.entity.*;
 
 public class CandidatureDTO {
     private Long id;
@@ -25,13 +19,15 @@ public class CandidatureDTO {
     public String descriptionExperience;
     public Double anneeExperience;
     public LocalDate dateCandidature;
-    public Integer scoreTest; 
+    public Integer scoreTest;
+    public Integer scoreTotal;
     public Integer age;
     public List<String> competences;
     public List<String> langues;
     public String filiere;
+    public String diplome;
     private double scoreGlobal;
-    
+
     public double getScoreGlobal() {
         return scoreGlobal;
     }
@@ -51,10 +47,12 @@ public class CandidatureDTO {
         correspondances.put(critere, valeurs);
     }
 
-    public CandidatureDTO() {}
+    public CandidatureDTO() {
+    }
 
     public static CandidatureDTO fromCandidature(Candidature candidature) {
-        if (candidature == null || candidature.getCandidat() == null) return null;
+        if (candidature == null || candidature.getCandidat() == null)
+            return null;
 
         Candidat candidat = candidature.getCandidat();
         CandidatureDTO dto = new CandidatureDTO();
@@ -73,7 +71,7 @@ public class CandidatureDTO {
                 .max(Comparator.comparing(e -> {
                     int debut = e.getDebutAnnee() != null ? e.getDebutAnnee() : 0;
                     int fin = e.getFinAnnee() != null ? e.getFinAnnee() : 0;
-                    return fin - debut; 
+                    return fin - debut;
                 }))
                 .orElse(null);
 
@@ -83,8 +81,28 @@ public class CandidatureDTO {
                 dto.anneeExperience = (double) (exp.getFinAnnee() - exp.getDebutAnnee());
             }
             dto.filiere = exp.getFiliere() != null ? exp.getFiliere().getLibelle() : null;
+
+            // Récupérer le diplôme avec la même filière
+            Diplome diplomeCorrespondant = candidat.getEducations().stream()
+                    .filter(edu -> edu.getFiliere().getId().equals(exp.getFiliere().getId()))
+                    .map(Education::getDiplome)
+                    .findFirst()
+                    .orElse(null);
+
+            dto.diplome = diplomeCorrespondant != null ? diplomeCorrespondant.getLibelle() : null;
+
         } else if (!candidat.getExperiences().isEmpty()) {
             dto.filiere = candidat.getExperiences().get(0).getFiliere().getLibelle();
+
+            // Récupérer également le diplôme pour la première expérience
+            Diplome diplomeCorrespondant = candidat.getEducations().stream()
+                    .filter(edu -> edu.getFiliere().getId()
+                            .equals(candidat.getExperiences().get(0).getFiliere().getId()))
+                    .map(Education::getDiplome)
+                    .findFirst()
+                    .orElse(null);
+
+            dto.diplome = diplomeCorrespondant != null ? diplomeCorrespondant.getLibelle() : null;
         }
 
         // Score du test passé pour cette annonce
@@ -93,6 +111,11 @@ public class CandidatureDTO {
                 .findFirst()
                 .orElse(null);
         dto.scoreTest = tp != null ? tp.getScore() : null;
+        dto.scoreTotal = 0;
+        List<Question> questions = tp.getAnnonce().getTest().getQuestions();
+        for(Question q : questions) {
+            dto.scoreTotal += q.getPoint(); 
+        }
 
         // Age
         if (candidat.getDateNaissance() != null) {
@@ -100,16 +123,14 @@ public class CandidatureDTO {
         }
 
         // Compétences
-        dto.competences = candidat.getCompetences() != null ? 
-                candidat.getCompetences().stream()
-                        .map(Competence::getLibelle)
-                        .collect(Collectors.toList()) : List.of();
+        dto.competences = candidat.getCompetences() != null ? candidat.getCompetences().stream()
+                .map(Competence::getLibelle)
+                .collect(Collectors.toList()) : List.of();
 
         // Langues
-        dto.langues = candidat.getLangues() != null ?
-                candidat.getLangues().stream()
-                        .map(Langue::getLibelle)
-                        .collect(Collectors.toList()) : List.of();
+        dto.langues = candidat.getLangues() != null ? candidat.getLangues().stream()
+                .map(Langue::getLibelle)
+                .collect(Collectors.toList()) : List.of();
 
         return dto;
     }

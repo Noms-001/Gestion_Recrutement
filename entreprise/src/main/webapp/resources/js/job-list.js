@@ -68,8 +68,7 @@ function openJobDetails(jobId) {
             // Diplôme
             if (job.diplomeLibelle) {
                 const obligatoire = job.diplomeObligatoire ? ' <span class="text-danger">*</span>' : '';
-                const niveau = job.diplomeNiveau ? ` (Niveau ${job.diplomeNiveau})` : '';
-                detailsContent += `<li><i class="bi bi-award text-warning me-2"></i>${job.diplomeLibelle}${niveau}${obligatoire}</li>`;
+                detailsContent += `<li><i class="bi bi-award text-warning me-2"></i>${job.diplomeLibelle}${obligatoire}</li>`;
             }
 
             // Expérience
@@ -539,7 +538,7 @@ function updateJobsList(annonces) {
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="card-title mb-1">${annonce.posteLibelle || 'Poste non spécifié'}</h5>
-                                <p class="text-muted mb-2">${annonce.urgent ? '<i class="bi bi-exclamation-triangle me-1 text-danger"></i>' : ''} ${annonce.departementNom || ''} • ${annonce.villeNom || 'Lieu non spécifié'}</p>
+                                <p class="text-muted mb-2">${annonce.urgent ? '<i class="fs-6 bi bi-exclamation-triangle-fill me-1 text-danger"></i>' : ''} ${annonce.departementNom || ''} • ${annonce.villeNom || 'Lieu non spécifié'}</p>
                                 <p class="card-text mb-3">
                                     ${(annonce.description || '').substring(0, 150)}...
                                 </p>

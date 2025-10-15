@@ -18,4 +18,5 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
     long countByAnnonceId(@Param("annonceId") Long annonceId);
 
     List<Candidature> findByAnnonceId(Long annonceId);
+    Optional<Candidature> findByCandidatId(Integer candidatId);
 }

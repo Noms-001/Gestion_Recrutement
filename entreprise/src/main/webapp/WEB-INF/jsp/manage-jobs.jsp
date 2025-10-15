@@ -107,7 +107,9 @@
                                 </div>
                             </div>
                         </div>
-
+                    <div class="text-end mb-2">
+                        <small><i class="fs-6 bi bi-exclamation-triangle-fill text-danger me-1"></i> Indique une annonce urgente</small>
+                    </div>
                     <!-- Job Offers Table -->
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">
@@ -138,7 +140,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="fw-medium"><%= annonce.getPoste().getLibelle() %></div>
-                                                    <small class="text-muted"> <%= annonce.getUrgent() == true && annonce.getFerme() == false ? "<i class=\"bi bi-exclamation-triangle me-1 text-danger\"></i>" : ""%> <%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> <%= annonce.getVille() != null ? " • " + annonce.getVille().getNom() : "" %></small>
+                                                    <small class="text-muted"> <%= annonce.getUrgent() == true && annonce.getFerme() == false ? "<i class=\"fs-6 bi bi-exclamation-triangle-fill me-1 text-danger\"></i>" : ""%> <%= annonce.getAnneeExperience() != null ? annonce.getAnneeExperience() + " ans" : "" %> <%= annonce.getVille() != null ? " • " + annonce.getVille().getNom() : "" %></small>
                                                 </td>
                                                 <td>
                                                     <span class="badge <%=color%>"><%= annonce.getPoste().getDepartement().getNom() %></span>
@@ -167,7 +169,7 @@
                                                                 Actions
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <% if(!annonce.getFerme()) { %>
+                                                                <% if(!annonce.getFerme() && (annonce.getDateLimite() == null || annonce.getDateLimite().isAfter(LocalDate.now()))) { %>
                                                                     <li><a class="dropdown-item" href="#" onclick="editJobOffer(<%= annonce.getId() %>)"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
                                                                     <li><a class="dropdown-item" href="/candidature/annonce/<%= annonce.getId() %>"><i class="bi bi-eye me-2"></i>Voir les candidatures</a></li>
                                                                     <hr class="dropdown-divider">

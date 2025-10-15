@@ -20,33 +20,43 @@ function loadNavbar(notificationInfo = {}) {
             <div class="d-flex align-items-center gap-3">
                 <!-- Notifications -->
                 <div class="dropdown">
-                    <button class="notification-btn" type="button" data-bs-toggle="dropdown">
+                    <button class="notification-btn" type="button" data-bs-toggle="dropdown" onclick="markAllRead()">
                         <i class="bi bi-bell"></i>
                         ${notifCount != 0 ? `<span class="notification-badge">${notifCount}</span>` : ""}
                     </button>
                     <div class="dropdown-menu dropdown-menu-end" style="width: 320px;">
                         <div class="dropdown-header d-flex justify-content-between align-items-center">
                             <span>Notifications</span>
-                            <button class="btn btn-link btn-sm text-primary p-0" onclick="markAllRead()">Tout marquer comme lu</button>
                         </div>
                         <div class="dropdown-divider"></div>
-                        ${notifications.map(n => `
-                        <a class="dropdown-item py-3" href="#">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0">
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        <i class="bi bi-info-circle"></i>
+                        <div class="notifications">
+                        ${notifications && notifications.length > 0 
+                            ? notifications.map(n => `
+                                    <a class="dropdown-item py-3 " href="#">
+                                        <div class="d-flex">
+                                            <div class="flex-shrink-0">
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-1">${n.titre}</h6>
+                                                <p class="mb-0 ms-4 small text-muted text-wrap">${n.message}</p>
+                                                <small class="text-muted">${timeAgo(new Date(n.createdAt))}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                            `).join('') 
+                            : `
+                                <div class="dropdown-item py-4">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-bell-slash display-6 d-block mb-2"></i>
+                                        <span class="small">Aucune notification</span>
                                     </div>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <p class="mb-0 small text-muted text-wrap">${n.message}</p>
-                                    <small class="text-muted">${timeAgo(new Date(n.createdAt))}</small>
-                                </div>
-                            </div>
-                        </a>
-                        `).join('')}
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-center text-primary" href="#">Voir toutes les notifications</a>
+                            `
+                        }
+                        </div>
                     </div>
                 </div>
 
@@ -71,10 +81,6 @@ function loadNavbar(notificationInfo = {}) {
                                 </div>
                             </div>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mon profil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Paramètres</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle me-2"></i>Aide</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Se déconnecter</a></li>
                     </ul>
@@ -110,11 +116,11 @@ function loadSidebar() {
             <a href="/job-listings" class="nav-link ${currentPage === 'job-listings' ? 'active' : ''}">
                 <i class="bi bi-search"></i><span>Offres d'emploi</span>
             </a>
-            <a href="/online-test" class="nav-link ${currentPage === 'online-test' ? 'active' : ''}">
-                <i class="bi bi-clipboard-check"></i><span>Passer un test</span>
+            <a href="#" class="nav-link ${currentPage === 'candidates' ? 'active' : ''}">
+                <i class="bi bi-bell"></i><span>Mes notifications</span>
             </a>
-            <a href="/candidates" class="nav-link ${currentPage === 'candidates' ? 'active' : ''}">
-                <i class="bi bi-people"></i><span>Annuaire candidats</span>
+            <a href="#" class="nav-link ${currentPage === 'online-test' ? 'active' : ''}">
+                <i class="bi bi-clipboard-check"></i><span>Mes annonces</span>
             </a>
         </div>
     `;
@@ -147,19 +153,22 @@ function loadSidebar() {
 
 // ======= Utility =======
 
-// Convert date to "x minutes/heure/jours ago"
 function timeAgo(date) {
     const now = new Date();
-    const diff = Math.floor((now - date) / 1000); // seconds
-    if (diff < 60) return `${diff} sec`;
-    if (diff < 3600) return `${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} h`;
-    return `${Math.floor(diff / 86400)} j`;
+    const diff = Math.floor((now - date) / 1000); 
+    if (diff < 60) return `À l’instant`;
+    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
+    if (diff < 604800) return `Il y a ${Math.floor(diff / 86400)} j`;
+    if (diff < 2592000) return `Il y a ${Math.floor(diff / 604800)} sem`;
+    if (diff < 31536000) return `Il y a ${Math.floor(diff / 2592000)} mois`;
+    return `Il y a ${Math.floor(diff / 31536000)} an${Math.floor(diff / 31536000) > 1 ? 's' : ''}`;
 }
 
 // Mark all notifications as read (example placeholder)
 function markAllRead() {
-    document.querySelectorAll('.notification-badge').forEach(b => b.textContent = '0');
+    fetch("localhost:8080/api/notifications/read");
+    document.querySelectorAll('.notification-badge').forEach(b => b.style.display = "none");
 }
 
 // ======= Initialize =======
@@ -173,6 +182,17 @@ fetch(`/api/notifications?id_utilisateur=${currentUser.id}`)
         loadNavbar([]);
         loadSidebar();
     });
+
+function reloadNavBar() {
+    fetch(`/api/notifications?id_utilisateur=${currentUser.id}`)
+    .then(res => res.json())
+    .then(data => {
+        loadNavbar(data);
+    })
+    .catch(() => {
+        loadNavbar([]);
+    });
+}
 
 
 // Initialize Sidebar
@@ -345,18 +365,15 @@ function setLoadingState(element, loading = true) {
 document.addEventListener('DOMContentLoaded', function () {
     initializeTooltips();
     initializeAutoResize();
-
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
 });
 
+// Rafraîchir automatiquement les "timeAgo" toutes les 60 secondes
+setInterval(() => {
+    document.querySelectorAll('.notifications small.text-muted').forEach(el => {
+        const createdAtText = el.getAttribute('data-created-at');
+        if (createdAtText) {
+            const date = new Date(createdAtText);
+            el.textContent = timeAgo(date);
+        }
+    });
+}, 60000); 

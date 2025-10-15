@@ -20,7 +20,7 @@
                     <div class="card-body p-5">
                         <div class="text-center mb-4 logo">
                             <img src="${pageContext.request.contextPath}/resources/img/logo.png" alt="logo" class="logo-img mb-3">
-                            <h1 class="fw-bold text-primary" style="margin-left: -15%;">Talent<small style="margin-top: -17%;">Sphere</small></h1>
+                            <h1 class="fw-bold text-primary">Talent<small>Sphere</small></h1>
                             <p class="text-muted">Créer votre compte</p>
                         </div>
                             

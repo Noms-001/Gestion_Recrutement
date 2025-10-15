@@ -59,7 +59,6 @@ function renderResult(resultDto) {
         return;
     }
 
-    const totalCriteria = Object.keys(resultDto.scores).length;
     let criteriaHTML = '';
 
     for (const [criterion, score] of Object.entries(resultDto.scores)) {
@@ -77,7 +76,7 @@ function renderResult(resultDto) {
                         ${criterion}
                         ${hasMatches && matches.length > 0 ? `<i class="bi bi-eye ms-2 toggle-icon"></i>` : ''}
                     </div>
-                    <div class="criteria-score ${scoreClass}">${score}<small>/100</small></div>
+                    <div class="criteria-score ${scoreClass}">${score}<small>%</small></div>
                 </div>
 
                 ${hasMatches && matches.length > 0 ? `
@@ -93,8 +92,13 @@ function renderResult(resultDto) {
 
     modalBody.innerHTML = `
         <div class="text-center mb-3">
-            <span class="badge bg-secondary fs-6">Candidature ID: ${resultDto.id}</span>
+            <img src="${window.appContext ? window.appContext : ''}/${resultDto.photo != null ? resultDto.photo : 'photo.png'}" 
+                class="rounded-circle shadow-sm mb-2" 
+                style="width: 120px; height: 120px; object-fit: cover;">
+
+            <div class="fw-bold fs-5">${resultDto.nom} ${resultDto.prenom}</div>
         </div>
+
 
         <div class="score-global mb-3">
             <p class="score-number">${resultDto.scoreGlobal.toFixed(2)}</p>

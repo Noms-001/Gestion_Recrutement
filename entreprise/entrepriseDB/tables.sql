@@ -237,9 +237,13 @@ CREATE TABLE entretien (
   id_entretien INT AUTO_INCREMENT PRIMARY KEY,
   id_candidature INT NOT NULL,
   id_employe INT NOT NULL,
-  date_entretien DATE NOT NULL,
-  score FLOAT,
+  date_entretien DATETIME NOT NULL,
+  score_technique FLOAT,
+  score_comportemental FLOAT,
+  score_culturel FLOAT,
   compte_rendu TEXT,
+  point_fort TEXT,
+  amelioration TEXT,
   FOREIGN KEY (id_candidature) REFERENCES candidature(id_candidature)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_employe) REFERENCES employe(id_employe)
@@ -262,8 +266,9 @@ CREATE TABLE notification (
   id_notification INT AUTO_INCREMENT PRIMARY KEY,
   message VARCHAR(255) NOT NULL,
   id_utilisateur INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  titre VARCHAR(255),
   lu BOOLEAN,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
