@@ -207,6 +207,7 @@
                 </div>
                 <div class="modal-body">
                     <form class="needs-validation" id="annonceForm" method="post" action="${pageContext.request.contextPath}/annonces/create">
+                        <input type="hidden" id="debutEntretien" name="debutEntretien">
                         <div class="row">
                             <div class="col-md-8">
                                 <input type="hidden" id="annonceId" name="id">
@@ -268,7 +269,7 @@
                                             <div class="col-md-6">
                                                 <label for="gender" class="form-label">Genre</label>
                                                 <select class="form-select" id="gender" name="genre">
-                                                    <option value="">Sélectionner</option>
+                                                    <option value="">Sélectionner un genre</option>
                                                     <option value="homme">Homme</option>
                                                     <option value="femme">Femme</option>
                                                     <option value="autre">Autre</option>
@@ -384,9 +385,36 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Publier l'annonce</button>
+                        <button type="submit" id="publishAnnonceBtn" class="btn btn-primary">Publier l'annonce</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour choisir la date du début d'entretien -->
+    <div class="modal fade" id="dateChoiceModal" tabindex="-1" aria-labelledby="dateChoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dateChoiceModalLabel">Choisir la date du début d'entretien</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <button class="btn btn-primary w-100 mb-2" id="useDefaultDate">
+                            <span id="defaultDateText">Utiliser la date par défaut</span>
+                        </button>
+                        <button class="btn btn-outline-secondary w-100 mb-2" id="chooseNewDate">
+                            Utiliser une nouvelle date
+                        </button>
+                    </div>
+                    <div class="d-none" id="customDateContainer">
+                        <label for="customDateInput" class="form-label">Sélectionnez une date et heure</label>
+                        <input type="datetime-local" class="form-control" id="customDateInput">
+                        <button class="btn btn-success mt-2 w-100" id="confirmCustomDate">Valider</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

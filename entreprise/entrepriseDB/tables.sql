@@ -153,6 +153,7 @@ CREATE TABLE annonce (
   id_filiere INT NOT NULL,
   id_test INT NOT NULL,
   id_poste INT NOT NULL,
+  debut_entretien DATETIME,
   INDEX (id_poste),
   INDEX (id_test),
   INDEX (id_filiere),

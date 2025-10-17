@@ -75,11 +75,11 @@ INSERT INTO competence (libelle) VALUES
 -- =========================
 -- Candidats
 -- =========================
-INSERT INTO candidat (date_naissance, photo, adresse, telephone, id_ville, id_utilisateur)
+INSERT INTO candidat (date_naissance, adresse, telephone, id_ville, id_utilisateur)
 VALUES
-('1990-05-12', 'paul.jpg', '12 rue République, Paris', '0612345678', 1, 1),
-('1995-11-03', 'sophie.jpg', '8 avenue Lumière, Lyon', '0698765432', 2, 2),
-('1988-07-21', 'alex.jpg', '45 rue Nationale, Marseille', '0655443322', 3, 3);
+('1990-05-12', '12 rue République, Paris', '0612345678', 1, 1),
+('1995-11-03', '8 avenue Lumière, Lyon', '0698765432', 2, 2),
+('1988-07-21', '45 rue Nationale, Marseille', '0655443322', 3, 3);
 
 -- =========================
 -- Employés

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,8 @@ public class AnnonceService {
             List<Boolean> competencesObligatoires,
             List<Long> langues,
             List<Boolean> languesObligatoires,
-            Long departementId) {
+            Long departementId,
+            LocalDateTime debutEntretien) {
         // Vérifier ou créer le poste
         Poste poste = posteRepository.findByLibelle(posteLibelle)
                 .orElseGet(() -> {
@@ -86,6 +88,7 @@ public class AnnonceService {
         annonce.setExperienceObligatoire(experienceObligatoire != null ? experienceObligatoire : false);
         annonce.setVille(villeId != null ? villeRepository.findById(villeId).orElse(null) : null);
         annonce.setVilleObligatoire(villeObligatoire != null ? villeObligatoire : false);
+        annonce.setDebutEntretien(debutEntretien);
 
         // Gérer le genre
         if (genre != null && !genre.isEmpty()) {
@@ -365,13 +368,6 @@ public class AnnonceService {
         });
     }
 
-    public void reopenAnnonce(Long id) {
-        annonceRepository.findById(id).ifPresent(annonce -> {
-            annonce.setFerme(false);
-            annonceRepository.save(annonce);
-        });
-    }
-
     @Transactional(readOnly = true)
     public List<AnnonceDTO> getAllAnnonces() {
         List<Annonce> annonces = annonceRepository.findAllActiveAnnonces();
@@ -387,11 +383,11 @@ public class AnnonceService {
                 .orElse(null);
     }
 
-    public List<AnnonceDTO> filterAnnonces(List<Long> villes, Long diplome, Integer experience, 
-                                        List<Long> competences, List<Long> langues, Boolean urgent) {
-        
+    public List<AnnonceDTO> filterAnnonces(List<Long> villes, Long diplome, Integer experience,
+            List<Long> competences, List<Long> langues, Boolean urgent) {
+
         List<Annonce> annonces = annonceRepository.findAllActiveAnnonces();
-        
+
         return annonces.stream()
                 .filter(annonce -> filterByVilles(annonce, villes))
                 .filter(annonce -> filterByDiplome(annonce, diplome))
@@ -404,7 +400,8 @@ public class AnnonceService {
     }
 
     private boolean filterByUrgent(Annonce annonce, Boolean urgent) {
-        if (urgent == null || !urgent) return true;
+        if (urgent == null || !urgent)
+            return true;
         return annonce.getUrgent() != null && annonce.getUrgent();
     }
 
@@ -415,28 +412,33 @@ public class AnnonceService {
     }
 
     private boolean filterByVilles(Annonce annonce, List<Long> villes) {
-        if (villes == null || villes.isEmpty()) return true;
+        if (villes == null || villes.isEmpty())
+            return true;
         return annonce.getVille() != null && villes.contains(annonce.getVille().getId());
     }
 
     private boolean filterByDiplome(Annonce annonce, Long diplomeId) {
-        if (diplomeId == null) return true;
+        if (diplomeId == null)
+            return true;
         return annonce.getDiplome() != null && annonce.getDiplome().getId().equals(diplomeId);
     }
 
     private boolean filterByExperience(Annonce annonce, Integer experience) {
-        if (experience == null || experience == 0) return true;
+        if (experience == null || experience == 0)
+            return true;
         return annonce.getAnneeExperience() != null && annonce.getAnneeExperience() >= experience;
     }
 
     private boolean filterByCompetences(Annonce annonce, List<Long> competences) {
-        if (competences == null || competences.isEmpty()) return true;
+        if (competences == null || competences.isEmpty())
+            return true;
         return annonce.getCompetences().stream()
                 .anyMatch(ac -> competences.contains(ac.getCompetence().getId()));
     }
 
     private boolean filterByLangues(Annonce annonce, List<Long> langues) {
-        if (langues == null || langues.isEmpty()) return true;
+        if (langues == null || langues.isEmpty())
+            return true;
         return annonce.getLangues().stream()
                 .anyMatch(al -> langues.contains(al.getLangue().getId()));
     }

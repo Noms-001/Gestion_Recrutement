@@ -1,3 +1,256 @@
+let isEditMode = false;
+let annonceForm = null;
+let annonceModal = null;
+let dateChoiceModal = null;
+let dateLimite = null;
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    annonceForm = document.getElementById('annonceForm');
+    annonceModal = new bootstrap.Modal(document.getElementById('jobOfferModal'));
+    dateChoiceModal = new bootstrap.Modal(document.getElementById('dateChoiceModal'));
+
+    document.querySelector('[data-bs-target="#jobOfferModal"]').addEventListener('click', function() {
+        resetModal(); // Réinitialiser complètement le modal
+        isEditMode = false; // S'assurer qu'on est en mode création
+    });
+
+    // Empêcher la soumission automatique
+    annonceForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    });
+    
+    // Événement pour le bouton de publication
+    document.getElementById('publishAnnonceBtn').addEventListener('click', handlePublishAnnonce);
+    
+    // Événements pour le modal de date
+    document.getElementById('useDefaultDate').addEventListener('click', handleUseDefaultDate);
+    document.getElementById('chooseNewDate').addEventListener('click', handleChooseNewDate);
+    document.getElementById('confirmCustomDate').addEventListener('click', handleConfirmCustomDate);
+    
+    // Réinitialiser le modal de date quand il est fermé
+    document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', resetDateModal);
+
+    // Réinitialiser le modal d'annonce quand il est fermé
+    document.getElementById('jobOfferModal').addEventListener('hidden.bs.modal', function () {
+        if (!isEditMode) {
+            resetModal();
+        }
+    });
+});
+
+// Gérer la publication d'annonce
+function handlePublishAnnonce() {
+    
+    // Valider le formulaire d'abord
+    if (!validateAnnonceForm()) {
+        return;
+    }
+
+    const dateLimiteField = document.getElementById('endDate');
+    dateLimite = dateLimiteField ? dateLimiteField.value : null;
+    
+    // Déterminer si on est en mode édition
+    isEditMode = document.getElementById('annonceId').value !== '';
+    
+    // Afficher le texte approprié pour le bouton de date par défaut
+    const defaultDateText = document.getElementById('defaultDateText');
+    defaultDateText.textContent = isEditMode ? 
+        'Utiliser la date prédéfinie' : 
+        'Utiliser la date par défaut';
+    
+    // Utiliser la méthode Bootstrap pour cacher le modal
+    bootstrap.Modal.getInstance(document.getElementById('jobOfferModal')).hide();
+    
+    // Attendre que le modal soit complètement caché avant d'afficher le suivant
+    document.getElementById('jobOfferModal').addEventListener('hidden.bs.modal', function onHidden() {
+        dateChoiceModal.show();
+        
+        // Retirer l'écouteur pour éviter les duplications
+        document.getElementById('jobOfferModal').removeEventListener('hidden.bs.modal', onHidden);
+    });
+}
+
+// Fonction de validation du formulaire
+function validateAnnonceForm() {
+    const requiredFields = [
+        'jobTitle', 'jobDepartment', 'filiere', 'jobDescription', 'endDate', 'tests'
+    ];
+    
+    let isValid = true;
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        console.log(`Validation champ ${fieldId}:`, field ? field.value : 'champ non trouvé');
+        
+        if (field && (!field.value || field.value === '' || field.value === '0')) {
+            isValid = false;
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+            
+            // Ajouter le message d'erreur si absent
+            if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'Ce champ est obligatoire';
+                field.parentNode.appendChild(errorDiv);
+            }
+        } else if (field) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+            
+            // Supprimer le message d'erreur s'il existe
+            const existingError = field.nextElementSibling;
+            if (existingError && existingError.classList.contains('invalid-feedback')) {
+                existingError.remove();
+            }
+        }
+    });
+    
+    // Validation spécifique pour la date limite
+    const dateLimiteField = document.getElementById('endDate');
+    if (dateLimiteField && dateLimiteField.value) {
+        const selectedDate = new Date(dateLimiteField.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate <= today) {
+            isValid = false;
+            dateLimiteField.classList.add('is-invalid');
+            showToast("danger", 'La date limite doit être dans le futur');
+        }
+    }
+    
+    if (!isValid) {
+        showToast("danger", 'Veuillez remplir tous les champs obligatoires');
+    } else {
+        console.log('✅ Formulaire validé avec succès');
+    }
+    
+    return isValid;
+}
+
+// Utiliser la date par défaut ou prédéfinie
+function handleUseDefaultDate() {
+    if (isEditMode) {
+        // En mode édition, utiliser la date existante (ne rien changer)
+        submitAnnonceForm();
+        
+    } else {
+        // En mode création, calculer la date par défaut (date limite + 1 jour à 8h)
+        if (dateLimite) {
+            const defaultDate = calculateDefaultDate(dateLimite);
+            document.getElementById('debutEntretien').value = defaultDate;
+            submitAnnonceForm('Annonce publiée avec la date de début d\'entretien par défaut');
+            const filiereValue = document.getElementById('filiere').value;
+    const testValue = document.getElementById('tests').value;
+    
+    console.log('filiere value:', filiereValue);
+    console.log('tests value:', testValue);
+    console.log('filiere element:', document.getElementById('filiere'));
+        } else {
+            showToast("danger", 'Erreur: Veuillez d\'abord définir une date limite');
+        }
+        
+    }
+}
+
+// Choisir une nouvelle date
+function handleChooseNewDate() {
+    document.getElementById('customDateContainer').classList.remove('d-none');
+    
+    // Pré-remplir avec la date par défaut si en mode création
+    if (!isEditMode) {
+        const dateLimite = document.getElementById('endDate').value;
+        if (dateLimite) {
+            const defaultDate = calculateDefaultDate(dateLimite);
+            document.getElementById('customDateInput').value = defaultDate;
+        }
+    }
+}
+
+// Confirmer la date personnalisée
+function handleConfirmCustomDate() {
+    const customDate = document.getElementById('customDateInput').value;
+    if (!customDate) {
+        showToast("warning", 'Veuillez sélectionner une date et heure');
+        return;
+    }
+    
+    // Vérifier que la date est dans le futur
+    const selectedDate = new Date(customDate);
+    const now = new Date();
+    if (selectedDate <= now) {
+        showToast("danger", 'La date de début d\'entretien doit être dans le futur');
+        return;
+    }
+    
+    document.getElementById('debutEntretien').value = customDate;
+    submitAnnonceForm('Annonce publiée avec la nouvelle date de début d\'entretien');
+}
+
+// Calculer la date par défaut (date limite + 1 jour à 8h)
+function calculateDefaultDate(dateLimite) {
+    const date = new Date(dateLimite);
+    date.setDate(date.getDate() + 1); // +1 jour
+    date.setHours(8, 0, 0, 0); // 8h00
+    
+    // Formater pour l'input datetime-local
+    return date.toISOString().slice(0, 16);
+}
+
+// Soumettre le formulaire d'annonce
+function submitAnnonceForm(successMessage = 'Annonce publiée avec succès') {
+    try {
+        console.log('Soumission du formulaire...');
+        
+        // Fermer le modal de date
+        dateChoiceModal.hide();
+        
+        // Réinitialiser le modal de date après fermeture
+        document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', function onDateModalHidden() {
+            resetDateModal();
+            
+            // Fermer aussi le modal d'annonce si encore ouvert
+            if (annonceModal._isShown) {
+                annonceModal.hide();
+            }
+            
+            // Réinitialiser le formulaire si en mode création
+            if (!isEditMode) {
+                resetModal();
+
+            }
+            
+            // Soumettre le formulaire
+            console.log('Soumission effective du formulaire');
+            annonceForm.submit();
+            
+            // Afficher le message de succès
+            showToast("success", successMessage);
+            
+            // Retirer l'écouteur
+            document.getElementById('dateChoiceModal').removeEventListener('hidden.bs.modal', onDateModalHidden);
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la soumission:', error);
+        showToast("danger", 'Erreur lors de la publication');
+        
+        // Réafficher le modal d'annonce en cas d'erreur
+        annonceModal.show();
+    }
+}
+
+// Réinitialiser le modal de date
+function resetDateModal() {
+    document.getElementById('customDateContainer').classList.add('d-none');
+    document.getElementById('customDateInput').value = '';
+    document.getElementById('defaultDateText').textContent = 'Utiliser la date par défaut';
+}
+
 // Remplacer le tableau statique par une fonction qui fetch les postes vacants
 function getJobTitles() {
     return fetch('/api/postes/vacants')
@@ -8,7 +261,6 @@ function getJobTitles() {
             return response.json();
         })
         .then(postesVacants => {
-            console.log('Postes vacants récupérés:', postesVacants);
             return postesVacants;
         })
         .catch(error => {
@@ -91,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!input) return;
 
             input.required = e.target.checked;
-            console.log(e.target.checked);
         });
     });
 
@@ -112,7 +363,6 @@ document.getElementById('btnFilter').addEventListener('click', function() {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     updateAnnonceTable(data);
                 })
                 .catch(error => console.error('Erreur fetch annonces:', error));
@@ -218,6 +468,7 @@ function updateAnnonceTable(annonces) {
 }
 // Fonction pour éditer une annonce
 function editJobOffer(annonceId) {
+    isEditMode = true;
     console.log('Modification de l\'annonce ID:', annonceId);
     
     // Récupérer les données de l'annonce via API
@@ -293,7 +544,6 @@ function updateRequiredFields() {
     });
 }
 
-// Fonction pour charger les compétences et langues de l'annonce
 // Fonction pour charger les compétences et langues de l'annonce
 function loadCompetencesAndLangues(annonceId) {
     // Vider les conteneurs actuels
@@ -393,10 +643,14 @@ function addExistingTag(containerType, id, libelle, estObligatoire = false) {
 }
 // Fonction pour réinitialiser le modal (pour nouvelle annonce)
 function resetModal() {
+    isEditMode = false;
     document.getElementById('modalTitle').textContent = 'Nouvelle annonce d\'emploi';
     document.getElementById('annonceForm').action = '/annonces/create';
     document.getElementById('annonceForm').reset();
     document.getElementById('annonceId').value = '';
+    
+    // Réinitialiser aussi la date d'entretien
+    document.getElementById('debutEntretien').value = '';
     
     // Vider les tags
     document.getElementById('technicalSkillsContainer').innerHTML = '';
@@ -409,7 +663,3 @@ function resetModal() {
     updateRequiredFields();
 }
 
-// Ajouter un écouteur d'événement pour réinitialiser le modal quand il est fermé
-document.getElementById('jobOfferModal').addEventListener('hidden.bs.modal', function () {
-    resetModal();
-});

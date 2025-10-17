@@ -54,6 +54,7 @@ public class AnnonceController {
             @RequestParam(value = "langues[]", required = false) Long[] langues,
             @RequestParam(value = "languesObligatoires[]", required = false) Boolean[] languesObligatoires,
             @RequestParam("departement") Long departementId,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
             RedirectAttributes redirectAttributes) {
         try {
             LocalDate dateLimite = null;
@@ -63,6 +64,11 @@ public class AnnonceController {
                 redirectAttributes.addFlashAttribute("error",
                         "Veuillez remplir la date limite");
                 return "redirect:/manage-jobs";
+            }
+
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
             }
 
             annonceService.createAnnonce(
@@ -86,9 +92,14 @@ public class AnnonceController {
                     competencesObligatoires != null ? Arrays.asList(competencesObligatoires) : null,
                     langues != null ? Arrays.asList(langues) : null,
                     languesObligatoires != null ? Arrays.asList(languesObligatoires) : null,
-                    departementId);
+                    departementId,
+                    debutEntretien);
 
-            redirectAttributes.addFlashAttribute("success", "Annonce créée avec succès !");
+            String successMessage = "Annonce créée avec succès";
+            if (debutEntretien != null) {
+                successMessage += " avec la date de début d'entretien définie";
+            }
+        redirectAttributes.addFlashAttribute("success", successMessage);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error",
                     "Erreur lors de la création de l'annonce : " + e.getMessage());
