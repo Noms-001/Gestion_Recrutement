@@ -215,7 +215,8 @@ public class AnnonceService {
             List<Boolean> competencesObligatoires,
             List<Long> langues,
             List<Boolean> languesObligatoires,
-            Long departementId) {
+            Long departementId,
+            LocalDateTime debutEntretien) {
         Annonce annonce = annonceRepository.findById(annonceId)
                 .orElseThrow(() -> new RuntimeException("Annonce non trouvée"));
 
@@ -231,6 +232,8 @@ public class AnnonceService {
                     });
             annonce.setPoste(poste);
         }
+
+        annonce.setDebutEntretien(debutEntretien);
 
         // Mettre à jour les champs de base
         if (filiereId != null)
@@ -361,9 +364,10 @@ public class AnnonceService {
     }
 
     @Transactional
-    public void closeAnnonce(Long id) {
+    public void closeAnnonce(Long id, LocalDateTime debutEntretien) {
         annonceRepository.findById(id).ifPresent(annonce -> {
             annonce.setFerme(true);
+            annonce.setDebutEntretien(debutEntretien);
             annonceRepository.save(annonce);
         });
     }

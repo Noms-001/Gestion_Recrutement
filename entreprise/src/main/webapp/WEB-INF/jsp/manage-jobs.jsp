@@ -182,8 +182,7 @@
                                                     </td>
                                                 </tr>
                                             <% } %>
-                                            </tbody>
-
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -297,8 +296,8 @@
                                                 <select name="filiere" id="filiere" class="form-select" required>
                                                     <option value="">Sélectionner une filière</option>
                                                     <% for(Filiere f : filieres) { %>
-                                                            <option value="<%= f.getId() %>"><%= f.getLibelle() %></option>
-                                                        <% } %>
+                                                        <option value="<%= f.getId() %>"><%= f.getLibelle() %></option>
+                                                    <% } %>
                                                 </select>
                                             </div>
                                         </div>
@@ -395,29 +394,46 @@
     <!-- Modal pour choisir la date du début d'entretien -->
     <div class="modal fade" id="dateChoiceModal" tabindex="-1" aria-labelledby="dateChoiceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dateChoiceModalLabel">Choisir la date du début d'entretien</h5>
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header pb-2">
+                    <h5 class="modal-title fw-bold" id="dateChoiceModalLabel">
+                        Choisir la date du début d'entretien
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <button class="btn btn-primary w-100 mb-2" id="useDefaultDate">
-                            <span id="defaultDateText">Utiliser la date par défaut</span>
-                        </button>
-                        <button class="btn btn-outline-secondary w-100 mb-2" id="chooseNewDate">
-                            Utiliser une nouvelle date
-                        </button>
+                <div class="modal-body position-relative overflow-hidden" style="min-height: 220px;">
+                    <div id="dateMainScreen" class="slide-screen active">
+                        <div class="mb-3 mt-3 p-5">
+                            <button class="btn btn-primary w-100 mb-3 py-2 rounded-pill" id="useDefaultDate">
+                                <i class="bi bi-clock-history me-2"></i>
+                                <span id="defaultDateText">Utiliser la date par défaut</span>
+                            </button>
+                            <button class="btn btn-outline-secondary w-100 py-2 rounded-pill" id="chooseNewDate">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                Utiliser une nouvelle date
+                            </button>
+                        </div>
                     </div>
-                    <div class="d-none" id="customDateContainer">
-                        <label for="customDateInput" class="form-label">Sélectionnez une date et heure</label>
-                        <input type="datetime-local" class="form-control" id="customDateInput">
-                        <button class="btn btn-success mt-2 w-100" id="confirmCustomDate">Valider</button>
+
+                        <!-- Écran secondaire -->
+                    <div id="customDateScreen" class="slide-screen">
+                        <button class="btn btn-link position-absolute top-0 start-0 ms-2 mt-2" id="backToMain">
+                            <i class="bi bi-arrow-left fs-5"></i>
+                        </button>
+
+                        <div class="mt-3 p-5">
+                            <label for="customDateInput" class="form-label">Sélectionnez une date et une heure</label>
+                            <input type="datetime-local" class="form-control mb-3" id="customDateInput">
+                            <button class="btn btn-success w-100 py-2 rounded-pill" id="confirmCustomDate">
+                                <i class="bi bi-check-circle me-2"></i> Valider
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div aria-live="polite" aria-atomic="true" class="position-relative">
         <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -426,6 +442,14 @@
                     <div class="d-flex">
                         <div class="toast-body">
                             <%= request.getAttribute("success") %>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="toast align-items-center text-white bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            La date de début d'entretien est susceptible d'être ajustée selon la disponibilité des évaluateurs.
                         </div>
                         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>

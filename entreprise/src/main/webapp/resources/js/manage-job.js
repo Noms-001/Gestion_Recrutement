@@ -3,47 +3,63 @@ let annonceForm = null;
 let annonceModal = null;
 let dateChoiceModal = null;
 let dateLimite = null;
+let isCloseMode = false;
 
 // Initialisation
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     annonceForm = document.getElementById('annonceForm');
     annonceModal = new bootstrap.Modal(document.getElementById('jobOfferModal'));
     dateChoiceModal = new bootstrap.Modal(document.getElementById('dateChoiceModal'));
 
-    document.querySelector('[data-bs-target="#jobOfferModal"]').addEventListener('click', function() {
+    document.querySelector('[data-bs-target="#jobOfferModal"]').addEventListener('click', function () {
         resetModal(); // Réinitialiser complètement le modal
         isEditMode = false; // S'assurer qu'on est en mode création
     });
 
     // Empêcher la soumission automatique
-    annonceForm.addEventListener("submit", function(event) {
+    annonceForm.addEventListener("submit", function (event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
     });
-    
+
     // Événement pour le bouton de publication
     document.getElementById('publishAnnonceBtn').addEventListener('click', handlePublishAnnonce);
-    
+
     // Événements pour le modal de date
-    document.getElementById('useDefaultDate').addEventListener('click', handleUseDefaultDate);
+    if (!isCloseMode) {
+        document.getElementById('useDefaultDate').addEventListener('click', submitAnnonceForm);
+        document.getElementById('confirmCustomDate').addEventListener('click', handleConfirmCustomDate);
+    }
+
     document.getElementById('chooseNewDate').addEventListener('click', handleChooseNewDate);
-    document.getElementById('confirmCustomDate').addEventListener('click', handleConfirmCustomDate);
-    
+
     // Réinitialiser le modal de date quand il est fermé
     document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', resetDateModal);
 
-    // Réinitialiser le modal d'annonce quand il est fermé
-    document.getElementById('jobOfferModal').addEventListener('hidden.bs.modal', function () {
-        if (!isEditMode) {
-            resetModal();
-        }
+    const mainScreen = document.getElementById("dateMainScreen");
+    const customScreen = document.getElementById("customDateScreen");
+    const chooseNewDateBtn = document.getElementById("chooseNewDate");
+    const backToMainBtn = document.getElementById("backToMain");
+
+    chooseNewDateBtn.addEventListener("click", () => {
+        mainScreen.classList.add("slide-out-left");
+        customScreen.classList.add("active");
+
+        setTimeout(() => {
+            mainScreen.classList.remove("active", "slide-out-left");
+        }, 400);
+    });
+
+    backToMainBtn.addEventListener("click", () => {
+        customScreen.classList.remove("active");
+        mainScreen.classList.add("active");
     });
 });
 
 // Gérer la publication d'annonce
 function handlePublishAnnonce() {
-    
+
     // Valider le formulaire d'abord
     if (!validateAnnonceForm()) {
         return;
@@ -51,23 +67,23 @@ function handlePublishAnnonce() {
 
     const dateLimiteField = document.getElementById('endDate');
     dateLimite = dateLimiteField ? dateLimiteField.value : null;
-    
+
     // Déterminer si on est en mode édition
     isEditMode = document.getElementById('annonceId').value !== '';
-    
+
     // Afficher le texte approprié pour le bouton de date par défaut
     const defaultDateText = document.getElementById('defaultDateText');
-    defaultDateText.textContent = isEditMode ? 
-        'Utiliser la date prédéfinie' : 
+    defaultDateText.textContent = isEditMode ?
+        'Utiliser la date prédéfinie' :
         'Utiliser la date par défaut';
-    
+
     // Utiliser la méthode Bootstrap pour cacher le modal
     bootstrap.Modal.getInstance(document.getElementById('jobOfferModal')).hide();
-    
+
     // Attendre que le modal soit complètement caché avant d'afficher le suivant
     document.getElementById('jobOfferModal').addEventListener('hidden.bs.modal', function onHidden() {
         dateChoiceModal.show();
-        
+
         // Retirer l'écouteur pour éviter les duplications
         document.getElementById('jobOfferModal').removeEventListener('hidden.bs.modal', onHidden);
     });
@@ -78,18 +94,17 @@ function validateAnnonceForm() {
     const requiredFields = [
         'jobTitle', 'jobDepartment', 'filiere', 'jobDescription', 'endDate', 'tests'
     ];
-    
+
     let isValid = true;
-    
+
     requiredFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
-        console.log(`Validation champ ${fieldId}:`, field ? field.value : 'champ non trouvé');
-        
+
         if (field && (!field.value || field.value === '' || field.value === '0')) {
             isValid = false;
             field.classList.add('is-invalid');
             field.classList.remove('is-valid');
-            
+
             // Ajouter le message d'erreur si absent
             if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
                 const errorDiv = document.createElement('div');
@@ -100,7 +115,7 @@ function validateAnnonceForm() {
         } else if (field) {
             field.classList.remove('is-invalid');
             field.classList.add('is-valid');
-            
+
             // Supprimer le message d'erreur s'il existe
             const existingError = field.nextElementSibling;
             if (existingError && existingError.classList.contains('invalid-feedback')) {
@@ -108,67 +123,27 @@ function validateAnnonceForm() {
             }
         }
     });
-    
+
     // Validation spécifique pour la date limite
     const dateLimiteField = document.getElementById('endDate');
     if (dateLimiteField && dateLimiteField.value) {
         const selectedDate = new Date(dateLimiteField.value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         if (selectedDate <= today) {
             isValid = false;
             dateLimiteField.classList.add('is-invalid');
             showToast("danger", 'La date limite doit être dans le futur');
         }
     }
-    
-    if (!isValid) {
-        showToast("danger", 'Veuillez remplir tous les champs obligatoires');
-    } else {
-        console.log('✅ Formulaire validé avec succès');
-    }
-    
-    return isValid;
-}
 
-// Utiliser la date par défaut ou prédéfinie
-function handleUseDefaultDate() {
-    if (isEditMode) {
-        // En mode édition, utiliser la date existante (ne rien changer)
-        submitAnnonceForm();
-        
-    } else {
-        // En mode création, calculer la date par défaut (date limite + 1 jour à 8h)
-        if (dateLimite) {
-            const defaultDate = calculateDefaultDate(dateLimite);
-            document.getElementById('debutEntretien').value = defaultDate;
-            submitAnnonceForm('Annonce publiée avec la date de début d\'entretien par défaut');
-            const filiereValue = document.getElementById('filiere').value;
-    const testValue = document.getElementById('tests').value;
-    
-    console.log('filiere value:', filiereValue);
-    console.log('tests value:', testValue);
-    console.log('filiere element:', document.getElementById('filiere'));
-        } else {
-            showToast("danger", 'Erreur: Veuillez d\'abord définir une date limite');
-        }
-        
-    }
+    return isValid;
 }
 
 // Choisir une nouvelle date
 function handleChooseNewDate() {
     document.getElementById('customDateContainer').classList.remove('d-none');
-    
-    // Pré-remplir avec la date par défaut si en mode création
-    if (!isEditMode) {
-        const dateLimite = document.getElementById('endDate').value;
-        if (dateLimite) {
-            const defaultDate = calculateDefaultDate(dateLimite);
-            document.getElementById('customDateInput').value = defaultDate;
-        }
-    }
 }
 
 // Confirmer la date personnalisée
@@ -178,7 +153,7 @@ function handleConfirmCustomDate() {
         showToast("warning", 'Veuillez sélectionner une date et heure');
         return;
     }
-    
+
     // Vérifier que la date est dans le futur
     const selectedDate = new Date(customDate);
     const now = new Date();
@@ -186,60 +161,45 @@ function handleConfirmCustomDate() {
         showToast("danger", 'La date de début d\'entretien doit être dans le futur');
         return;
     }
-    
+
     document.getElementById('debutEntretien').value = customDate;
-    submitAnnonceForm('Annonce publiée avec la nouvelle date de début d\'entretien');
+    submitAnnonceForm();
 }
 
-// Calculer la date par défaut (date limite + 1 jour à 8h)
 function calculateDefaultDate(dateLimite) {
     const date = new Date(dateLimite);
     date.setDate(date.getDate() + 1); // +1 jour
-    date.setHours(8, 0, 0, 0); // 8h00
-    
-    // Formater pour l'input datetime-local
-    return date.toISOString().slice(0, 16);
+    date.setHours(8, 0, 0, 0); // 8h00 locale
+
+    // Formater manuellement en local (yyyy-MM-ddTHH:mm)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const secondes = String(date.getSeconds()).padStart(2, '0');
+
+    const localDate = `${year}-${month}-${day}T${hours}:${minutes}:${secondes}`;
+    return localDate;
 }
 
+
 // Soumettre le formulaire d'annonce
-function submitAnnonceForm(successMessage = 'Annonce publiée avec succès') {
+function submitAnnonceForm() {
     try {
-        console.log('Soumission du formulaire...');
-        
+
         // Fermer le modal de date
         dateChoiceModal.hide();
-        
-        // Réinitialiser le modal de date après fermeture
-        document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', function onDateModalHidden() {
-            resetDateModal();
-            
-            // Fermer aussi le modal d'annonce si encore ouvert
-            if (annonceModal._isShown) {
-                annonceModal.hide();
-            }
-            
-            // Réinitialiser le formulaire si en mode création
-            if (!isEditMode) {
-                resetModal();
 
-            }
-            
-            // Soumettre le formulaire
-            console.log('Soumission effective du formulaire');
+        document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', function onDateModalHidden() {
             annonceForm.submit();
-            
-            // Afficher le message de succès
-            showToast("success", successMessage);
-            
-            // Retirer l'écouteur
+
             document.getElementById('dateChoiceModal').removeEventListener('hidden.bs.modal', onDateModalHidden);
         });
-        
+
     } catch (error) {
         console.error('Erreur lors de la soumission:', error);
         showToast("danger", 'Erreur lors de la publication');
-        
-        // Réafficher le modal d'annonce en cas d'erreur
         annonceModal.show();
     }
 }
@@ -279,10 +239,10 @@ function showJobList(filter = "") {
     const value = filter.toLowerCase();
 
     getJobTitles().then(jobTitles => {
-        const filtered = jobTitles.filter(title => 
+        const filtered = jobTitles.filter(title =>
             title.toLowerCase().includes(value)
         );
-        
+
         filtered.forEach(title => {
             const item = document.createElement("div");
             item.classList.add("list-group-item", "list-group-item-action");
@@ -353,45 +313,129 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.getElementById('btnFilter').addEventListener('click', function() {
-            const villeId = document.getElementById('filterVille').value;
-            const departementId = document.getElementById('filterDepartement').value;
-            const poste = document.getElementById('filterPoste').value;
-            const status = document.getElementById('filterStatus').value;
-            let url = "/api/annonces/filtre?villeId="+villeId+"&departementId="+departementId+"&poste="+poste;
-            if(status) url += "&status="+status;
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    updateAnnonceTable(data);
-                })
-                .catch(error => console.error('Erreur fetch annonces:', error));
-        });
-        // Fonction pour fermer une annonce
+document.getElementById('btnFilter').addEventListener('click', function () {
+    const villeId = document.getElementById('filterVille').value;
+    const departementId = document.getElementById('filterDepartement').value;
+    const poste = document.getElementById('filterPoste').value;
+    const status = document.getElementById('filterStatus').value;
+    let url = "/api/annonces/filtre?villeId=" + villeId + "&departementId=" + departementId + "&poste=" + poste;
+    if (status) url += "&status=" + status;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            updateAnnonceTable(data);
+        })
+        .catch(error => console.error('Erreur fetch annonces:', error));
+});
+// Fonction pour fermer une annonce
+// Fonction pour fermer une annonce avec choix de date
 function closeJobOffer(annonceId) {
-    if (confirm('Êtes-vous sûr de vouloir fermer cette annonce ?')) {
-        // Créer un formulaire pour envoyer la requête POST
+    if (!confirm('Êtes-vous sûr de vouloir fermer cette annonce ?')) return;
+
+    isCloseMode = true;
+    window.pendingCloseAnnonceId = annonceId;
+
+    // Supprimer les anciens écouteurs
+    const useDefaultDateBtn = document.getElementById('useDefaultDate');
+    const confirmCustomDateBtn = document.getElementById('confirmCustomDate');
+    useDefaultDateBtn.replaceWith(useDefaultDateBtn.cloneNode(true));
+    confirmCustomDateBtn.replaceWith(confirmCustomDateBtn.cloneNode(true));
+
+    // Réaffecter les variables après clonage
+    const newUseDefaultDateBtn = document.getElementById('useDefaultDate');
+    const newConfirmCustomDateBtn = document.getElementById('confirmCustomDate');
+
+    // Attacher les bons événements pour la fermeture
+    newConfirmCustomDateBtn.addEventListener('click', handleConfirmCloseNewDate);
+    newUseDefaultDateBtn.addEventListener('click', handleConfirmCloseDefaultDate);
+
+    dateChoiceModal.show();
+}
+
+// Fonction pour gérer la confirmation de la date pour la fermeture
+function handleConfirmCloseNewDate() {
+    const customDate = document.getElementById('customDateInput').value;
+    if (!customDate) {
+        showToast("warning", 'Veuillez sélectionner une date et heure');
+        return;
+    }
+
+    const selectedDate = new Date(customDate);
+    const now = new Date();
+    if (selectedDate <= now) {
+        showToast("danger", 'La date de début d\'entretien doit être dans le futur');
+        return;
+    }
+
+    // Cacher le modal et envoyer la requête de fermeture
+    dateChoiceModal.hide();
+
+    document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', function onHidden() {
+        // Créer le formulaire pour fermer l'annonce
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/annonces/close';
-        
-        // Ajouter le champ ID
+
+        // Ajouter l'ID de l'annonce
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'id';
-        input.value = annonceId;
+        input.value = window.pendingCloseAnnonceId;
         form.appendChild(input);
-        
-        // Ajouter le token CSRF (si vous en utilisez un)
+
+        // Ajouter la date d'entretien choisie
+        const dateInput = document.createElement('input');
+        dateInput.type = 'hidden';
+        dateInput.name = 'debutEntretien';
+        dateInput.value = customDate;
+        form.appendChild(dateInput);
+
+        // Ajouter le token CSRF si nécessaire
         const csrfToken = document.querySelector('input[name="_csrf"]');
         if (csrfToken) {
             form.appendChild(csrfToken.cloneNode());
         }
-        
-        // Soumettre le formulaire
+
         document.body.appendChild(form);
         form.submit();
-    }
+
+        // Nettoyer l'écouteur et variable temporaire
+        dateChoiceModal.removeEventListener('hidden.bs.modal', onHidden);
+        window.pendingCloseAnnonceId = null;
+        isCloseMode = false;
+    });
+}
+
+function handleConfirmCloseDefaultDate() {
+    dateChoiceModal.hide();
+
+    document.getElementById('dateChoiceModal').addEventListener('hidden.bs.modal', function onHidden() {
+        // Créer le formulaire pour fermer l'annonce
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/annonces/close';
+
+        // Ajouter l'ID de l'annonce
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id';
+        input.value = window.pendingCloseAnnonceId;
+        form.appendChild(input);
+
+        // Ajouter le token CSRF si nécessaire
+        const csrfToken = document.querySelector('input[name="_csrf"]');
+        if (csrfToken) {
+            form.appendChild(csrfToken.cloneNode());
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+
+        // Nettoyer l'écouteur et variable temporaire
+        dateChoiceModal.removeEventListener('hidden.bs.modal', onHidden);
+        window.pendingCloseAnnonceId = null;
+        isCloseMode = false;
+    });
 }
 
 // Fonction pour mettre à jour le tableau avec l'action de fermeture
@@ -400,7 +444,7 @@ function updateAnnonceTable(annonces) {
     tbody.innerHTML = ''; // vider l'ancien contenu
 
     let rowIndex = 0;
-    annonces.forEach(function(annonce) {
+    annonces.forEach(function (annonce) {
         let badgeColor = '';
         switch (rowIndex % 3) {
             case 0: badgeColor = 'bg-primary'; break;
@@ -419,8 +463,8 @@ function updateAnnonceTable(annonces) {
         }
 
         const showCloseAction = !annonce.ferme && (!annonce.dateLimite || new Date(annonce.dateLimite) >= new Date());
-        const urgentBadge = annonce.urgent && !annonce.ferme 
-            ? '<i class="fs-6 bi bi-exclamation-triangle-fill me-1 text-danger"></i>' 
+        const urgentBadge = annonce.urgent && !annonce.ferme
+            ? '<i class="fs-6 bi bi-exclamation-triangle-fill me-1 text-danger"></i>'
             : '';
 
         // Version avec Template Literals (plus lisible)
@@ -470,7 +514,7 @@ function updateAnnonceTable(annonces) {
 function editJobOffer(annonceId) {
     isEditMode = true;
     console.log('Modification de l\'annonce ID:', annonceId);
-    
+
     // Récupérer les données de l'annonce via API
     fetch('/api/annonces/' + annonceId)
         .then(response => {
@@ -493,13 +537,14 @@ function editJobOffer(annonceId) {
 function populateModalWithData(annonce) {
     // Changer le titre du modal
     document.getElementById('modalTitle').textContent = 'Modifier l\'annonce';
-    
+
     // Mettre à jour l'action du formulaire
     const form = document.getElementById('annonceForm');
     form.action = '/annonces/update';
-    
+
     // Remplir les champs avec les données
     document.getElementById('annonceId').value = annonce.id;
+    document.getElementById('debutEntretien').value = annonce.debutEntretien || '';
     document.getElementById('jobTitle').value = annonce.posteLibelle || '';
     document.getElementById('jobDepartment').value = annonce.departementId || '';
     document.getElementById('age').value = annonce.ageMinimum || '';
@@ -512,20 +557,20 @@ function populateModalWithData(annonce) {
     document.getElementById('endDate').value = annonce.dateLimite || '';
     document.getElementById('tests').value = annonce.testId || '';
     document.getElementById('urgentJob').checked = annonce.urgent || false;
-    
+
     // Gérer les toggles obligatoires
     document.getElementById('ageRequired').checked = annonce.ageObligatoire || false;
     document.getElementById('experienceRequired').checked = annonce.experienceObligatoire || false;
     document.getElementById('locationRequired').checked = annonce.villeObligatoire || false;
     document.getElementById('genderRequired').checked = annonce.genreObligatoire || false;
     document.getElementById('diplomeRequired').checked = annonce.diplomeObligatoire || false;
-    
+
     // Mettre à jour les champs requis
     updateRequiredFields();
-    
+
     // Charger les compétences et langues (si disponibles)
     loadCompetencesAndLangues(annonce.id);
-    
+
     // Ouvrir le modal
     const modal = new bootstrap.Modal(document.getElementById('jobOfferModal'));
     modal.show();
@@ -549,7 +594,7 @@ function loadCompetencesAndLangues(annonceId) {
     // Vider les conteneurs actuels
     document.getElementById('technicalSkillsContainer').innerHTML = '';
     document.getElementById('languagesContainer').innerHTML = '';
-    
+
     // Charger les compétences
     fetch('/api/annonces/' + annonceId + '/competences')
         .then(response => response.json())
@@ -559,7 +604,7 @@ function loadCompetencesAndLangues(annonceId) {
             });
         })
         .catch(error => console.error('Erreur chargement compétences:', error));
-    
+
     // Charger les langues
     fetch('/api/annonces/' + annonceId + '/langues')
         .then(response => response.json())
@@ -575,7 +620,7 @@ function loadCompetencesAndLangues(annonceId) {
 // Fonction pour ajouter des tags existants AVEC les toggles
 function addExistingTag(containerType, id, libelle, estObligatoire = false) {
     const container = document.getElementById(containerType + 'Container');
-    
+
     // Vérifier si le tag existe déjà
     if (container.querySelector(`[data-value="${id}"]`)) return;
 
@@ -648,14 +693,14 @@ function resetModal() {
     document.getElementById('annonceForm').action = '/annonces/create';
     document.getElementById('annonceForm').reset();
     document.getElementById('annonceId').value = '';
-    
+
     // Réinitialiser aussi la date d'entretien
     document.getElementById('debutEntretien').value = '';
-    
+
     // Vider les tags
     document.getElementById('technicalSkillsContainer').innerHTML = '';
     document.getElementById('languagesContainer').innerHTML = '';
-    
+
     // Réinitialiser les toggles
     document.querySelectorAll('.toggle-required input[type="checkbox"]').forEach(toggle => {
         toggle.checked = false;
