@@ -36,9 +36,8 @@
                         <h4 id="monthYear"></h4>
                         <button id="nextMonth" class="btn btn-outline-secondary"><i class="bi bi-chevron-right"></i></button>
                     </div>
-                    <div class="calendar-days" id="calendarDays">
-                        <!-- Jours générés par JS -->
-                    </div>
+                    <div id="calendarWeekdays" class="calendar-weekdays"></div>
+                    <div id="calendarDays" class="calendar-days"></div>
                 </div>
             </div>
 
@@ -46,10 +45,10 @@
         </main>
     </div>
 
-        <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
         <script src="${pageContext.request.contextPath}/resources/js/planning.js"></script>
-        <script>
+    <script>
         const currentUser = {
             name: "<%= session.getAttribute("nom") %> <%= session.getAttribute("prenom") %>",
             initials: "<%= session.getAttribute("initiales") != null ? session.getAttribute("initiales") : "" %>",
@@ -58,11 +57,7 @@
             poste: "<%= session.getAttribute("poste") %>"
         };
     </script>
-<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
-        <script>
-            loadNavbar();
-            loadSidebar();
-        </script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
 </body>
 
 </html>

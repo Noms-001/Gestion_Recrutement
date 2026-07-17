@@ -251,11 +251,11 @@ function startTimer() {
 
         // Alertes de temps
         if (testData.timeRemaining === 30) {
-            showToast('danger', 'Attention: Il ne vous reste que 30 secondes !');
+            showToast('danger', 'Attention: Il ne vous reste que 30 s !');
         } else if (testData.timeRemaining === 60) {
-            showToast('warning', 'Attention: Il ne vous reste qu\'1 minute !');
+            showToast('warning', 'Attention: Il ne vous reste qu\'1 min !');
         } else if (testData.timeRemaining === 300) {
-            showToast('warning', 'Attention: Il ne vous reste que 5 minutes !');
+            showToast('warning', 'Attention: Il ne vous reste que 5 min !');
         }
     }, 1000);
 }
@@ -596,6 +596,30 @@ function showTestResults(score) {
     const totalQuestions = testData.totalQuestions;
     const passed = score >= testData.scoreMin;
 
+    if (passed) {
+        fetch(`/api/entretiens/planifier/${annonceId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    reloadNavBar();
+                    showToast('success', data.message);
+                } else {
+                    showToast('danger', data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                showToast('danger', "Erreur lors de la planification");
+            });
+    }
+
+
     const resultContent = `
         <div class="text-center">
             <div class="mb-4">
@@ -628,7 +652,8 @@ function showTestResults(score) {
     showModal(
         'Résultats du test',
         resultContent,
-        '<button type="button" class="btn btn-primary" onclick="/job-listings">Voir les annonces</button>'
+        '<a href="/job-listings"><button type="button" class="btn btn-primary">Voir les annonces</button></a>',
+        false
     );
 }
 
@@ -639,7 +664,7 @@ document.addEventListener('contextmenu', e => {
     showToast('warning', 'Clic droit désactivé pendant le test');
 });
 document.addEventListener('keydown', e => {
-    if(e.key==='F12' || (e.ctrlKey && e.shiftKey && ['I','C'].includes(e.key)) || (e.ctrlKey && e.key==='u')){
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'C'].includes(e.key)) || (e.ctrlKey && e.key === 'u')) {
         e.preventDefault();
         showToast('warning', 'Outils développeur désactivés pendant le test');
     }

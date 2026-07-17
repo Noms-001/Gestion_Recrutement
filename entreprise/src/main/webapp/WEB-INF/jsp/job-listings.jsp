@@ -67,6 +67,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="text-end mb-2">
+                    <small><i class="fs-6 bi bi-exclamation-triangle-fill text-danger me-1"></i> Indique une annonce urgente</small>
+                </div>
                 <div class="row flex-nowrap" id="jobsRow">
                     <div class="jobs-container" id="jobsContainer">
                         <!-- Jobs List -->
@@ -91,7 +94,7 @@
                                                             <p class="text-muted mb-2">
                                                                 <% if(annonce.urgent != null && annonce.urgent) { %>
                                                                 <span class="text-danger">
-                                                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                                                    <i class="fs-6 bi bi-exclamation-triangle-fill me-1"></i>
                                                                 </span>
                                                                 <% } %>
                                                                 <%= annonce.departementNom %> • <%= annonce.villeNom %></p>
@@ -106,6 +109,12 @@
                                                             </p>
                                                             <div class="d-flex flex-wrap gap-2">
                                                                 <!-- Compétences -->
+                                                                 <% if (annonce.competencesObligatoires != null) { %>
+                                                                    <% for (String competence : annonce.competencesObligatoires) { %>
+                                                                        <span class="badge bg-primary"><%= competence %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.competences != null) { %>
                                                                     <% for (String competence : annonce.competences) { %>
                                                                         <span class="badge bg-primary"><%= competence %></span>
@@ -113,6 +122,12 @@
                                                                 <% } %>
                                                                 
                                                                 <!-- Langues -->
+                                                                 <% if (annonce.languesObligatoires != null) { %>
+                                                                    <% for (String langue : annonce.languesObligatoires) { %>
+                                                                        <span class="badge bg-info"><%= langue %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.langues != null) { %>
                                                                     <% for (String langue : annonce.langues) { %>
                                                                         <span class="badge bg-info"><%= langue %></span>
@@ -269,7 +284,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="urgentFilter">
                         <label class="form-check-label" for="urgentFilter">
-                            <i class="bi bi-exclamation-triangle text-danger me-1"></i>
+                            <i class="fs-6 bi bi-exclamation-triangle-fill text-danger me-1"></i>
                             Afficher seulement les annonces urgentes
                         </label>
                     </div>

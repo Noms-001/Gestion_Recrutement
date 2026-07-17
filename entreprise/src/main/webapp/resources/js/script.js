@@ -89,7 +89,6 @@ function validateCandidate(candidateId) {
     const row = button.closest('tr');
     
     // Change button state
-    button.innerHTML = '<i class="bi bi-check"></i> Validé';
     button.className = 'btn btn-success btn-sm';
     button.disabled = true;
     

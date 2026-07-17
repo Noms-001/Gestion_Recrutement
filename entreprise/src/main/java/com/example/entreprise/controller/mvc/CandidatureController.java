@@ -1,8 +1,12 @@
 package com.example.entreprise.controller.mvc;
 
 import com.example.entreprise.service.*;
+import com.example.entreprise.dto.CandidatureDTO;
 import com.example.entreprise.entity.*;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +22,18 @@ public class CandidatureController {
 
     @Autowired
     private TestPassageService testPassageService;
+
+    @Autowired
+    private VilleService villeService;
+
+    @Autowired
+    private DiplomeService diplomeService;
+
+    @Autowired
+    private CompetenceService competenceService;
+
+    @Autowired
+    private LangueService langueService;
 
     @PostMapping("/postuler/{annonceId}")
     public String postuler(@PathVariable Long annonceId,
@@ -81,5 +97,20 @@ public class CandidatureController {
     public String error(@ModelAttribute("error") String error, Model model) {
         model.addAttribute("errorMessage", error);
         return "error-candidature";
+    }
+
+    @GetMapping("/annonce/{id}")
+    public String getCandidaturesByAnnonce(@PathVariable("id") Long annonceId, Model model) {
+        List<CandidatureDTO> candidatures = candidatureService.getCandidaturesByAnnonceId(annonceId);
+        List<Ville> villes = villeService.findAll();
+        List<Diplome> diplomes = diplomeService.findAll();
+        List<Competence> competences = competenceService.findAll();
+        List<Langue> langues = langueService.findAll();
+        model.addAttribute("candidatures", candidatures);
+        model.addAttribute("villes", villes);
+        model.addAttribute("diplomes", diplomes);
+        model.addAttribute("competences", competences);
+        model.addAttribute("langues", langues);
+        return "candidates";
     }
 }

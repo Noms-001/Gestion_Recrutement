@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.*;
 
 @Entity
 @Table(name = "notification")
@@ -20,6 +21,11 @@ public class Notification {
     private Long id;
 
     private String message;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    private String titre;
 
     @ManyToOne
     @JoinColumn(name = "id_utilisateur", nullable = false)
@@ -37,8 +43,6 @@ public class Notification {
         this.lu = lu;
     }
 
-    private LocalDateTime createdAt;
-
     // Getters & Setters
     public Long getId() {
         return id;
@@ -54,6 +58,14 @@ public class Notification {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
     }
 
     public Utilisateur getUtilisateur() {

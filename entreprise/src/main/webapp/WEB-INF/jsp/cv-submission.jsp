@@ -49,7 +49,7 @@
                                             <%
                                                 if (candidat != null && candidat.getPhoto() != null && !candidat.getPhoto().isEmpty()) {
                                             %>
-                                                <img src="${pageContext.request.contextPath}/<%= candidat.getPhoto() %>" alt="Photo"
+                                                <img src="${pageContext.request.contextPath}/<%= candidat.getPhoto() %>"
                                                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                                             <%
                                                 } else {

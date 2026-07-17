@@ -20,10 +20,15 @@ public class AnnonceController {
     @PostMapping("/close")
     public String closeAnnonce(
             @RequestParam Long id,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
             RedirectAttributes redirectAttributes) {
 
         try {
-            annonceService.closeAnnonce(id);
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
+            }
+            annonceService.closeAnnonce(id, debutEntretien);
             redirectAttributes.addFlashAttribute("success", "Annonce fermée avec succès!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la fermeture: " + e.getMessage());
@@ -54,6 +59,7 @@ public class AnnonceController {
             @RequestParam(value = "langues[]", required = false) Long[] langues,
             @RequestParam(value = "languesObligatoires[]", required = false) Boolean[] languesObligatoires,
             @RequestParam("departement") Long departementId,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
             RedirectAttributes redirectAttributes) {
         try {
             LocalDate dateLimite = null;
@@ -63,6 +69,11 @@ public class AnnonceController {
                 redirectAttributes.addFlashAttribute("error",
                         "Veuillez remplir la date limite");
                 return "redirect:/manage-jobs";
+            }
+
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
             }
 
             annonceService.createAnnonce(
@@ -86,9 +97,14 @@ public class AnnonceController {
                     competencesObligatoires != null ? Arrays.asList(competencesObligatoires) : null,
                     langues != null ? Arrays.asList(langues) : null,
                     languesObligatoires != null ? Arrays.asList(languesObligatoires) : null,
-                    departementId);
+                    departementId,
+                    debutEntretien);
 
-            redirectAttributes.addFlashAttribute("success", "Annonce créée avec succès !");
+            String successMessage = "Annonce créée avec succès";
+            if (debutEntretien != null) {
+                successMessage += " avec la date de début d'entretien définie";
+            }
+        redirectAttributes.addFlashAttribute("success", successMessage);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error",
                     "Erreur lors de la création de l'annonce : " + e.getMessage());
@@ -122,9 +138,14 @@ public class AnnonceController {
             @RequestParam(required = false) List<Long> langues,
             @RequestParam(required = false) List<Boolean> languesObligatoires,
             @RequestParam Long departement,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
             RedirectAttributes redirectAttributes) {
 
         try {
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
+            }
             annonceService.updateAnnonce(
                     id, poste, filiere, test, LocalDate.parse(dateLimite), description,
                     age, ageObligatoire, anneeExperience, experienceObligatoire,
@@ -132,9 +153,10 @@ public class AnnonceController {
                     diplome, diplomeObligatoire, urgent,
                     competences, competencesObligatoires,
                     langues, languesObligatoires,
-                    departement);
+                    departement, debutEntretien);
 
             redirectAttributes.addFlashAttribute("success", "Annonce modifiée avec succès!");
+            
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la modification: " + e.getMessage());
         }

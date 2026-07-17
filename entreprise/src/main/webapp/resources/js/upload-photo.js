@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const photoPreview = document.getElementById("photoPreview");
 
     // upload URL: utilise window.appContext si fourni par ton JSP
-    const uploadUrl = (window.appContext ? window.appContext : "") + "/upload-photo";
+    const uploadUrl = (window.appContext ? window.appContext : "") + "/api/candidat/upload-photo";
 
     // upload handler
     photoInput.addEventListener("change", async () => {

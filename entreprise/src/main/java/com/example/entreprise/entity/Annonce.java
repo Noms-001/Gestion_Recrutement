@@ -1,6 +1,7 @@
 package com.example.entreprise.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -53,6 +53,9 @@ public class Annonce {
     
     @Column(name = "ville_obligatoire")
     private Boolean villeObligatoire = false;
+
+    @Column(name = "debut_entretien")
+    private LocalDateTime debutEntretien;
 
     // Relations avec FetchType.LAZY pour éviter les problèmes
     @ManyToOne(fetch = FetchType.LAZY)
@@ -218,6 +221,14 @@ public class Annonce {
 
     public void setVilleObligatoire(Boolean villeObligatoire) {
         this.villeObligatoire = villeObligatoire;
+    }
+
+    public LocalDateTime getDebutEntretien() {
+        return debutEntretien;
+    }
+
+    public void setDebutEntretien(LocalDateTime debutEntretien) {
+        this.debutEntretien = debutEntretien;
     }
 
     public Diplome getDiplome() {

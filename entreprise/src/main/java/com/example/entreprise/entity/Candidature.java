@@ -22,12 +22,35 @@ public class Candidature {
     private LocalDate dateCandidature;
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Annonce getAnnonce() { return annonce; }
-    public void setAnnonce(Annonce annonce) { this.annonce = annonce; }
-    public Candidat getCandidat() { return candidat; }
-    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
-    public LocalDate getDateCandidature() { return dateCandidature; }
-    public void setDateCandidature(LocalDate dateCandidature) { this.dateCandidature = dateCandidature; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Annonce getAnnonce() {
+        return annonce;
+    }
+
+    public void setAnnonce(Annonce annonce) {
+        this.annonce = annonce;
+    }
+
+    public Candidat getCandidat() {
+        return candidat;
+    }
+
+    public void setCandidat(Candidat candidat) {
+        this.candidat = candidat;
+    }
+
+    public LocalDate getDateCandidature() {
+        return dateCandidature;
+    }
+
+    public void setDateCandidature(LocalDate dateCandidature) {
+        this.dateCandidature = dateCandidature;
+    }
 }

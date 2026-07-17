@@ -43,7 +43,7 @@ function showToast(type, message) {
     toastEl.setAttribute("aria-atomic", "true");
 
     toastEl.innerHTML = `
-        <div class="d-flex">
+        <div class="d-flex m-3">
             <div class="toast-body">
                 <i class="bi ${iconMap[type]} me-2"></i>
                 ${escapeHtml(message)}
