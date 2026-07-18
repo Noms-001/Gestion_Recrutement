@@ -1,38 +1,60 @@
-
-// Exemple de données d'entretiens
-const interviews = [
-    { date: '2025-09-27', candidate: 'Alice Dupont', evaluator: 'Jean Martin', time: '10:00', photo: 'https://i.pravatar.cc/50?img=1' },
-    { date: '2025-09-27', candidate: 'Bob Leroy', evaluator: 'Marie Claire', time: '14:00', photo: 'https://i.pravatar.cc/50?img=2' },
-    { date: '2025-09-28', candidate: 'Charlie Dubois', evaluator: 'Paul Henry', time: '09:00', photo: 'https://i.pravatar.cc/50?img=3' }
-];
-
+let interviews = [];
 let currentDate = new Date();
+
+async function fetchInterviews() {
+    try {
+        const response = await fetch('/api/entretiens');
+        if (!response.ok) throw new Error('Erreur serveur');
+        interviews = await response.json();
+        generateCalendar(currentDate);
+    } catch (error) {
+        console.error('Erreur lors du chargement des entretiens:', error);
+        const eventsList = document.getElementById('events-list');
+        if (eventsList) {
+            eventsList.innerHTML = '<p style="color: red;">Impossible de charger les entretiens.</p>';
+        }
+    }
+}
 
 function generateCalendar(date) {
     const calendarDays = document.getElementById('calendarDays');
+    const calendarWeekdays = document.getElementById('calendarWeekdays');
     calendarDays.innerHTML = '';
+    calendarWeekdays.innerHTML = '';
 
     const monthYear = document.getElementById('monthYear');
     const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const weekdayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
     monthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    // 🗓️ Afficher les noms des jours de la semaine
+    weekdayNames.forEach(day => {
+        const wd = document.createElement('div');
+        wd.textContent = day;
+        wd.classList.add('weekday');
+        calendarWeekdays.appendChild(wd);
+    });
+
+    // ⚙️ Calcul du premier jour et du nombre de jours
+    let firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    if (firstDay === 0) firstDay = 7; // Ajuster dimanche -> 7 pour alignement avec Lundi
+
     const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
-    // Ajouter jours vides avant le 1er
-    for (let i = 0; i < firstDay; i++) {
+    // Espaces avant le 1er
+    for (let i = 1; i < firstDay; i++) {
         const emptyDay = document.createElement('div');
         calendarDays.appendChild(emptyDay);
     }
 
-    // Ajouter les jours du mois
+    // Jours du mois
     for (let d = 1; d <= daysInMonth; d++) {
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
         const fullDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         dayDiv.textContent = d;
 
-        // Vérifier s'il y a un entretien ce jour
         if (interviews.some(e => e.date === fullDate)) {
             dayDiv.classList.add('has-event');
         }
@@ -69,7 +91,8 @@ function showEvents(date) {
             <img src="${ev.photo}" alt="${ev.candidate}">
             <div class="event-info">
                 <span class="candidate">${ev.candidate}</span>
-                <span class="evaluator"><strong>Evaluateur:</strong> ${ev.evaluator}</span>
+                <span class="evaluator"><small><i class="bi bi-briefcase"></i> ${ev.annonce}</small></span>
+                <span class="evaluator"><strong>Évaluateur:</strong> ${ev.evaluator}</span>
             </div>
             <div class="time-badge">${ev.time}</div>
         `;
@@ -77,7 +100,7 @@ function showEvents(date) {
     });
 }
 
-
+// Navigation mois
 document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
     generateCalendar(currentDate);
@@ -89,4 +112,4 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 });
 
 // Initialisation
-generateCalendar(currentDate);
+fetchInterviews();

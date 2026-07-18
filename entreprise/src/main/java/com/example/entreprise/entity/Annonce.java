@@ -1,8 +1,19 @@
 package com.example.entreprise.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "annonce")
@@ -43,6 +54,9 @@ public class Annonce {
     @Column(name = "ville_obligatoire")
     private Boolean villeObligatoire = false;
 
+    @Column(name = "debut_entretien")
+    private LocalDateTime debutEntretien;
+
     // Relations avec FetchType.LAZY pour éviter les problèmes
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_diplome")
@@ -68,6 +82,7 @@ public class Annonce {
     @JoinColumn(name = "id_poste", nullable = false, unique = true)
     private Poste poste;
 
+
     // Collections avec FetchType.LAZY et List (pas besoin de Set)
     @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Candidature> candidatures;
@@ -77,6 +92,9 @@ public class Annonce {
 
     @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AnnonceLangue> langues;
+    
+    @OneToMany(mappedBy = "annonce")
+    private List<TestPassage> passages;
 
     // Constructeurs
     public Annonce() {
@@ -91,73 +109,199 @@ public class Annonce {
         this.ferme = false;
         this.urgent = false;
     }
+    
+    public List<TestPassage> getPassages() {
+        return passages;
+    }
+
+    public void setPassages(List<TestPassage> passages) {
+        this.passages = passages;
+    }
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public LocalDate getDateLimite() { return dateLimite; }
-    public void setDateLimite(LocalDate dateLimite) { this.dateLimite = dateLimite; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDate getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDate dateCreation) { this.dateCreation = dateCreation; }
+    public LocalDate getDateLimite() {
+        return dateLimite;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setDateLimite(LocalDate dateLimite) {
+        this.dateLimite = dateLimite;
+    }
 
-    public Integer getAnneeExperience() { return anneeExperience; }
-    public void setAnneeExperience(Integer anneeExperience) { this.anneeExperience = anneeExperience; }
+    public LocalDate getDateCreation() {
+        return dateCreation;
+    }
 
-    public Integer getAge() { return age; }
-    public void setAge(Integer age) { this.age = age; }
+    public void setDateCreation(LocalDate dateCreation) {
+        this.dateCreation = dateCreation;
+    }
 
-    public Boolean getUrgent() { return urgent; }
-    public void setUrgent(Boolean urgent) { this.urgent = urgent; }
+    public String getDescription() {
+        return description;
+    }
 
-    public Boolean getFerme() { return ferme; }
-    public void setFerme(Boolean ferme) { this.ferme = ferme; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Boolean getAgeObligatoire() { return ageObligatoire; }
-    public void setAgeObligatoire(Boolean ageObligatoire) { this.ageObligatoire = ageObligatoire; }
+    public Integer getAnneeExperience() {
+        return anneeExperience;
+    }
 
-    public Boolean getDiplomeObligatoire() { return diplomeObligatoire; }
-    public void setDiplomeObligatoire(Boolean diplomeObligatoire) { this.diplomeObligatoire = diplomeObligatoire; }
+    public void setAnneeExperience(Integer anneeExperience) {
+        this.anneeExperience = anneeExperience;
+    }
 
-    public Boolean getExperienceObligatoire() { return experienceObligatoire; }
-    public void setExperienceObligatoire(Boolean experienceObligatoire) { this.experienceObligatoire = experienceObligatoire; }
+    public Integer getAge() {
+        return age;
+    }
 
-    public Boolean getGenreObligatoire() { return genreObligatoire; }
-    public void setGenreObligatoire(Boolean genreObligatoire) { this.genreObligatoire = genreObligatoire; }
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 
-    public Boolean getVilleObligatoire() { return villeObligatoire; }
-    public void setVilleObligatoire(Boolean villeObligatoire) { this.villeObligatoire = villeObligatoire; }
+    public Boolean getUrgent() {
+        return urgent;
+    }
 
-    public Diplome getDiplome() { return diplome; }
-    public void setDiplome(Diplome diplome) { this.diplome = diplome; }
+    public void setUrgent(Boolean urgent) {
+        this.urgent = urgent;
+    }
 
-    public Genre getGenre() { return genre; }
-    public void setGenre(Genre genre) { this.genre = genre; }
+    public Boolean getFerme() {
+        return ferme;
+    }
 
-    public Ville getVille() { return ville; }
-    public void setVille(Ville ville) { this.ville = ville; }
+    public void setFerme(Boolean ferme) {
+        this.ferme = ferme;
+    }
 
-    public Filiere getFiliere() { return filiere; }
-    public void setFiliere(Filiere filiere) { this.filiere = filiere; }
+    public Boolean getAgeObligatoire() {
+        return ageObligatoire;
+    }
 
-    public Test getTest() { return test; }
-    public void setTest(Test test) { this.test = test; }
+    public void setAgeObligatoire(Boolean ageObligatoire) {
+        this.ageObligatoire = ageObligatoire;
+    }
 
-    public Poste getPoste() { return poste; }
-    public void setPoste(Poste poste) { this.poste = poste; }
+    public Boolean getDiplomeObligatoire() {
+        return diplomeObligatoire;
+    }
 
-    public List<Candidature> getCandidatures() { return candidatures; }
-    public void setCandidatures(List<Candidature> candidatures) { this.candidatures = candidatures; }
+    public void setDiplomeObligatoire(Boolean diplomeObligatoire) {
+        this.diplomeObligatoire = diplomeObligatoire;
+    }
 
-    public List<AnnonceCompetence> getCompetences() { return competences; }
-    public void setCompetences(List<AnnonceCompetence> competences) { this.competences = competences; }
+    public Boolean getExperienceObligatoire() {
+        return experienceObligatoire;
+    }
 
-    public List<AnnonceLangue> getLangues() { return langues; }
-    public void setLangues(List<AnnonceLangue> langues) { this.langues = langues; }
+    public void setExperienceObligatoire(Boolean experienceObligatoire) {
+        this.experienceObligatoire = experienceObligatoire;
+    }
+
+    public Boolean getGenreObligatoire() {
+        return genreObligatoire;
+    }
+
+    public void setGenreObligatoire(Boolean genreObligatoire) {
+        this.genreObligatoire = genreObligatoire;
+    }
+
+    public Boolean getVilleObligatoire() {
+        return villeObligatoire;
+    }
+
+    public void setVilleObligatoire(Boolean villeObligatoire) {
+        this.villeObligatoire = villeObligatoire;
+    }
+
+    public LocalDateTime getDebutEntretien() {
+        return debutEntretien;
+    }
+
+    public void setDebutEntretien(LocalDateTime debutEntretien) {
+        this.debutEntretien = debutEntretien;
+    }
+
+    public Diplome getDiplome() {
+        return diplome;
+    }
+
+    public void setDiplome(Diplome diplome) {
+        this.diplome = diplome;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public Ville getVille() {
+        return ville;
+    }
+
+    public void setVille(Ville ville) {
+        this.ville = ville;
+    }
+
+    public Filiere getFiliere() {
+        return filiere;
+    }
+
+    public void setFiliere(Filiere filiere) {
+        this.filiere = filiere;
+    }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+    public Poste getPoste() {
+        return poste;
+    }
+
+    public void setPoste(Poste poste) {
+        this.poste = poste;
+    }
+
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
+
+    public void setCandidatures(List<Candidature> candidatures) {
+        this.candidatures = candidatures;
+    }
+
+    public List<AnnonceCompetence> getCompetences() {
+        return competences;
+    }
+
+    public void setCompetences(List<AnnonceCompetence> competences) {
+        this.competences = competences;
+    }
+
+    public List<AnnonceLangue> getLangues() {
+        return langues;
+    }
+
+    public void setLangues(List<AnnonceLangue> langues) {
+        this.langues = langues;
+    }
 
     // Méthodes utilitaires
     public void addCompetence(AnnonceCompetence annonceCompetence) {
@@ -199,4 +343,5 @@ public class Annonce {
     public boolean isActive() {
         return !ferme && !isExpired();
     }
+
 }

@@ -8,5 +8,5 @@ import java.util.*;
 
 @Repository
 public interface ReponseRepository extends JpaRepository<Reponse, Long> {
-    Optional<Reponse> findByValeur(String valeur);
+    Optional<Reponse> findFirstByValeur(String valeur);
 }

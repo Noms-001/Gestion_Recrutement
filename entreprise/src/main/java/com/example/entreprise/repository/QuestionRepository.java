@@ -8,5 +8,5 @@ import java.util.*;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Optional<Question> findByEnonce(String enonce);
+    Optional<Question> findFirstByEnonce(String enonce);
 }

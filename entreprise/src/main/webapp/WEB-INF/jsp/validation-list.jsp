@@ -484,7 +484,6 @@
                                                 <div class="card-body text-center">
                                                     <h3 class="mb-1">85/100</h3>
                                                     <p class="mb-0">Score du test</p>
-                                                    <small>Excellent niveau technique</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -493,61 +492,6 @@
                                                 <div class="card-body text-center">
                                                     <h3 class="mb-1">88/100</h3>
                                                     <p class="mb-0">Score d'entretien</p>
-                                                    <small>Très bon profil comportemental</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Test Results -->
-                                    <div class="card border-0 shadow-sm mb-3">
-                                        <div class="card-header">
-                                            <h6 class="mb-0">Résultats du test technique</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-2">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>JavaScript</span>
-                                                            <span class="fw-bold">90%</span>
-                                                        </div>
-                                                        <div class="progress" style="height: 6px;">
-                                                            <div class="progress-bar bg-success" style="width: 90%">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>React</span>
-                                                            <span class="fw-bold">85%</span>
-                                                        </div>
-                                                        <div class="progress" style="height: 6px;">
-                                                            <div class="progress-bar bg-success" style="width: 85%">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-2">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>TypeScript</span>
-                                                            <span class="fw-bold">80%</span>
-                                                        </div>
-                                                        <div class="progress" style="height: 6px;">
-                                                            <div class="progress-bar bg-info" style="width: 80%"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span>CSS/HTML</span>
-                                                            <span class="fw-bold">88%</span>
-                                                        </div>
-                                                        <div class="progress" style="height: 6px;">
-                                                            <div class="progress-bar bg-success" style="width: 88%">
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -579,22 +523,30 @@
                                                             <div class="col-6">
                                                                 <small class="text-muted">Compétences
                                                                     techniques:</small>
-                                                                <div class="fw-bold text-success">18/20</div>
+                                                                <div class="fw-bold text-success">18/50</div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <small class="text-muted">Communication:</small>
-                                                                <div class="fw-bold text-success">9/10</div>
+                                                                <small class="text-muted">Adéquation culturelle:</small>
+                                                                <div class="fw-bold text-success">5/10</div>
+                                                            </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <small class="text-muted">Résolution de
-                                                                    problèmes:</small>
-                                                                <div class="fw-bold text-success">14/15</div>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <small class="text-muted">Motivation:</small>
-                                                                <div class="fw-bold text-success">9/10</div>
-                                                            </div>
+                                                                <small class="text-muted">Compétences
+                                                                    comportementales:</small>
+                                                                <div class="fw-bold text-success">9/40</div>
                                                         </div>
+
+                                                        <div class="mb-2">
+                                                            <strong>Points forts:</strong>
+                                                            <ul class="mb-1">
+                                                                <li>Excellente maîtrise de React et de l'écosystème
+                                                                    JavaScript
+                                                                </li>
+                                                                <li>Approche méthodique et structurée</li>
+                                                                <li>Très bonne communication</li>
+                                                            </ul>
+                                                        </div>
+
 
                                                         <div class="mb-2">
                                                             <strong>Points forts:</strong>
@@ -615,11 +567,6 @@
                                                                 <li>Expérience limitée sur les projets à grande échelle
                                                                 </li>
                                                             </ul>
-                                                        </div>
-
-                                                        <div class="alert alert-success py-2 mb-0">
-                                                            <strong>Recommandation:</strong> Candidat à retenir - Profil
-                                                            excellent pour le poste
                                                         </div>
                                                     </div>
                                                 </div>
@@ -649,6 +596,7 @@
         </main>
     </div>
 
+
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/toast.js"></script>
     <script>
@@ -660,7 +608,8 @@
             poste: "<%= session.getAttribute("poste") %>"
         };
     </script>
-<script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/script.js"></script>
 </body>
 
 </html>

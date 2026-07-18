@@ -33,16 +33,26 @@ function addTag(type) {
 
     const toggle = document.createElement('input');
     toggle.type = "checkbox";
+    toggle.name = type === 'technicalSkills' ? 'competencesObligatoires[]' : 'languesObligatoires[]';
     toggle.className = "form-check-input";
-    toggle.setAttribute("data-bs-html", "true"); // autoriser HTML dans le tooltip
-    toggle.setAttribute("title", '<i class="bi bi-info-circle"></i> Spécifie si c\'est obligatoire'); // ✅ texte dans l'info-bulle
+    toggle.setAttribute("data-bs-html", "true");
+    toggle.setAttribute("title", '<i class="bi bi-info-circle"></i> Spécifie si c\'est obligatoire');
     toggleWrapper.appendChild(toggle);
+
+    // hidden input pour le formulaire
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = type === 'technicalSkills' ? 'competences[]' : 'langues[]';
+    hiddenInput.value = value;
 
     // bouton suppression
     const closeIcon = document.createElement('i');
     closeIcon.className = "bi bi-x";
     closeIcon.style.cursor = "pointer";
-    closeIcon.addEventListener('click', () => tag.remove());
+    closeIcon.addEventListener('click', () => {
+        tag.remove();          // supprime le tag visuel
+        hiddenInput.remove();  // supprime le hidden input
+    });
 
     // actions = switch + croix
     actions.appendChild(toggleWrapper);
@@ -55,6 +65,7 @@ function addTag(type) {
     // assembler
     tag.appendChild(row);
     container.appendChild(tag);
+    container.appendChild(hiddenInput); // ajoute hidden input dans le container
 
     // reset select
     select.value = '';

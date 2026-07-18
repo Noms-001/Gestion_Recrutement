@@ -211,7 +211,7 @@ document.getElementById('testForm').addEventListener('submit', async function (e
         questions: questionsData
     };
 
-    const response = await fetch('/tests', {
+    const response = await fetch('/api/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(test)
@@ -228,7 +228,7 @@ document.getElementById('testForm').addEventListener('submit', async function (e
 
 async function reloadQuestionBank() {
     try {
-        const response = await fetch('/tests/questions');
+        const response = await fetch('/api/test/questions');
         if (!response.ok) throw new Error('Erreur lors du chargement des questions');
         const questions = await response.json();
 

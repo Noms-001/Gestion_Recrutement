@@ -136,7 +136,7 @@
                                             <div class="card-body">
                                                 <div class="row g-4">
                                                     <div class="col-md-6">
-                                                        <label class="form-label">Maîtrise des technologies
+                                                        <label class="form-label">Maîtrise des competences
                                                             requises</label>
                                                         <input type="range" class="form-range score-input" min="0"
                                                             max="20" value="0"
@@ -148,30 +148,29 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label">Architecture et bonnes
-                                                            pratiques</label>
+                                                        <label class="form-label">Capacité d'apprentissage et adaptabilité</label>
                                                         <input type="range" class="form-range score-input" min="0"
-                                                            max="15" value="0"
+                                                            max="10" value="0"
                                                             oninput="this.nextElementSibling.textContent = this.value + '/15'; updateTotalScore()">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted">0</small>
-                                                            <span class="fw-bold">0/15</span>
-                                                            <small class="text-muted">15</small>
+                                                            <span class="fw-bold">0/10</span>
+                                                            <small class="text-muted">10</small>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">Résolution de problèmes</label>
                                                         <input type="range" class="form-range score-input" min="0"
-                                                            max="15" value="0"
+                                                            max="10" value="0"
                                                             oninput="this.nextElementSibling.textContent = this.value + '/15'; updateTotalScore()">
                                                         <div class="d-flex justify-content-between">
                                                             <small class="text-muted">0</small>
-                                                            <span class="fw-bold">0/15</span>
-                                                            <small class="text-muted">15</small>
+                                                            <span class="fw-bold">0/10</span>
+                                                            <small class="text-muted">10</small>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label">Veille technologique</label>
+                                                        <label class="form-label">Qualité et rigueur technique</label>
                                                         <input type="range" class="form-range score-input" min="0"
                                                             max="10" value="0"
                                                             oninput="this.nextElementSibling.textContent = this.value + '/10'; updateTotalScore()">
@@ -310,18 +309,6 @@
                                                 </h5>
                                             </div>
                                             <div class="card-body">
-                                                <div class="mb-3">
-                                                    <label for="overallRecommendation"
-                                                        class="form-label">Recommandation</label>
-                                                    <select class="form-select" id="overallRecommendation" required>
-                                                        <option value="">Sélectionnez une recommandation</option>
-                                                        <option value="excellent">Excellent candidat - Embauche
-                                                            immédiate</option>
-                                                        <option value="good">Bon candidat - À recommander</option>
-                                                        <option value="average">Candidat moyen - À discuter</option>
-                                                        <option value="poor">Ne convient pas - Ne pas retenir</option>
-                                                    </select>
-                                                </div>
 
                                                 <div class="mb-3">
                                                     <label for="strengths" class="form-label">Points forts</label>
@@ -390,6 +377,7 @@
         };
     </script>
 <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/script.js"></script>
 </body>
 
 </html>

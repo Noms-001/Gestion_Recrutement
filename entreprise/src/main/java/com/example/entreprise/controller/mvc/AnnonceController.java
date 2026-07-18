@@ -1,0 +1,166 @@
+package com.example.entreprise.controller.mvc;
+
+import java.util.*;
+import java.time.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import com.example.entreprise.service.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/annonces")
+public class AnnonceController {
+
+    @Autowired
+    private AnnonceService annonceService;
+
+    // Dans AnnonceController.java
+    @PostMapping("/close")
+    public String closeAnnonce(
+            @RequestParam Long id,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
+            }
+            annonceService.closeAnnonce(id, debutEntretien);
+            redirectAttributes.addFlashAttribute("success", "Annonce fermée avec succès!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de la fermeture: " + e.getMessage());
+        }
+
+        return "redirect:/manage-jobs";
+    }
+
+    @PostMapping("/create")
+    public String createAnnonce(
+            @RequestParam(value = "poste", required = true) String posteLibelle,
+            @RequestParam(value = "filiere", required = true) Long filiereId,
+            @RequestParam(value = "test", required = true) Long testId,
+            @RequestParam(value = "dateLimite", required = true) String dateLimiteStr,
+            @RequestParam(value = "description", required = true) String description,
+            @RequestParam(value = "age", required = false) Integer age,
+            @RequestParam(value = "ageObligatoire", required = false) Boolean ageObligatoire,
+            @RequestParam(value = "anneeExperience", required = false) Integer anneeExperience,
+            @RequestParam(value = "experienceObligatoire", required = false) Boolean experienceObligatoire,
+            @RequestParam(value = "ville", required = false) Long villeId,
+            @RequestParam(value = "villeObligatoire", required = false) Boolean villeObligatoire,
+            @RequestParam(value = "genreObligatoire", required = false) Boolean genreObligatoire,
+            @RequestParam(value = "diplome", required = false) Long diplomeId,
+            @RequestParam(value = "diplomeObligatoire", required = false) Boolean diplomeObligatoire,
+            @RequestParam(value = "urgent", required = false) Boolean urgent,
+            @RequestParam(value = "competences[]", required = false) Long[] competences,
+            @RequestParam(value = "competencesObligatoires[]", required = false) Boolean[] competencesObligatoires,
+            @RequestParam(value = "langues[]", required = false) Long[] langues,
+            @RequestParam(value = "languesObligatoires[]", required = false) Boolean[] languesObligatoires,
+            @RequestParam("departement") Long departementId,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
+            RedirectAttributes redirectAttributes) {
+        try {
+            LocalDate dateLimite = null;
+            if (dateLimiteStr != null && !dateLimiteStr.isBlank()) {
+                dateLimite = LocalDate.parse(dateLimiteStr);
+            } else {
+                redirectAttributes.addFlashAttribute("error",
+                        "Veuillez remplir la date limite");
+                return "redirect:/manage-jobs";
+            }
+
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
+            }
+
+            annonceService.createAnnonce(
+                    posteLibelle,
+                    filiereId,
+                    testId,
+                    dateLimite,
+                    description,
+                    age,
+                    ageObligatoire,
+                    anneeExperience,
+                    experienceObligatoire,
+                    villeId,
+                    villeObligatoire,
+                    null,
+                    genreObligatoire,
+                    diplomeId,
+                    diplomeObligatoire,
+                    urgent,
+                    competences != null ? Arrays.asList(competences) : null,
+                    competencesObligatoires != null ? Arrays.asList(competencesObligatoires) : null,
+                    langues != null ? Arrays.asList(langues) : null,
+                    languesObligatoires != null ? Arrays.asList(languesObligatoires) : null,
+                    departementId,
+                    debutEntretien);
+
+            String successMessage = "Annonce créée avec succès";
+            if (debutEntretien != null) {
+                successMessage += " avec la date de début d'entretien définie";
+            }
+        redirectAttributes.addFlashAttribute("success", successMessage);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Erreur lors de la création de l'annonce : " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "redirect:/manage-jobs";
+    }
+
+    @PostMapping("/update")
+    public String updateAnnonce(
+            @RequestParam Long id,
+            @RequestParam String poste,
+            @RequestParam Long filiere,
+            @RequestParam Long test,
+            @RequestParam String dateLimite,
+            @RequestParam String description,
+            @RequestParam(required = false) Integer age,
+            @RequestParam(required = false, defaultValue = "false") Boolean ageObligatoire,
+            @RequestParam(required = false) Integer anneeExperience,
+            @RequestParam(required = false, defaultValue = "false") Boolean experienceObligatoire,
+            @RequestParam(required = false) Long ville,
+            @RequestParam(required = false, defaultValue = "false") Boolean villeObligatoire,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false, defaultValue = "false") Boolean genreObligatoire,
+            @RequestParam(required = false) Long diplome,
+            @RequestParam(required = false, defaultValue = "false") Boolean diplomeObligatoire,
+            @RequestParam(required = false, defaultValue = "false") Boolean urgent,
+            @RequestParam(required = false) List<Long> competences,
+            @RequestParam(required = false) List<Boolean> competencesObligatoires,
+            @RequestParam(required = false) List<Long> langues,
+            @RequestParam(required = false) List<Boolean> languesObligatoires,
+            @RequestParam Long departement,
+            @RequestParam(value = "debutEntretien", required = false) String debutEntretienStr,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            LocalDateTime debutEntretien = null;
+            if (debutEntretienStr != null && !debutEntretienStr.isBlank()) {
+                debutEntretien = LocalDateTime.parse(debutEntretienStr.replace(" ", "T"));
+            }
+            annonceService.updateAnnonce(
+                    id, poste, filiere, test, LocalDate.parse(dateLimite), description,
+                    age, ageObligatoire, anneeExperience, experienceObligatoire,
+                    ville, villeObligatoire, genre, genreObligatoire,
+                    diplome, diplomeObligatoire, urgent,
+                    competences, competencesObligatoires,
+                    langues, languesObligatoires,
+                    departement, debutEntretien);
+
+            redirectAttributes.addFlashAttribute("success", "Annonce modifiée avec succès!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de la modification: " + e.getMessage());
+        }
+
+        return "redirect:/manage-jobs";
+    }
+}

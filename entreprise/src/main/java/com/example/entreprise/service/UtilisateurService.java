@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UtilisateurService {
@@ -24,6 +25,24 @@ public class UtilisateurService {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    public Optional<Utilisateur> authenticate(String email, String password) {
+        return utilisateurRepository.findByEmailAndMotDePasse(email, password);
+    }
+
+    public Optional<Candidat> getCandidat(Utilisateur utilisateur) {
+        return candidatRepository.findAll()
+                .stream()
+                .filter(c -> c.getUtilisateur().getId().equals(utilisateur.getId()))
+                .findFirst();
+    }
+
+    public Optional<Employe> getEmploye(Utilisateur utilisateur) {
+        return employeRepository.findAll()
+                .stream()
+                .filter(e -> e.getUtilisateur().getId().equals(utilisateur.getId()))
+                .findFirst();
+    }
 
     public void inscrireUtilisateur(String nom, String prenom, String email, String motDePasse, String profil, Long posteId, Long genreId) throws Exception {
         // Vérifier si l'email existe déjà

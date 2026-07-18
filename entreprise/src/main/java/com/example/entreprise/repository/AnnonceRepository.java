@@ -5,9 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
@@ -26,6 +24,8 @@ public interface AnnonceRepository extends JpaRepository<Annonce, Long> {
             @Param("poste") String poste,
             @Param("status") String status
     );
+    
+    List<Annonce> findByPosteId(Long posteId);
 
     @Query("SELECT a FROM Annonce a " +
            "LEFT JOIN FETCH a.poste p " +

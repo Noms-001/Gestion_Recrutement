@@ -69,7 +69,6 @@ CREATE TABLE reponse (
   valeur VARCHAR(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 CREATE TABLE question_reponse (
   id_question INT NOT NULL,
   id_reponse INT NOT NULL,
@@ -154,6 +153,7 @@ CREATE TABLE annonce (
   id_filiere INT NOT NULL,
   id_test INT NOT NULL,
   id_poste INT NOT NULL,
+  debut_entretien DATETIME,
   INDEX (id_poste),
   INDEX (id_test),
   INDEX (id_filiere),
@@ -224,12 +224,13 @@ CREATE TABLE candidat_competence (
 
 CREATE TABLE test_passage (
   id_candidat INT NOT NULL,
-  id_test INT NOT NULL,
+  id_annonce INT NOT NULL,
+  score INT,
   date_passage DATE NOT NULL,
-  PRIMARY KEY (id_candidat, id_test),
+  PRIMARY KEY (id_candidat, id_annonce),
   FOREIGN KEY (id_candidat) REFERENCES candidat(id_candidat)
     ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_test) REFERENCES test(id_test)
+  FOREIGN KEY (id_annonce) REFERENCES annonce(id_annonce)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -237,8 +238,13 @@ CREATE TABLE entretien (
   id_entretien INT AUTO_INCREMENT PRIMARY KEY,
   id_candidature INT NOT NULL,
   id_employe INT NOT NULL,
-  date_entretien DATE NOT NULL,
+  date_entretien DATETIME NOT NULL,
+  score_technique FLOAT,
+  score_comportemental FLOAT,
+  score_culturel FLOAT,
   compte_rendu TEXT,
+  point_fort TEXT,
+  amelioration TEXT,
   FOREIGN KEY (id_candidature) REFERENCES candidature(id_candidature)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_employe) REFERENCES employe(id_employe)
@@ -261,8 +267,9 @@ CREATE TABLE notification (
   id_notification INT AUTO_INCREMENT PRIMARY KEY,
   message VARCHAR(255) NOT NULL,
   id_utilisateur INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  titre VARCHAR(255),
   lu BOOLEAN,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,34 +1,102 @@
 package com.example.entreprise.service;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.example.entreprise.entity.*;
+import com.example.entreprise.dto.*;
+import com.example.entreprise.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.entreprise.dto.QuestionDTO;
-import com.example.entreprise.dto.ReponseDTO;
-import com.example.entreprise.dto.TestDTO;
-import com.example.entreprise.entity.Question;
-import com.example.entreprise.entity.QuestionReponse;
-import com.example.entreprise.entity.QuestionReponseId;
-import com.example.entreprise.entity.Reponse;
-import com.example.entreprise.entity.Test;
-import com.example.entreprise.repository.QuestionRepository;
-import com.example.entreprise.repository.ReponseRepository;
-import com.example.entreprise.repository.TestRepository;
+import java.time.*;
+import java.util.*;;
 
 @Service
 public class TestService {
+
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private TestPassageRepository testPassageRepository;
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
     private ReponseRepository reponseRepository;
+    @Autowired
+    private AnnonceRepository annonceRepository;
+    @Transactional
+    public void demarrerTest(Long utilisateurId, Long AnnonceId) throws Exception {
+        try {
+            // Récupérer le candidat
+            Candidat candidat = utilisateurRepository.findById(utilisateurId)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"))
+                    .getCandidat();
+            
+            // Vérifier si le test existe
+            Annonce annonce = annonceRepository.findById(AnnonceId)
+                    .orElseThrow(() -> new RuntimeException("Test non trouvé"));
+            
+            // Vérifier si le candidat a déjà passé ce test
+            if (testPassageRepository.existsByCandidatIdAndAnnonceId(candidat.getId(), AnnonceId)) {
+                throw new RuntimeException("Vous avez déjà passé ce test");
+            }
+            
+            // Créer le passage de test
+            TestPassage testPassage = new TestPassage();
+            TestPassageId testPassageId = new TestPassageId();
+            testPassageId.setIdCandidat(candidat.getId());
+            testPassageId.setIdAnnonce(AnnonceId);
+            
+            testPassage.setId(testPassageId);
+            testPassage.setCandidat(candidat);
+            testPassage.setAnnonce(annonce);
+            testPassage.setDatePassage(LocalDate.now());
+            
+            testPassageRepository.save(testPassage);
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du démarrage du test: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> getTestInfo(Long testId) {
+        Test test = testRepository.findById(testId).get();
+        Map<String, Object> questionsData = new HashMap<>();
+        
+        questionsData.put("totalQuestions", test.getQuestions().size());
+        questionsData.put("dureeMinutes", test.getTemps().getHour() * 60 + test.getTemps().getMinute());
+        questionsData.put("scoreMinimum", test.getScoreMin());
+        questionsData.put("titre", test.getTitre());
+        int id = 1;
+        // Préparer chaque question
+        ArrayList questions = new ArrayList();
+        Long currentQuestion = null;
+        for (Question question : test.getQuestions()) {
+            Map<String, Object> questionData = new HashMap<>();
+            questionData.put("q_id", question.getId());
+            questionData.put("id", id);
+            questionData.put("text", question.getEnonce());
+            questionData.put("points", question.getPoint());
+            if(currentQuestion == null || currentQuestion > question.getId())
+                currentQuestion = question.getId();
+            // Préparer les options de réponse
+            Map<String, String> options = new HashMap<>();
+            char optionChar = 'a';
+            char correct = 'a';
+            for (QuestionReponse reponse : question.getQuestionReponses()) {
+                options.put(String.valueOf(optionChar), reponse.getReponse().getValeur());
+                if(reponse.getEstCorrect()) correct = optionChar;
+                optionChar++;
+            }
+            questionData.put("options", options);
+            questionData.put("correct", String.valueOf(correct));
+            questions.add(questionData);
+            id++;
+        }
+        questionsData.put("questions", questions);
+        return questionsData;
+    }
 
     @Transactional
     public Test createTest(TestDTO dto) {
@@ -46,7 +114,7 @@ public class TestService {
 
         for (QuestionDTO qdto : dto.getQuestions()) {
             // Vérifier si la question existe déjà (par enonce)
-            Question question = questionRepository.findByEnonce(qdto.getEnonce())
+            Question question = questionRepository.findFirstByEnonce(qdto.getEnonce())
                     .orElseGet(() -> {
                         Question newQ = new Question();
                         newQ.setEnonce(qdto.getEnonce());
@@ -56,7 +124,7 @@ public class TestService {
 
                         for (ReponseDTO rdto : qdto.getReponses()) {
                             // Vérifier si la réponse existe déjà (par valeur)
-                            Reponse reponse = reponseRepository.findByValeur(rdto.getValeur())
+                            Reponse reponse = reponseRepository.findFirstByValeur(rdto.getValeur())
                                     .orElseGet(() -> {
                                         Reponse newR = new Reponse();
                                         newR.setValeur(rdto.getValeur());
@@ -84,29 +152,7 @@ public class TestService {
         return testRepository.save(test);
     }
 
-    public List<Test> getAllTests() {
+    public List<Test> findAll() {
         return testRepository.findAll();
     }
-
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
-    }
-
-    public List<QuestionDTO> getAllQuestionsDTO() {
-        return questionRepository.findAll().stream().map(q -> {
-            QuestionDTO dto = new QuestionDTO();
-            dto.setId(q.getId());
-            dto.setEnonce(q.getEnonce());
-            dto.setPoint(q.getPoint());
-            dto.setReponses(q.getReponses().stream().map(r -> {
-                ReponseDTO rdto = new ReponseDTO();
-                rdto.setId(r.getId());
-                rdto.setValeur(r.getValeur());
-                rdto.setEstCorrect(r.estCorrect(q));
-                return rdto;
-            }).collect(Collectors.toList()));
-            return dto;
-        }).collect(Collectors.toList());
-    }
-
 }

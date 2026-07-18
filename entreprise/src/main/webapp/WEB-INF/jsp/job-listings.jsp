@@ -60,12 +60,15 @@
                                 <input type="text" class="form-control form-control-lg" placeholder="Rechercher un poste, un département, une ville...">
                             </div>
                             <div class="col-md-2">
-                                <button class="btn btn-primary btn-lg w-100">
+                                <button class="btn btn-primary btn-lg w-100" id="btnSearch">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="text-end mb-2">
+                    <small><i class="fs-6 bi bi-exclamation-triangle-fill text-danger me-1"></i> Indique une annonce urgente</small>
                 </div>
                 <div class="row flex-nowrap" id="jobsRow">
                     <div class="jobs-container" id="jobsContainer">
@@ -85,8 +88,16 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-grow-1">
-                                                            <h5 class="card-title mb-1"><%= annonce.posteLibelle %></h5>
-                                                            <p class="text-muted mb-2"><%= annonce.departementNom %> • <%= annonce.villeNom %></p>
+                                                            <h5 class="card-title mb-1">
+                                                                <%= annonce.posteLibelle %>
+                                                            </h5>
+                                                            <p class="text-muted mb-2">
+                                                                <% if(annonce.urgent != null && annonce.urgent) { %>
+                                                                <span class="text-danger">
+                                                                    <i class="fs-6 bi bi-exclamation-triangle-fill me-1"></i>
+                                                                </span>
+                                                                <% } %>
+                                                                <%= annonce.departementNom %> • <%= annonce.villeNom %></p>
                                                             <p class="card-text mb-3">
                                                                 <% 
                                                                     String description = annonce.description != null ? annonce.description : "";
@@ -98,6 +109,12 @@
                                                             </p>
                                                             <div class="d-flex flex-wrap gap-2">
                                                                 <!-- Compétences -->
+                                                                 <% if (annonce.competencesObligatoires != null) { %>
+                                                                    <% for (String competence : annonce.competencesObligatoires) { %>
+                                                                        <span class="badge bg-primary"><%= competence %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.competences != null) { %>
                                                                     <% for (String competence : annonce.competences) { %>
                                                                         <span class="badge bg-primary"><%= competence %></span>
@@ -105,6 +122,12 @@
                                                                 <% } %>
                                                                 
                                                                 <!-- Langues -->
+                                                                 <% if (annonce.languesObligatoires != null) { %>
+                                                                    <% for (String langue : annonce.languesObligatoires) { %>
+                                                                        <span class="badge bg-info"><%= langue %></span>
+                                                                    <% } %>
+                                                                <% } %>
+
                                                                 <% if (annonce.langues != null) { %>
                                                                     <% for (String langue : annonce.langues) { %>
                                                                         <span class="badge bg-info"><%= langue %></span>
@@ -126,7 +149,7 @@
                                                         Chargement...
                                                     </small>
                                                     <div class="mt-3 d-flex justify-content-end">
-                                                        <button class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
+                                                        <button  style="height: 30px; overflow: hidden;" class="btn btn-outline-primary btn-sm me-2 btn-detailler" id="btn-detail-<%= annonce.id %>" onclick="openJobDetails(<%= annonce.id %>)">
                                                             <i class="bi bi-eye me-1"></i>Voir détails
                                                         </button>
                                                         <button class="btn btn-primary btn-sm btn-postuler" onclick="postulerAnnonce(<%= annonce.id %>)">
@@ -187,7 +210,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <form>
+            <form id="form">
                 <!-- Villes -->
                 <div class="mb-4">
                     <label for="cityFilter" class="form-label fw-semibold">Ville</label>
@@ -253,7 +276,17 @@
                     </select>
                     <div id="langsTags" class="mt-2"></div>
                 </div>
-
+                <!-- Dans votre JSP, ajoutez cette section dans l'offcanvas de filtres -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Type d'annonce</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="urgentFilter">
+                        <label class="form-check-label" for="urgentFilter">
+                            <i class="fs-6 bi bi-exclamation-triangle-fill text-danger me-1"></i>
+                            Afficher seulement les annonces urgentes
+                        </label>
+                    </div>
+                </div>
                 <!-- Boutons -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
@@ -273,6 +306,11 @@
             id: "<%= session.getAttribute("id_utilisateur") %>",
             poste: "<%= session.getAttribute("poste") %>"
         };
+        const error = "<%= request.getAttribute("error") %>";
+        if(error != 'null') {
+            showToast('danger', error);
+        }
+        
     </script>
     <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/job-list.js"></script>

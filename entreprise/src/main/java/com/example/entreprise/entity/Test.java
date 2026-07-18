@@ -21,9 +21,6 @@ public class Test {
     private List<Question> questions;
 
     @OneToMany(mappedBy = "test")
-    private List<TestPassage> passages;
-
-    @OneToMany(mappedBy = "test")
     private List<Annonce> annonces;
 
     // Getters & Setters
@@ -65,14 +62,6 @@ public class Test {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
-    }
-
-    public List<TestPassage> getPassages() {
-        return passages;
-    }
-
-    public void setPassages(List<TestPassage> passages) {
-        this.passages = passages;
     }
 
     public List<Annonce> getAnnonces() {
