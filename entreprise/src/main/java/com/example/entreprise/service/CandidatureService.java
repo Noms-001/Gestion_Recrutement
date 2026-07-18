@@ -1,341 +1,253 @@
 package com.example.entreprise.service;
 
+import com.example.entreprise.dto.VerificationResultDTO;
 import com.example.entreprise.entity.*;
-import com.example.entreprise.dto.CandidatureDTO;
 import com.example.entreprise.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class CandidatureService {
 
     @Autowired
-    private CandidatureRepository candidatureRepository;
-
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
-
-    @Autowired
     private CandidatRepository candidatRepository;
+
     @Autowired
     private AnnonceRepository annonceRepository;
+
     @Autowired
-    private EducationRepository educationRepository;
-    @Autowired
-    private ExperienceRepository experienceRepository;
+    private CandidatureRepository candidatureRepository;
 
-    public Long validerCandidature(Long candidatId, Long annonceId) throws Exception {
-        Candidat candidat = candidatRepository.findById(candidatId)
-                .orElseThrow(() -> new IllegalArgumentException("Candidat introuvable"));
-        Annonce annonce = annonceRepository.findById(annonceId)
-                .orElseThrow(() -> new IllegalArgumentException("Annonce introuvable"));
+    // Vérifier si le candidat peut postuler
+    public VerificationResultDTO verifierEligibiliteCandidat(Long candidatId, Long annonceId) {
+        VerificationResultDTO result = new VerificationResultDTO();
+        result.setEligible(true);
+        List<String> problemes = new ArrayList<>();
 
-        // Vérification de l'âge
-        if (annonce.getAgeObligatoire() && !validerAge(candidat, annonce)) {
-            if (candidat.getDateNaissance() == null) {
-                throw new IllegalStateException("dateNaissance");
+        Optional<Candidat> candidatOpt = candidatRepository.findByIdWithDetails(candidatId);
+        Optional<Annonce> annonceOpt = annonceRepository.findByIdWithDetails(annonceId);
+
+        if (candidatOpt.isEmpty() || annonceOpt.isEmpty()) {
+            result.setEligible(false);
+            result.setProblemes(List.of("Candidat ou annonce non trouvé"));
+            return result;
+        }
+
+        Candidat candidat = candidatOpt.get();
+        Annonce annonce = annonceOpt.get();
+
+        // 1. Vérification des informations personnelles obligatoires
+        if (!verifierInfosPersonnelles(candidat, problemes)) {
+            result.setEligible(false);
+        }
+
+        // 2. Vérification des critères obligatoires de l'annonce
+        if (!verifierCriteresAnnonce(candidat, annonce, problemes)) {
+            result.setEligible(false);
+        }
+
+        result.setProblemes(problemes);
+        return result;
+    }
+
+    private boolean verifierInfosPersonnelles(Candidat candidat, List<String> problemes) {
+        boolean valide = true;
+
+        if (candidat.getUtilisateur().getNom() == null || candidat.getUtilisateur().getNom().trim().isEmpty()) {
+            problemes.add("Nom manquant");
+            valide = false;
+        }
+        if (candidat.getUtilisateur().getPrenom() == null || candidat.getUtilisateur().getPrenom().trim().isEmpty()) {
+            problemes.add("Prénom manquant");
+            valide = false;
+        }
+        if (candidat.getUtilisateur().getEmail() == null || candidat.getUtilisateur().getEmail().trim().isEmpty()) {
+            problemes.add("Email manquant");
+            valide = false;
+        }
+        if (candidat.getTelephone() == null || candidat.getTelephone().trim().isEmpty()) {
+            problemes.add("Téléphone manquant");
+            valide = false;
+        }
+        if (candidat.getAdresse() == null || candidat.getAdresse().trim().isEmpty()) {
+            problemes.add("Adresse manquant");
+            valide = false;
+        }
+
+        return valide;
+    }
+
+    private boolean verifierCriteresAnnonce(Candidat candidat, Annonce annonce, List<String> problemes) {
+        boolean valide = true;
+
+        // Vérification diplôme
+        if (Boolean.TRUE.equals(annonce.getDiplomeObligatoire()) && annonce.getDiplome() != null) {
+            if (!verifierDiplome(candidat, annonce.getDiplome())) {
+                problemes.add("Diplôme requis: " + annonce.getDiplome().getLibelle() + " (niveau " + annonce.getDiplome().getNiveau() + ")");
+                valide = false;
             }
-            throw new IllegalArgumentException("Âge ne correspond pas aux critères requis");
         }
 
-        // Vérification de la ville
-        if (annonce.getVilleObligatoire() && !validerVille(candidat, annonce)) {
-            if (candidat.getVille() == null) {
-                throw new IllegalStateException("ville");
+        // Vérification âge
+        if (Boolean.TRUE.equals(annonce.getAgeObligatoire()) && annonce.getAge() != null) {
+            if (!verifierAge(candidat, annonce.getAge())) {
+                problemes.add("Âge minimum requis: " + annonce.getAge() + " ans");
+                valide = false;
             }
-            throw new IllegalArgumentException("Ville ne correspond pas à celle exigée par l'annonce");
         }
 
-        // Vérification du genre
-        if (annonce.getGenreObligatoire() && !validerGenre(candidat, annonce)) {
-            throw new IllegalArgumentException("Genre non conforme aux critères de l'annonce");
+        // Vérification expérience
+        if (Boolean.TRUE.equals(annonce.getExperienceObligatoire()) && annonce.getAnneeExperience() != null) {
+            if (!verifierExperience(candidat, annonce.getAnneeExperience())) {
+                problemes.add("Expérience requise: " + annonce.getAnneeExperience() + " an(s)");
+                valide = false;
+            }
         }
 
-        // Vérification du diplôme
-        if (annonce.getDiplomeObligatoire() && !validerDiplome(candidat, annonce)) {
-            throw new IllegalArgumentException("Diplôme insuffisant pour ce poste");
+        // Vérification genre
+        if (Boolean.TRUE.equals(annonce.getGenreObligatoire()) && annonce.getGenre() != null) {
+            if (!verifierGenre(candidat, annonce.getGenre())) {
+                problemes.add("Genre requis: " + annonce.getGenre().getLibelle());
+                valide = false;
+            }
         }
 
-        // Vérification de l'expérience
-        if (annonce.getExperienceObligatoire() && !validerExperience(candidat, annonce)) {
-            throw new IllegalArgumentException("Expérience professionnelle insuffisante");
+        // Vérification ville
+        if (Boolean.TRUE.equals(annonce.getVilleObligatoire()) && annonce.getVille() != null) {
+            if (!verifierVille(candidat, annonce.getVille())) {
+                problemes.add("Localisation requise: " + annonce.getVille().getNom());
+                valide = false;
+            }
         }
 
-        // Vérification des compétences
-        if (!validerCompetencesObligatoires(candidat, annonce)) {
-            throw new IllegalArgumentException("Compétences obligatoires manquantes");
+        // Vérification compétences obligatoires
+        if (annonce.getCompetences() != null) {
+            List<String> competencesManquantes = verifierCompetencesObligatoires(candidat, annonce);
+            if (!competencesManquantes.isEmpty()) {
+                problemes.add("Compétences obligatoires manquantes: " + String.join(", ", competencesManquantes));
+                valide = false;
+            }
         }
 
-        // Vérification des langues
-        if (!validerLanguesObligatoires(candidat, annonce)) {
-            throw new IllegalArgumentException("Langues obligatoires manquantes");
+        // Vérification langues obligatoires
+        if (annonce.getLangues() != null) {
+            List<String> languesManquantes = verifierLanguesObligatoires(candidat, annonce);
+            if (!languesManquantes.isEmpty()) {
+                problemes.add("Langues obligatoires manquantes: " + String.join(", ", languesManquantes));
+                valide = false;
+            }
         }
 
-        if (annonce.getTest() == null) {
-            throw new IllegalArgumentException("Aucun test associé à cette annonce");
-        }
-
-        return annonce.getTest().getId();
+        return valide;
     }
 
-    private boolean validerCompetencesObligatoires(Candidat candidat, Annonce annonce) {
-        List<AnnonceCompetence> requises = annonce.getCompetences().stream()
-                .filter(AnnonceCompetence::isEstObligatoire)
-                .toList();
-        return requises.stream().allMatch(aComp -> candidat.getCompetences().stream()
-                .anyMatch(cComp -> cComp.getId().equals(aComp.getCompetence().getId())));
-    }
-
-    private boolean validerLanguesObligatoires(Candidat candidat, Annonce annonce) {
-        List<AnnonceLangue> requises = annonce.getLangues().stream()
-                .filter(AnnonceLangue::isEstObligatoire)
-                .toList();
-        return requises.stream().allMatch(aLang -> candidat.getLangues().stream()
-                .anyMatch(cLang -> cLang.getId().equals(aLang.getLangue().getId())));
-    }
-
-    private boolean validerAge(Candidat candidat, Annonce annonce) {
-        if (candidat.getDateNaissance() == null || annonce.getAge() == null)
+    private boolean verifierDiplome(Candidat candidat, Diplome diplomeRequis) {
+        if (candidat.getEducations() == null || candidat.getEducations().isEmpty()) {
             return false;
-        java.time.Period age = java.time.Period.between(candidat.getDateNaissance(), java.time.LocalDate.now());
-        return age.getYears() <= annonce.getAge();
+        }
+
+        return candidat.getEducations().stream()
+            .anyMatch(education -> education.getDiplome() != null && 
+                education.getDiplome().getNiveau() >= diplomeRequis.getNiveau());
     }
 
-    private boolean validerVille(Candidat candidat, Annonce annonce) {
-        if (candidat.getVille() == null || annonce.getVille() == null)
+    private boolean verifierAge(Candidat candidat, Integer ageMinimum) {
+        if (candidat.getDateNaissance() == null) {
             return false;
-        return candidat.getVille().getId().equals(annonce.getVille().getId());
+        }
+        
+        int age = LocalDate.now().getYear() - candidat.getDateNaissance().getYear();
+        return age >= ageMinimum;
     }
 
-    private boolean validerGenre(Candidat candidat, Annonce annonce) {
-        if (candidat.getUtilisateur().getGenre() == null || annonce.getGenre() == null)
+    private boolean verifierExperience(Candidat candidat, Integer anneeExperienceRequise) {
+        if (candidat.getExperiences() == null || candidat.getExperiences().isEmpty()) {
             return false;
-        return candidat.getUtilisateur().getGenre().getId().equals(annonce.getGenre().getId());
+        }
+
+        // Calcul approximatif de l'expérience totale
+        long experienceTotale = candidat.getExperiences().stream()
+            .mapToLong(exp -> {
+                if (exp.getFinAnnee() != null && exp.getDebutAnnee() != null) {
+                    return exp.getFinAnnee() - exp.getDebutAnnee();
+                }
+                return 0;
+            })
+            .sum();
+
+        return experienceTotale >= anneeExperienceRequise;
     }
 
-    private boolean validerDiplome(Candidat candidat, Annonce annonce) {
-        if(annonce.getDiplome() == null) return false;
-        List<Education> educations = educationRepository.findByCandidatAndFiliere(candidat, annonce.getFiliere());
-        return educations.stream()
-                .anyMatch(e -> e.getDiplome().getNiveau() >= annonce.getDiplome().getNiveau());
+    private boolean verifierGenre(Candidat candidat, Genre genreRequis) {
+        return candidat.getUtilisateur().getGenre() != null && 
+               candidat.getUtilisateur().getGenre().getId().equals(genreRequis.getId());
     }
 
-    private boolean validerExperience(Candidat candidat, Annonce annonce) {
-        if(annonce.getAnneeExperience() == null) 
-            return false;
-        List<Experience> experiences = experienceRepository.findByCandidatAndFiliere(candidat, annonce.getFiliere());
-        int total = experiences.stream()
-                .mapToInt(e -> e.getFinAnnee() - e.getDebutAnnee())
-                .sum();
-        return total >= annonce.getAnneeExperience();
+    private boolean verifierVille(Candidat candidat, Ville villeRequise) {
+        return candidat.getVille() != null && 
+               candidat.getVille().getId().equals(villeRequise.getId());
+    }
+
+    private List<String> verifierCompetencesObligatoires(Candidat candidat, Annonce annonce) {
+        List<String> competencesManquantes = new ArrayList<>();
+        
+        annonce.getCompetences().stream()
+            .filter(AnnonceCompetence::isEstObligatoire)
+            .forEach(annonceCompetence -> {
+                boolean possedeCompetence = candidat.getCompetences().stream()
+                    .anyMatch(competence -> competence.getId().equals(annonceCompetence.getCompetence().getId()));
+                
+                if (!possedeCompetence) {
+                    competencesManquantes.add(annonceCompetence.getCompetence().getLibelle());
+                }
+            });
+        
+        return competencesManquantes;
+    }
+
+    private List<String> verifierLanguesObligatoires(Candidat candidat, Annonce annonce) {
+        List<String> languesManquantes = new ArrayList<>();
+        
+        annonce.getLangues().stream()
+            .filter(AnnonceLangue::isEstObligatoire)
+            .forEach(annonceLangue -> {
+                boolean possedeLangue = candidat.getLangues().stream()
+                    .anyMatch(langue -> langue.getId().equals(annonceLangue.getLangue().getId()));
+                
+                if (!possedeLangue) {
+                    languesManquantes.add(annonceLangue.getLangue().getLibelle());
+                }
+            });
+        
+        return languesManquantes;
     }
 
     @Transactional
-    public Long postuler(Long utilisateurId, Long annonceId, Long candidatureId) throws Exception {
-        try {
-            // Récupération du candidat lié à l'utilisateur
-            Long candidatId = utilisateurRepository.findById(utilisateurId)
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"))
-                    .getCandidat()
-                    .getId();
+    public Candidature creerCandidature(Long candidatId, Long annonceId) {
+        Optional<Candidat> candidatOpt = candidatRepository.findById(candidatId);
+        Optional<Annonce> annonceOpt = annonceRepository.findById(annonceId);
 
-            // Validation des critères avant de postuler
-            Long validation = validerCandidature(candidatId, annonceId);
-
-            // Création de la candidature
-            Candidature candidature = new Candidature();
-            candidature.setId(candidatureId);
-            Candidat candidat = new Candidat();
-            candidat.setId(candidatId);
-
-            Annonce annonce = new Annonce();
-            annonce.setId(annonceId);
-
-            candidature.setCandidat(candidat);
-            candidature.setAnnonce(annonce);
-            candidature.setDateCandidature(LocalDate.now());
-
-            candidatureRepository.save(candidature);
-
-            return validation;
-
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    public Candidature aDejaPostule(Long utilisateurId, Long annonceId) {
-        Long candidatId = utilisateurRepository.findById(utilisateurId).get().getCandidat().getId();
-        return candidatureRepository
-                .findByCandidatIdAndAnnonceId(candidatId, annonceId)
-                .orElse(null);
-    }
-
-    public List<CandidatureDTO> getCandidaturesByAnnonceId(Long annonceId) {
-        List<Candidature> candidatures = candidatureRepository.findByAnnonceId(annonceId);
-        return candidatures.stream()
-                .map(CandidatureDTO::fromCandidature)
-                .collect(Collectors.toList());
-    }
-
-    private double calculerScoreDiplome(Candidat candidat, Annonce annonce) {
-        List<Education> educations = educationRepository.findByCandidatAndFiliere(candidat, annonce.getFiliere());
-        if (educations.isEmpty())
-            return 0;
-
-        double maxNiveau = educations.stream().mapToDouble(e -> e.getDiplome().getNiveau()).max().orElse(0);
-
-        double req = annonce.getDiplome().getNiveau();
-        return Math.min(100, (maxNiveau * 100.0 / req));
-    }
-
-    private double calculerScoreExperience(Candidat candidat, Annonce annonce) {
-        List<Experience> experiences = experienceRepository.findByCandidatAndFiliere(candidat, annonce.getFiliere());
-        if (experiences.isEmpty())
-            return 0;
-
-        int total = experiences.stream().mapToInt(e -> e.getFinAnnee() - e.getDebutAnnee()).sum();
-
-        int req = annonce.getAnneeExperience();
-        return Math.min(100, (total * 100.0 / req));
-    }
-
-    private double calculerScoreCompetences(Candidat candidat, Annonce annonce) {
-        List<AnnonceCompetence> annonceComps = annonce.getCompetences();
-        if (annonceComps.isEmpty()) return 100;
-
-        double totalPoids = 0;
-        double score = 0;
-
-        for (AnnonceCompetence ac : annonceComps) {
-            double facteur = ac.isEstObligatoire() ? 1.5 : 1.0;
-            totalPoids += facteur;
-
-            boolean possede = candidat.getCompetences().stream().anyMatch(cComp -> cComp.getId().equals(ac.getCompetence().getId()));
-            if (possede) score += facteur;
+        if (candidatOpt.isEmpty() || annonceOpt.isEmpty()) {
+            throw new RuntimeException("Candidat ou annonce non trouvé");
         }
 
-        return (score / totalPoids) * 100.0;
-    }
-
-    private double calculerScoreLangues(Candidat candidat, Annonce annonce) {
-        List<AnnonceLangue> annonceLangues = annonce.getLangues();
-        if (annonceLangues.isEmpty()) return 100;
-
-        double totalPoids = 0;
-        double score = 0;
-
-        for (AnnonceLangue al : annonceLangues) {
-            double facteur = al.isEstObligatoire() ? 1.5 : 1.0;
-            totalPoids += facteur;
-
-            boolean possede = candidat.getLangues().stream().anyMatch(cLang -> cLang.getId().equals(al.getLangue().getId()));
-            if (possede) score += facteur;
+        // Vérifier si candidature existe déjà
+        boolean existeDeja = candidatureRepository.existsByCandidatIdAndAnnonceId(candidatId, annonceId);
+        if (existeDeja) {
+            throw new RuntimeException("Candidature déjà existante");
         }
 
-        return (score / totalPoids) * 100.0;
+        Candidature candidature = new Candidature();
+        candidature.setCandidat(candidatOpt.get());
+        candidature.setAnnonce(annonceOpt.get());
+        candidature.setDateCandidature(LocalDate.now());
+
+        return candidatureRepository.save(candidature);
     }
-
-    private List<String> getCompetencesMatch(Candidat candidat, Annonce annonce) {
-        return annonce.getCompetences().stream()
-                .filter(aComp -> candidat.getCompetences().stream()
-                        .anyMatch(cComp -> cComp.getId().equals(aComp.getCompetence().getId())))
-                .map(aComp -> aComp.getCompetence().getLibelle())
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getLanguesMatch(Candidat candidat, Annonce annonce) {
-        return annonce.getLangues().stream()
-                .filter(aLang -> candidat.getLangues().stream()
-                        .anyMatch(cLang -> cLang.getId().equals(aLang.getLangue().getId())))
-                .map(aLang -> aLang.getLangue().getLibelle())
-                .collect(Collectors.toList());
-    }
-
-
-    public CandidatureDTO evaluerCompatibilite(Long candidatureId) throws Exception {
-        Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new IllegalArgumentException("Candidature introuvable"));
-        Candidat candidat = candidature.getCandidat();
-        Annonce annonce = candidature.getAnnonce();
-
-        CandidatureDTO dto = new CandidatureDTO();
-        dto.setId(candidatureId);
-        dto.nom = candidat.getUtilisateur().getNom();
-        dto.prenom = candidat.getUtilisateur().getPrenom();
-        dto.photo = candidat.getPhoto();
-
-        double totalScore = 0;
-
-        // 🔹 Pondération par critère
-        double wAge = 10;
-        double wVille = 10;
-        double wGenre = 5;
-        double wDiplome = 15;
-        double wExperience = 15;
-        double wCompetences = 30;
-        double wLangues = 15;
-
-        double facteur = 1.5;
-
-        if (annonce.getAgeObligatoire())
-            wAge *= facteur;
-        if (annonce.getVilleObligatoire())
-            wVille *= facteur;
-        if (annonce.getGenreObligatoire())
-            wGenre *= facteur;
-        if (annonce.getDiplomeObligatoire())
-            wDiplome *= facteur;
-        if (annonce.getExperienceObligatoire())
-            wExperience *= facteur;
-
-        double totalPoids = wAge + wVille + wGenre + wDiplome + wExperience + wCompetences + wLangues;
-
-        // ==== AGE ====
-        double ageScore = validerAge(candidat, annonce) ? 100 : 0;
-        dto.addScore("Âge", ageScore);
-        totalScore += ageScore * (wAge / totalPoids);
-
-        // ==== VILLE ====
-        double villeScore = validerVille(candidat, annonce) ? 100 : 0;
-        dto.addScore("Ville", villeScore);
-        totalScore += villeScore * (wVille / totalPoids);
-
-        // ==== GENRE ====
-        double genreScore = validerGenre(candidat, annonce) ? 100 : 0;
-        dto.addScore("Genre", genreScore);
-        totalScore += genreScore * (wGenre / totalPoids);
-
-        // ==== DIPLÔME ====
-        double diplomeScore = calculerScoreDiplome(candidat, annonce);
-        dto.addScore("Diplôme", diplomeScore);
-        totalScore += diplomeScore * (wDiplome / totalPoids);
-
-        // ==== EXPÉRIENCE ====
-        double expScore = calculerScoreExperience(candidat, annonce);
-        dto.addScore("Expérience", expScore);
-        totalScore += expScore * (wExperience / totalPoids);
-
-        // ==== COMPÉTENCES ====
-        double compScore = calculerScoreCompetences(candidat, annonce);
-        dto.addScore("Compétences", compScore);
-        dto.addCorrespondance("Compétences", getCompetencesMatch(candidat, annonce));
-        totalScore += compScore * (wCompetences / totalPoids);
-
-        // ==== LANGUES ====
-        double langScore = calculerScoreLangues(candidat, annonce);
-        dto.addScore("Langues", langScore);
-        dto.addCorrespondance("Langues", getLanguesMatch(candidat, annonce));
-        totalScore += langScore * (wLangues / totalPoids);
-
-        // ==== Résultat final ====
-        dto.setScoreGlobal(Math.round(totalScore * 100.0) / 100.0);
-        return dto;
-    }
-
 }

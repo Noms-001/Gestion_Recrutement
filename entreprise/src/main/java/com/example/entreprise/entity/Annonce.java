@@ -78,8 +78,8 @@ public class Annonce {
     @JoinColumn(name = "id_test", nullable = false)
     private Test test;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_poste", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_poste", nullable = false, unique = true)
     private Poste poste;
 
 

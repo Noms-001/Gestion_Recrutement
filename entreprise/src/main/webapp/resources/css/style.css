@@ -6,7 +6,7 @@
     --secondary-color: #0d3b56;
     --bg-light: #f0f4f8;
     --text-muted: #6c757d;
-    --success-color: #198754;
+    --success-color: #10B981;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
     --info-color: #0dcaf0;
@@ -777,54 +777,62 @@ body {
     transition: all 0.4s ease-in-out;
 }
 
-/* --- Animation slide --- */
-.slide-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
+.success-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.success-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 3rem;
+    text-align: center;
+    max-width: 500px;
     width: 100%;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.4s ease;
 }
 
-.slide-screen.active {
-    opacity: 1;
-    transform: translateX(0);
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 2.5rem;
 }
 
-.slide-screen.slide-out-left {
-    opacity: 0;
-    transform: translateX(-100%);
+.success-icon {
+    background: linear-gradient(135deg, var(--success-color), #059669);
+    color: white;
 }
 
-/* --- Améliorations visuelles --- */
-#dateChoiceModal .modal-content {
-    background: #fff;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+.success-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
-#dateChoiceModal .modal-header h5 {
-    color: #333;
+.success-title {
+    color: var(--success-color);
 }
 
-#dateChoiceModal .btn {
-    font-weight: 500;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.success-message {
+    color: var(--gray-600);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
 }
 
-#dateChoiceModal .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#backToMain {
-    color: #555;
-}
-
-#backToMain:hover {
-    color: #000;
+.success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 

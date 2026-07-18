@@ -11,12 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface CandidatureRepository extends JpaRepository<Candidature, Long> {
-    
-    Optional<Candidature> findByCandidatIdAndAnnonceId(Long candidatId, Long annonceId);
-    
-    @Query("SELECT COUNT(c) FROM Candidature c WHERE c.annonce.id = :annonceId")
-    long countByAnnonceId(@Param("annonceId") Long annonceId);
-
-    List<Candidature> findByAnnonceId(Long annonceId);
-    Optional<Candidature> findByCandidatId(Integer candidatId);
+    boolean existsByCandidatIdAndAnnonceId(Long candidatId, Long annonceId);
 }

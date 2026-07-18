@@ -18,10 +18,6 @@ public class Langue {
     @ManyToMany(mappedBy = "langues")
     private List<Candidat> candidats;
 
-    // Constructors
-    public Langue() {}
-    public Langue(String libelle) { this.libelle = libelle; }
-
     // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
